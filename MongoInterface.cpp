@@ -76,3 +76,12 @@ void MongoInterface::setDatabase(std::string database) {
 std::string MongoInterface::getIP_Port() const {
     return IP_Port;
 }
+
+bool mongoInterfaceTest(){
+    MongoInterface mi;
+    mi.connect();
+    JsonBox::Value val;
+    val["TestKey"] = JsonBox::Value("TestVal");
+    mi.insertJSON("Test", &val);
+    return true;
+}
