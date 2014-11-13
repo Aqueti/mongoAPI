@@ -86,18 +86,3 @@ std::string MongoInterface::getIP_Port() const {
     return IP_Port;
 }
 
-int main(){
-    MongoInterface mi;
-    JsonBox::Value val1;
-    val1["TestKey"] = JsonBox::Value("TestVal");
-    mi.insertJSON("Test", &val1);
-    JsonBox::Value val2;
-    val2["TestKey"]["$in"][size_t(0)] = JsonBox::Value("TestVal");
-    val2["TestKey"]["$in"][1] = JsonBox::Value("TestVal2");
-    std::cout << val2 << std::endl;
-    mi.query("Test", &val2);
-    mi.removeEntry("Test", &val1, false);
-    mi.query("test", &val2);
-    return true;
-}
-
