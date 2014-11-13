@@ -1,24 +1,23 @@
-/* 
- * File:   MongoInterface.cpp
- * Author: cameron
- * 
- * Created on October 21, 2014, 3:54 PM
+/*
+ * Interface.cpp
+ *
+ *  Created on: Nov 6, 2014
+ *      Author: Cameron Givler
  */
 
 #include "MongoInterface.h"
 
 MongoInterface::MongoInterface() {
-}
-
-MongoInterface::MongoInterface(const MongoInterface& orig) {
+	connection = new mongo::DBClientConnection();
+	connect();
 }
 
 MongoInterface::~MongoInterface() {
+	delete connection;
 }
 
-bool MongoInterface::connect(std::string IP_Port, std::string database) {
+bool MongoInterface::connect(std::string database, std::string IP_Port) {
     mongo::client::initialize();
-
     try {
         connection->connect(IP_Port);
         std::cout << "connected ok" << std::endl;
@@ -59,10 +58,20 @@ JsonBox::Value MongoInterface::query(std::string collection, JsonBox::Value* dat
     int counter = 0;
     while (cursor->more()) {
         mongo::BSONObj b = cursor->next();
-        results["results"][counter] = JSON_from_BSON(&b);
+        results[counter] = JSON_from_BSON(&b);
+        counter++;
     }
     results.writeToStream(std::cout);
     return results;
+}
+
+bool MongoInterface::removeEntry(std::string collection, JsonBox::Value* data, bool onlyOne){
+	try{
+		connection->remove(database + "." + collection, BSON_from_JSON(data), onlyOne);
+	} catch(const mongo::DBException& e){
+		return false;
+	}
+	return true;
 }
 
 std::string MongoInterface::getDatabase() const {
@@ -77,11 +86,18 @@ std::string MongoInterface::getIP_Port() const {
     return IP_Port;
 }
 
-bool mongoInterfaceTest(){
+int main(){
     MongoInterface mi;
-    mi.connect();
-    JsonBox::Value val;
-    val["TestKey"] = JsonBox::Value("TestVal");
-    mi.insertJSON("Test", &val);
+    JsonBox::Value val1;
+    val1["TestKey"] = JsonBox::Value("TestVal");
+    mi.insertJSON("Test", &val1);
+    JsonBox::Value val2;
+    val2["TestKey"]["$in"][size_t(0)] = JsonBox::Value("TestVal");
+    val2["TestKey"]["$in"][1] = JsonBox::Value("TestVal2");
+    std::cout << val2 << std::endl;
+    mi.query("Test", &val2);
+    mi.removeEntry("Test", &val1, false);
+    mi.query("test", &val2);
     return true;
 }
+
