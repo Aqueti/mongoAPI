@@ -7,13 +7,19 @@ FIND_PACKAGE(Boost 1.55 COMPONENTS system regex thread filesystem program_option
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 FIND_PACKAGE(Threads REQUIRED)
 INCLUDE_DIRECTORIES( ${Threads_INCLUDE_DIR})
-FIND_PACKAGE(JsonBox REQUIRED)
-INCLUDE_DIRECTORIES( ${JsonBox_INCLUDE_DIRS})
+FIND_PACKAGE(JSONBOX REQUIRED)
+INCLUDE_DIRECTORIES( ${JSONBOX_INCLUDE_DIRS})
 FIND_PACKAGE(MongoDB REQUIRED)
 INCLUDE_DIRECTORIES( ${MongoDB_INCLUDE_DIR})
 
-add_executable(MongoInterface MongoInterface.cpp)
-TARGET_LINK_LIBRARIES( MongoInterface ${JsonBox_LIBRARY_RELEASE} ${MongoDB_LIBRARIES} ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+add_library(MongoInterface STATIC MongoInterface.cpp)
+TARGET_LINK_LIBRARIES( MongoInterface ${JSONBOX_LIBRARY_RELEASE} ${MongoDB_LIBRARIES} ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+
+install(TARGETS MongoInterface DESTINATION bin)
+install(FILES MongoInterface.h DESTINATION include)
+
+add_executable(MongoInterfaceTest MongoInterface_test.cpp)
+TARGET_LINK_LIBRARIES(MongoInterfaceTest MongoInterface)
 
 #add_subdirectory(tests)
 
