@@ -85,4 +85,3 @@ void MongoInterface::setDatabase(std::string database) {
 std::string MongoInterface::getIP_Port() const {
     return IP_Port;
 }
-
