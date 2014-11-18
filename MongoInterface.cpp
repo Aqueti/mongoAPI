@@ -1,21 +1,25 @@
-/*
- * Interface.cpp
+/**
+ * @file MongoInterface.h
+ * @author Cameron Givler <cameron.givler@duke.edu>
+ * @version 1.0
  *
- *  Created on: Nov 6, 2014
- *      Author: Cameron Givler
+ * Interface class to MongoDB
+ *
+ * A class to connect to a MongoDB database with methods to insert, retrieve,
+ * and remove entries with JsonBox Values.
  */
 
 #include "MongoInterface.h"
 
-MongoInterface::MongoInterface() {
+
+MongoInterface::MongoInterface(std::string database, std::string IP_Port) {
 	connection = new mongo::DBClientConnection();
-	connect();
+	connect(database, IP_Port);
 }
 
 MongoInterface::~MongoInterface() {
 	delete connection;
 }
-
 bool MongoInterface::connect(std::string database, std::string IP_Port) {
     mongo::client::initialize();
     try {

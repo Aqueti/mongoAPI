@@ -1,8 +1,12 @@
-/*
- * Interface.h
+/**
+ * @file MongoInterface.h
+ * @author Cameron Givler <cameron.givler@duke.edu>
+ * @version 1.0
  *
- *  Created on: Nov 6, 2014
- *      Author: Cameron Givler
+ * Interface class to MongoDB
+ *
+ * A class to connect to a MongoDB database with methods to insert, retrieve,
+ * and remove entries with JsonBox Values.
  */
 
 #ifndef MONGOINTERFACE_H_
@@ -14,22 +18,90 @@
 #include "mongo/client/dbclient.h"
 #include "mongo/bson/bson.h"
 
+/**
+ * @class MongoInterface
+ *
+ * @brief An interface to a MongoDB database
+ * with methods to insert, retrieve, and remove entries with JsonBox Values.
+ */
 class MongoInterface {
 private:
     std::string database;
     std::string IP_Port;
     mongo::DBClientConnection* connection;
+    /**
+     * Helper method to convert a JsonBox Value to a BSON object that MongoDB accepts
+     *
+     * @param data the JsonBox Value to convert
+     * @return the BSON object
+     */
     mongo::BSONObj BSON_from_JSON(JsonBox::Value* data) const;
+    /**
+     * Helper method to convert a BSON object from MongoDB to a JsonBox Value
+     *
+     * @param data the BSON object to convert
+     * @return the JsonBox Value
+     */
     JsonBox::Value JSON_from_BSON(mongo::BSONObj* data) const;
+    /**
+     * Helper method to connect to a specified database
+     *
+     * @param database The name of the database to connect to
+     * @param IP_Port The IP address and port given as a string in the form "IP:Port"
+     * @return true if the connection was successful
+     */
+    bool connect(std::string database, std::string IP_Port);
 public:
-    MongoInterface();
+    /**
+     * Constructor opens connection to database with specified name.
+     *
+     * @param database Name of the database to connect to
+     * @param IP_Port The IP address and port given as a string in the form "IP:Port"
+     */
+    MongoInterface(std::string database="aqueti", std::string IP_Port="localhost");
+    /**
+     * Destructor
+     */
     virtual ~MongoInterface();
-    bool connect(std::string database="aqueti", std::string IP_Port="localhost");
+    /**
+     * Insert a JsonBox Value into the database with specified collection.
+     *
+     * @param collection The name of the collection to insert Value into
+     * @param data The JsonBox Value to insert
+     * @return true on success
+     */
     bool insertJSON(std::string collection, JsonBox::Value* data) const;
+    /**
+     * Query the specified collection according to a specified JsonBox Value
+     *
+     * @param collection The name of the collection to query
+     * @param data The JsonBox Value query
+     * @return Array of results
+     */
     JsonBox::Value query(std::string collection, JsonBox::Value* data) const;
+    /**
+     * Remove one or multiple entries from the specified collection
+     *
+     * @param collection The name of the collection
+     * @param data A JsonBox Value specifying what entries to remove
+     * @param onlyOne if true, a maximum of one entry will be deleted
+     * @return true on success
+     */
     bool removeEntry(std::string collection, JsonBox::Value* data, bool onlyOne);
+    /**
+     * Returns a string containing the name of the current database
+     * @return The name of the current database
+     */
     std::string getDatabase() const;
+    /**
+     * Change the database to query
+     * @param database The name of the new database
+     */
     void setDatabase(std::string database);
+    /**
+     * Returns a string containing the IP and Port of the database
+     * @return The IP and port in the form "IP:Port"
+     */
     std::string getIP_Port() const;
 };
 

@@ -2,7 +2,7 @@
  * MongoInterface_test.cpp
  *
  *  Created on: Nov 13, 2014
- *      Author: cameron
+ *      Author: Cameron Givler
  */
 
 #include "MongoInterface.h"
