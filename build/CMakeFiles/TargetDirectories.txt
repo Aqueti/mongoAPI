@@ -1,0 +1,2 @@
+/home/cameron/Documents/aware/dispcode_mongoapi/build/CMakeFiles/MongoInterface.dir
+/home/cameron/Documents/aware/dispcode_mongoapi/build/CMakeFiles/MongoInterfaceTest.dir

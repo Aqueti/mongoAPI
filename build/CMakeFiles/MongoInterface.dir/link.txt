@@ -1,0 +1,2 @@
+/usr/bin/ar cr libMongoInterface.a  CMakeFiles/MongoInterface.dir/MongoInterface.cpp.o
+/usr/bin/ranlib libMongoInterface.a
