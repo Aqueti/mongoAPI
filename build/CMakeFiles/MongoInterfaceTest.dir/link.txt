@@ -1,1 +1,0 @@
-/usr/bin/c++       CMakeFiles/MongoInterfaceTest.dir/MongoInterface_test.cpp.o  -o MongoInterfaceTest -rdynamic libMongoInterface.a /usr/local/lib/libJsonBox.a /usr/local/lib/libmongoclient.a -lboost_system -lboost_regex -lboost_thread -lboost_filesystem -lboost_program_options -lpthread -lpthread 
