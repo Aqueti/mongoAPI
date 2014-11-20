@@ -3,6 +3,8 @@ PROJECT(MongoInterface)
 
 list(APPEND CMAKE_MODULE_PATH ${MongoInterface_SOURCE_DIR} ${MongoInterface_SOURCE_DIR}/cmake)
 
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
+
 FIND_PACKAGE(Boost 1.55 COMPONENTS system regex thread filesystem program_options REQUIRED )
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 FIND_PACKAGE(Threads REQUIRED)
