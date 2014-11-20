@@ -84,22 +84,25 @@ public:
      *
      * @param collection The name of the collection
      * @param data A JsonBox Value specifying what entries to remove
-     * @param onlyOne if true, a maximum of one entry will be deleted
+     * @param onlyOne if true, a maximum of one entry will be removed
      * @return true on success
      */
     bool removeEntry(std::string collection, JsonBox::Value* data, bool onlyOne);
     /**
      * Returns a string containing the name of the current database
+     *
      * @return The name of the current database
      */
     std::string getDatabase() const;
     /**
      * Change the database to query
+     *
      * @param database The name of the new database
      */
     void setDatabase(std::string database);
     /**
      * Returns a string containing the IP and Port of the database
+     *
      * @return The IP and port in the form "IP:Port"
      */
     std::string getIP_Port() const;

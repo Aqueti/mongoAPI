@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-PROJECT(MONGOINTERFACE)
+PROJECT(MongoInterface)
 
-list(APPEND CMAKE_MODULE_PATH ${MONGOINTERFACE_SOURCE_DIR} ${MONGOINTERFACE_SOURCE_DIR}/cmake)
+list(APPEND CMAKE_MODULE_PATH ${MongoInterface_SOURCE_DIR} ${MongoInterface_SOURCE_DIR}/cmake)
 
 FIND_PACKAGE(Boost 1.55 COMPONENTS system regex thread filesystem program_options REQUIRED )
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
@@ -12,14 +12,14 @@ INCLUDE_DIRECTORIES( ${JSONBOX_INCLUDE_DIRS})
 FIND_PACKAGE(MongoDB REQUIRED)
 INCLUDE_DIRECTORIES( ${MongoDB_INCLUDE_DIR})
 
-add_library(MONGOINTERFACE STATIC MongoInterface.cpp MongoInterface.h)
-TARGET_LINK_LIBRARIES(MONGOINTERFACE ${JSONBOX_LIBRARY_RELEASE} ${MongoDB_LIBRARIES} ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+add_library(MongoInterface STATIC MongoInterface.cpp MongoInterface.h)
+TARGET_LINK_LIBRARIES(MongoInterface ${JSONBOX_LIBRARY_RELEASE} ${MongoDB_LIBRARIES} ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
-install(TARGETS MONGOINTERFACE ARCHIVE DESTINATION "lib" COMPONENT lib)
+install(TARGETS MongoInterface ARCHIVE DESTINATION "lib" COMPONENT lib)
 install(FILES MongoInterface.h DESTINATION include)
 
-add_executable(MongoInterfaceTest MongoInterface_test.cpp)
-TARGET_LINK_LIBRARIES(MongoInterfaceTest MONGOINTERFACE)
+#add_executable(MongoInterfaceTest MongoInterface_test.cpp)
+#TARGET_LINK_LIBRARIES(MongoInterfaceTest MongoInterface)
 
 # add a target to generate API documentation with Doxygen
 find_package(Doxygen)
