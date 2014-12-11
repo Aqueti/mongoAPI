@@ -82,6 +82,18 @@ bool MongoInterface::removeEntry(std::string collection, JsonBox::Value* data,
 	return true;
 }
 
+bool MongoInterface::update(std::string collection, JsonBox::Value* query,
+			JsonBox::Value* update, bool onlyOne){
+
+	try{
+		connection->update(database + "." + collection, BSON_from_JSON(query), BSON_from_JSON(update), false, !onlyOne);
+	}catch(const mongo::DBException& e){
+
+	}
+
+	return true;
+}
+
 std::string MongoInterface::getDatabase() const {
 	return database;
 }

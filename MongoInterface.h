@@ -85,11 +85,23 @@ public:
 	 *
 	 * @param collection The name of the collection
 	 * @param data A JsonBox Value specifying what entries to remove
-	 * @param onlyOne if true, a maximum of one entry will be removed
+	 * @param onlyOne If true, a maximum of one entry will be removed
 	 * @return true on success
 	 */
 	bool removeEntry(std::string collection, JsonBox::Value* data,
 			bool onlyOne);
+	/**
+	 * this queries a collection for the specified value, and updates it with
+	 * the passed parameters.  This function will only update one entry if the
+	 * query matches multiple.
+	 *
+	 * @param collection The name of the collection
+	 * @param query Which entry to update
+	 * @param update The parameters to update with
+	 * @return true on success
+	 */
+	bool update(std::string collection, JsonBox::Value* query,
+			JsonBox::Value* update, bool onlyOne);
 	/**
 	 * Returns a string containing the name of the current database
 	 *
