@@ -11,15 +11,13 @@ make
 sudo make install; cd ..
 
 ##### TO INSTALL BOOST #####
-sudo apt-get install libboost-all-dev
-
-##### TO INSTALL SCONS #####
-sudo apt-get install scons
+sudo apt-get install libboost1.55
 
 ##### TO INSTALL DOXYGEN (OPTIONAL) #####
 sudo apt-get install doxygen
 
 ##### TO INSTALL MONGO-CXX-DRIVER #####
+sudo apt-get install scons
 git clone https://github.com/mongodb/mongo-cxx-driver.git
 cd mongo-cxx-driver
 git checkout legacy
@@ -33,3 +31,4 @@ cmake ../dispcode_mongoapi
 make
 sudo make install
 cd ..
+

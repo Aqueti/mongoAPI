@@ -1,6 +1,31 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 PROJECT(MongoInterface)
 
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+option( USE_SUPERBUILD "Use the superbuild to pull in dependencies" ON)
+
+if( USE_SUPERBUILD)
+      option(GIT_HTTPS "Clone git repositories with HTTPS" ON)
+      include(ExternalProject)
+      include(Superbuild.cmake)
+      return()
+endif()
+
+# Additional build flags
+if(UNIX)
+       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fexpensive-optimizations")
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wold-style-cast")
+endif()
+
+list(APPEND CMAKE_MODULE_PATH ${ACI_SOURCE_DIR} ${ACI_SOURCE_DIR}/cmake)
+
+
+set(INSTALL_DIR "${CMAKE_BINARY_DIR}/INSTALL")
+
+
 list(APPEND CMAKE_MODULE_PATH ${MongoInterface_SOURCE_DIR} ${MongoInterface_SOURCE_DIR}/cmake)
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
