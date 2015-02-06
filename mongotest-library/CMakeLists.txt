@@ -5,7 +5,7 @@ list(APPEND CMAKE_MODULE_PATH ${MongoTest_SOURCE_DIR} ${MongoTest_SOURCE_DIR}/cm
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 
-FIND_PACKAGE(Boost 1.55 COMPONENTS system regex thread filesystem program_options REQUIRED )
+FIND_PACKAGE(Boost 1.54 COMPONENTS system regex thread filesystem program_options REQUIRED )
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 FIND_PACKAGE(Threads REQUIRED)
 INCLUDE_DIRECTORIES( ${Threads_INCLUDE_DIR})
