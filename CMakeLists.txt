@@ -41,8 +41,6 @@ COMMENT "Generating API documentation with Doxygen" VERBATIM
 )
 endif(DOXYGEN_FOUND)
 
-#add_subdirectory(mongotest tests)
-
 add_executable(MongoInterfaceTest mongotest/MongoInterface_test.cpp)
 TARGET_LINK_LIBRARIES(MongoInterfaceTest MongoInterface ${JSONBOX_LIBRARY_RELEASE} ${MongoDB_LIBRARIES} ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 install(TARGETS MongoInterfaceTest DESTINATION test)
