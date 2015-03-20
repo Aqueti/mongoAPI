@@ -27,7 +27,7 @@ ExternalProject_Add(
   CONFIGURE_COMMAND 
   COMMAND echo "building mongo-cxx-driver"
   BUILD_IN_SOURCE 1 
-  BUILD_COMMAND scons --prefix=${CMAKE_BINARY_DIR}/INSTALL install
+  BUILD_COMMAND scons -j 4 --prefix=${CMAKE_BINARY_DIR}/INSTALL install
   INSTALL_COMMAND 
   COMMAND echo "built mongo-cxx-driver"
 )
