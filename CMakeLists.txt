@@ -1,9 +1,19 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12)
 PROJECT(MongoInterface)
 
 list(APPEND CMAKE_MODULE_PATH ${MongoInterface_SOURCE_DIR} ${MongoInterface_SOURCE_DIR}/cmake)
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
+
+option(USE_SUPERBUILD "Use superbuild to pull in and build dependencies." ON)
+
+# Superbuild rules
+if(USE_SUPERBUILD)
+    option(GIT_HTTPS "Clone git repositories with HTTPS" ON)
+    include(ExternalProject)
+    include(Superbuild.cmake)
+    return()
+endif()
 
 FIND_PACKAGE(Boost 1.55 COMPONENTS system regex thread filesystem program_options REQUIRED )
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
@@ -17,11 +27,8 @@ INCLUDE_DIRECTORIES( ${MongoDB_INCLUDE_DIR})
 add_library(MongoInterface STATIC MongoInterface.cpp MongoInterface.h)
 TARGET_LINK_LIBRARIES(MongoInterface ${JSONBOX_LIBRARY_RELEASE} ${MongoDB_LIBRARIES} ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
-install(TARGETS MongoInterface ARCHIVE DESTINATION "lib" COMPONENT lib)
+install(TARGETS MongoInterface DESTINATION lib)
 install(FILES MongoInterface.h DESTINATION include)
-
-#add_executable(MongoInterfaceTest MongoInterface_test.cpp)
-#TARGET_LINK_LIBRARIES(MongoInterfaceTest MongoInterface)
 
 # add a target to generate API documentation with Doxygen
 find_package(Doxygen)
@@ -34,5 +41,8 @@ COMMENT "Generating API documentation with Doxygen" VERBATIM
 )
 endif(DOXYGEN_FOUND)
 
-#add_subdirectory(tests)
+#add_subdirectory(mongotest tests)
 
+add_executable(MongoInterfaceTest mongotest/MongoInterface_test.cpp)
+TARGET_LINK_LIBRARIES(MongoInterfaceTest MongoInterface ${JSONBOX_LIBRARY_RELEASE} ${MongoDB_LIBRARIES} ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+install(TARGETS MongoInterfaceTest DESTINATION test)
