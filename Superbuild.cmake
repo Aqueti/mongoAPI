@@ -34,7 +34,7 @@ ExternalProject_Add(
 
 ExternalProject_Add (
   MongoInterface
-  SOURCE_DIR "${CMAKE_SOURCE_DIR}"
+  SOURCE_DIR ${CMAKE_SOURCE_DIR}
   CMAKE_ARGS
     ${cmake_common_args}
     -DUSE_SUPERBUILD:BOOL=OFF
