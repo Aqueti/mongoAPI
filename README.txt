@@ -1,4 +1,14 @@
-To install:
+Recommended install:
+Use superbuild.  This is the default setting.
+
+##### For Doxygen, run: #####
+sudo apt-get install doxygen
+sudo apt-get install Graphviz
+
+
+
+To install manually:
+in the install directory, run ccmake [source_directory] and turn superbuild "off"
 
 ##### TO INSTALL GIT #####
 sudo apt-get install git
