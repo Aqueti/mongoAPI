@@ -38,6 +38,7 @@ ExternalProject_Add (
   CMAKE_ARGS
     ${cmake_common_args}
     -DUSE_SUPERBUILD:BOOL=OFF
+    -DDOXYGEN_DIR=${CMAKE_BINARY_DIR}/INSTALL/Doxygen
   INSTALL_DIR ${CMAKE_BINARY_DIR}/INSTALL
   DEPENDS JsonBox MongoDB
 )
