@@ -3,8 +3,13 @@ Use superbuild.  This is the default setting.
 
 ##### For Doxygen, run: #####
 sudo apt-get install doxygen
-sudo apt-get install Graphviz
+sudo apt-get install graphviz
 
+##### TO INSTALL BOOST #####
+sudo apt-get install libboost-all-dev
+
+##### TO INSTALL SCONS #####
+sudo apt-get install scons
 
 
 To install manually:
@@ -19,15 +24,6 @@ mkdir JsonBox-build; cd JsonBox-build
 cmake ../JsonBox
 make
 sudo make install; cd ..
-
-##### TO INSTALL BOOST #####
-sudo apt-get install libboost-all-dev
-
-##### TO INSTALL SCONS #####
-sudo apt-get install scons
-
-##### TO INSTALL DOXYGEN (OPTIONAL) #####
-sudo apt-get install doxygen
 
 ##### TO INSTALL MONGO-CXX-DRIVER #####
 git clone https://github.com/mongodb/mongo-cxx-driver.git
