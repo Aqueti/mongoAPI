@@ -1,54 +1,41 @@
 # - Find MongoDB
 # Find the MongoDB includes and client library
-# This module defines
-#  MongoDB_INCLUDE_DIR, where to find mongo/client/dbclient.h
-#  MongoDB_LIBRARIES, the libraries needed to use MongoDB.
-#  MongoDB_FOUND, If false, do not try to use MongoDB.
+# This module defines where to find bson.h
+#
+include(FindPackageHandleStandardArgs)
 
-if(MongoDB_INCLUDE_DIR AND MongoDB_LIBRARIES)
-   set(MongoDB_FOUND TRUE)
+# if BSON_ROOT has defined in system environment, use this as a hint
+set(BSON_ROOT "$ENV{BSON_ROOT}")
+set(INSTALL_PATH "${CMAKE_BINARY_DIR}/INSTALL")
+set(MONGOC_ROOT "$ENV{MONGOC_ROOT}")
 
-else(MongoDB_INCLUDE_DIR AND MongoDB_LIBRARIES)
+#find the header files
+find_path(BSON_INCLUDE_DIRS "bson.h" HINTS 
+   "${BSON_ROOT}/include"
+   "${INSTALL_PATH}/include/libbson-1.0"
+)
+message( "INSTALL_PATH: ${INSTALL_PATH}")
+find_library(BSON_LIBRARY NAMES BSON HINTS 
+   "${BSON_ROOT}/lib"
+   "${INSTALL_PATH}/lib"
+)
 
-  find_path(MongoDB_INCLUDE_DIR mongo/client/dbclient.h
-      /usr/include/
-      /usr/local/include/
-      /usr/include/mongo/
-      /usr/local/include/mongo/
-	  /opt/mongo/include/
-      $ENV{ProgramFiles}/Mongo/*/include
-      $ENV{SystemDrive}/Mongo/*/include
-      )
 
-if(WIN32)
-  find_library(MongoDB_LIBRARIES NAMES mongoclient
-      PATHS
-      $ENV{ProgramFiles}/Mongo/*/lib
-      $ENV{SystemDrive}/Mongo/*/lib
-      )
-else(WIN32)
-  find_library(MongoDB_LIBRARIES NAMES mongoclient
-      PATHS
-      /usr/lib
-      /usr/lib/mongo
-      /usr/local/lib
-      /usr/local/lib/mongo
-	  /opt/mongo/lib
-      )
-endif(WIN32)
+# if MONGOC_ROOT has defined in system environment, use this as a hint
+set(MONGOC_ROOT "$ENV{MONGOC_ROOT}")
+set(INSTALL_PATH "${CMAKE_BINARY_DIR}/INSTALL")
 
-  if(MongoDB_INCLUDE_DIR AND MongoDB_LIBRARIES)
-    set(MongoDB_FOUND TRUE)
-    message(STATUS "Found MongoDB: ${MongoDB_INCLUDE_DIR}, ${MongoDB_LIBRARIES}")
-  else(MongoDB_INCLUDE_DIR AND MongoDB_LIBRARIES)
-    set(MongoDB_FOUND FALSE)
-    if (MongoDB_FIND_REQUIRED)
-		message(FATAL_ERROR "MongoDB not found.")
-	else (MongoDB_FIND_REQUIRED)
-		message(STATUS "MongoDB not found.")
-	endif (MongoDB_FIND_REQUIRED)
-  endif(MongoDB_INCLUDE_DIR AND MongoDB_LIBRARIES)
+#find the header files
+find_path(MONGOC_INCLUDE_DIRS "mongoc.h" HINTS 
+   "${MONGOC_ROOT}/include"
+   "${INSTALL_PATH}/include/libmongoc-1.0"
+)
 
-  mark_as_advanced(MongoDB_INCLUDE_DIR MongoDB_LIBRARIES)
 
-endif(MongoDB_INCLUDE_DIR AND MongoDB_LIBRARIES)
+find_library(MONGOC_LIBRARY NAMES MONGOC HINTS 
+   "${MONGOC_ROOT}/lib"
+   "${INSTALL_PATH}/lib"
+)
+#
+find_package_handle_standard_args(BSON DEFAULT_MSG BSON_INCLUDE_DIRS BSON_LIBRARIES)
+find_package_handle_standard_args(MONGOC DEFAULT_MSG MONGOC_INCLUDE_DIRS MONGOC_LIBRARIES)
