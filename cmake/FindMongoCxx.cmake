@@ -9,10 +9,10 @@ set(MONGOCXX_ROOT "$ENV{MONGOCXX_ROOT}")
 set(INSTALL_PATH "${CMAKE_BINARY_DIR}/INSTALL")
 
 #find the header files
-find_path(MONGOCXX_INCLUDE_DIRS "collection.hpp" HINTS 
+find_path(MONGOCXX_INCLUDE_DIRS "mongocxx/collection.hpp" HINTS 
    "${MONGOCXX_ROOT}/include"
    "${INSTALL_PATH}/include/mongocxx"
-   "${INSTALL_PATH}/include/mongocxx/v_noabi/mongocxx"
+   "${INSTALL_PATH}/include/mongocxx/v_noabi/"
 )
 
 

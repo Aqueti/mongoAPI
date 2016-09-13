@@ -10,15 +10,17 @@
  */
 
 #include "MongoInterface.h"
-
+/*
 MongoInterface::MongoInterface(std::string database, std::string IP_Port) {
-	connection = new mongo::DBClientConnection();
-	connect(database, IP_Port);
+        m_client{"mongo://localhost:2017"};
+        db = conn["test"];
+//	connection = new mongo::DBClientConnection();
+//	connect(database, IP_Port);
 }
 
 MongoInterface::~MongoInterface() {
-	mongo::client::shutdown();
-	delete connection;
+//	mongo::client::shutdown();
+//	delete connection;
 }
 bool MongoInterface::connect(std::string database, std::string IP_Port) {
 	mongo::client::initialize();
@@ -105,3 +107,4 @@ void MongoInterface::setDatabase(std::string database) {
 std::string MongoInterface::getIP_Port() const {
 	return IP_Port;
 }
+*/

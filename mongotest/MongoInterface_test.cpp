@@ -8,6 +8,7 @@
 #include "MongoInterface.h"
 
 int main() {
+/*
 	try {
 		MongoInterface* mi = new MongoInterface();
 		JsonBox::Value *val1 = new JsonBox::Value();
@@ -33,5 +34,6 @@ int main() {
 		std::cout << "Something went wrong";
 		return 1;
 	}
+*/
 	return 0;
 }
