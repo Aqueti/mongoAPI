@@ -8,9 +8,7 @@
  * A class to connect to a MongoDB database with methods to insert, retrieve,
  * and remove entries with JsonBox Values.
  */
-
-#ifndef MONGOINTERFACE_H_
-#define MONGOINTERFACE_H_
+#pragma once
 
 #include <cstdlib>
 #include <iostream>
@@ -19,7 +17,15 @@
 //#include <mongoc.h>
 
 #include <mongocxx/client.hpp>
-//#include <instance.hpp">
+#include <bsoncxx/types.hpp>
+
+/**
+ * \brief Namespace for the mongoAPI code
+ **/
+namespace mongoAPI 
+{
+
+#define DEFAULT_PORT 27017
 
 /**
  * @class MongoInterface
@@ -29,22 +35,22 @@
  */
 class MongoInterface {
 private:
-	std::string database;
-	std::string IP_Port;
+	std::string m_host;                                 //!< Hostname of the database server
+        uint64_t m_port = 27014;
 
         mongocxx::database db;
 
 //	mongocxx::instance inst{};
 //	mongocxx::client conn{};
 
-	/*
+	/**
 	 * Helper method to convert a JsonBox Value to a BSON object that MongoDB accepts
 	 *
 	 * @param data the JsonBox Value to convert
 	 * @return the BSON object
-	 *
-	mongo::BSONObj BSON_from_JSON(JsonBox::Value* data) const;
-	/*
+	 **/
+	 bsoncxx::document::value BSON_from_JSON(JsonBox::Value data) const;
+	/**
 	 * Helper method to convert a BSON object from MongoDB to a JsonBox Value
 	 *
 	 * @param data the BSON object to convert
@@ -132,5 +138,5 @@ public:
 };
 
 bool mongoInterfaceTest();
+}
 
-#endif /* MONGOINTERFACE_H_ */

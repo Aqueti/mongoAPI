@@ -8,8 +8,14 @@
  * A class to connect to a MongoDB database with methods to insert, retrieve,
  * and remove entries with JsonBox Values.
  */
+#include <sstream>
 
 #include "MongoInterface.h"
+#include <bsoncxx/builder/stream/document.hpp>
+#include <bsoncxx/json.hpp>
+
+namespace mongoAPI
+{
 /*
 MongoInterface::MongoInterface(std::string database, std::string IP_Port) {
         m_client{"mongo://localhost:2017"};
@@ -35,18 +41,30 @@ bool MongoInterface::connect(std::string database, std::string IP_Port) {
 	this->database = database;
 	return true;
 }
+*/
+   /**
+   * \brief Converts a JSON string into a BSON object
+   * \return bsoncxx::document::value of the JsonBox data;
+   **/
+   bsoncxx::document::value MongoInterface::BSON_from_JSON(JsonBox::Value data) const 
+   {
+       std::stringstream ss;
 
-mongo::BSONObj MongoInterface::BSON_from_JSON(JsonBox::Value* data) const {
-	std::stringstream stream;
-	data->writeToStream(stream, false);
-	return mongo::fromjson(stream.str());
-}
+       bsoncxx::builder::stream::document doc{};
+       ss<<data;
+       doc << ss.str();
 
-JsonBox::Value MongoInterface::JSON_from_BSON(mongo::BSONObj* data) const {
+       return doc.extract();
+   }
+
+   /**
+    * \brief converts a mongo document into a json object
+    **/
+   JsonBox::Value MongoInterface::JSON_from_BSON(mongo::BSONObj* data) const {
 	JsonBox::Value j;
 	j.loadFromString(data->jsonString());
 	return j;
-}
+   }
 
 bool MongoInterface::insertJSON(std::string collection,
 		JsonBox::Value* data) const {
@@ -108,3 +126,4 @@ std::string MongoInterface::getIP_Port() const {
 	return IP_Port;
 }
 */
+}
