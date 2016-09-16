@@ -10,6 +10,7 @@
  */
 #include <sstream>
 
+#include <JsonBox.h>
 #include "MongoInterface.h"
 #include <bsoncxx/builder/stream/document.hpp>
 #include <bsoncxx/json.hpp>
@@ -28,7 +29,8 @@ namespace mongoAPI
    MongoInterface::MongoInterface(std::string database, std::string uri, size_t port) 
    {
         if( !database.empty() && !uri.empty() && port ) {
-        connect( database, uri, port);
+           connect( database, uri, port);
+         }
    }
 
 
@@ -138,24 +140,18 @@ namespace mongoAPI
    }
 
    /**
-    * Returns a string containing the name of the current database
-    *
-    * \return The name of the current database
-    **/
-   std::string MongoInterface::getDatabase() 
-   {
-      return database;
-   }
-
-
-   /**
     * \brief returns the uri, port and database 
-    * \return string that includes the uri, port and database or empty string if not connected
+    * \return JsonBox value that includes the uri, port and database name. Empty if not connected
+    *
+    * {
+    *     "uri":"10.0.0.110",
+    *     "port":9000,
+    *     "name":"test"
+    * }
     **/
-   std::string MongoInterface::getIP_Port() 
+   JsonBox::Value MongoInterface::getDBInfo() 
    {
-      std::string result;
-	return result;
+	return m_dbInfo;
    }
 
    /**
@@ -164,9 +160,8 @@ namespace mongoAPI
    bool testMongoInterface()
    {
        MongoInterface interface( "test", "localhost", 27014 );
-       if( !inteface.connected()) {
-           return false;
-       }
+
+       JsonBox::Value dbinfo = interface.getDBInfo();
 
        JsonBox::Value value("{\"id\":1234, \"name\":\"test1\"}");
 

@@ -16,7 +16,7 @@ find_path(BSONCXX_INCLUDE_DIRS "bsoncxx/oid.hpp" HINTS
 )
 
 
-find_library(BSONCXX_LIBRARY NAMES "bsoncxx" HINTS 
+find_library(BSONCXX_LIBRARY NAMES "libbsoncxx" HINTS 
    "${BSONCXX_ROOT}/lib"
    "${INSTALL_PATH}/lib"
 )

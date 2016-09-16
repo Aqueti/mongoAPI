@@ -18,6 +18,7 @@ ExternalProject_Add(
     -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
     -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
     -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_BINARY_DIR}/INSTALL
+    -DUSE_SUPERBUILD:BOOL=OFF
   INSTALL_DIR ${CMAKE_BINARY_DIR}/INSTALL
 )
 
@@ -44,14 +45,13 @@ ExternalProject_Add(
   BUILD_COMMAND make -j
 #  INSTALL_COMMAND make DESTDIR=${CMAKE_BINARY_DIR} install 
   INSTALL_COMMAND make install 
-
 )
 
 #Mongo CXX drivers
 ExternalProject_Add(
    MongoCxxDriver
    GIT_REPOSITORY "https://github.com/mongodb/mongo-cxx-driver"
-#   GIT_TAG "3.1-dev"
+   GIT_TAG "3.1-dev"
    CMAKE_ARGS
      ${cmake_common_args}
      -DLIBBSON_DIR=${CMAKE_BINARY_DIR}/INSTALL
@@ -67,6 +67,7 @@ ExternalProject_Add (
     ${cmake_common_args}
     -DUSE_SUPERBUILD:BOOL=OFF
     -DDOXYGEN_DIR=${CMAKE_BINARY_DIR}/INSTALL/Doxygen
+  BUILD_ALWAYS 1
   INSTALL_DIR ${CMAKE_BINARY_DIR}/INSTALL
   DEPENDS JsonBox MongoCxxDriver
 )
