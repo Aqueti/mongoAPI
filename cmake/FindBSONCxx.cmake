@@ -10,13 +10,13 @@ set(INSTALL_PATH "${CMAKE_BINARY_DIR}/INSTALL")
 
 #find the header files
 find_path(BSONCXX_INCLUDE_DIRS "bsoncxx/oid.hpp" HINTS 
-   "${BSONCXX_ROOT}/include"
-   "${INSTALL_PATH}/include/bsoncxx"
+#   "${BSONCXX_ROOT}/include"
+#   "${INSTALL_PATH}/include/bsoncxx"
    "${INSTALL_PATH}/include/bsoncxx/v_noabi/"
 )
 
 
-find_library(BSONCXX_LIBRARY NAMES "libbsoncxx" HINTS 
+find_library(BSONCXX_LIBRARY NAMES "bsoncxx" HINTS 
    "${BSONCXX_ROOT}/lib"
    "${INSTALL_PATH}/lib"
 )
