@@ -28,7 +28,7 @@ namespace mongoAPI
    MongoInterface::MongoInterface(std::string database, std::string uri, size_t port) 
    {
         if( !database.empty() && !uri.empty() && port ) {
-        connect( database, uri, port)
+        connect( database, uri, port);
    }
 
 
@@ -157,4 +157,22 @@ namespace mongoAPI
       std::string result;
 	return result;
    }
+
+   /**
+    * \brief unit test function
+    **/ 
+   bool testMongoInterface()
+   {
+       MongoInterface interface( "test", "localhost", 27014 );
+       if( !inteface.connected()) {
+           return false;
+       }
+
+       JsonBox::Value value("{\"id\":1234, \"name\":\"test1\"}");
+
+       interface.insertJSON( "test", value);
+       
+       return true;
+   }
+
 }

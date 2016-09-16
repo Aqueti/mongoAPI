@@ -29,7 +29,7 @@
 namespace mongoAPI 
 {
 
-#define DEFAULT_PORT 27017
+   #define DEFAULT_PORT 27017
 
 /**
  * @class MongoInterface
@@ -40,19 +40,19 @@ namespace mongoAPI
 class MongoInterface {
 private:
 	std::string m_uri;                 //!< Hostname of the database server
-        uint64_t m_port = 27014;
+        uint64_t m_port;                   //!< Port we are connected to
 
-      
-        mongocxx::database m_db;          //!< Database we are connected to
-	mongocxx::client   m_conn{};      //!< Database client
+        mongocxx::database m_db;           //!< Database we are connected to
+	mongocxx::client   m_conn{};       //!< Database client
 
 
 	bsoncxx::document::value BSON_from_JSON(JsonBox::Value data);
 	JsonBox::Value JSON_from_BSON(bsoncxx::document::value data);
 
-	bool connect(std::string database, std::string uri, size_t port);
+	bool connect(std::string database, std::string uri, size_t port = DEFAULT_PORT );
 public:
-	MongoInterface(std::string database="", std::string uri="", size_t port=0);
+	MongoInterface(std::string database="", std::string uri="", size_t port=DEFAULT_PORT );
+
 	virtual ~MongoInterface();
 	bool insertJSON(std::string collection, JsonBox::Value* data);
 	JsonBox::Value query(std::string collection, JsonBox::Value* data);
