@@ -6,8 +6,10 @@
  */
 
 #include "MongoInterface.h"
+using namespace mongoAPI;
 
 int main() {
+   MongoInterface mi;
 /*
 	try {
 		MongoInterface* mi = new MongoInterface();

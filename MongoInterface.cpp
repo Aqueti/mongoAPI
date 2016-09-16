@@ -16,37 +16,46 @@
 
 namespace mongoAPI
 {
-/*
-MongoInterface::MongoInterface(std::string database, std::string IP_Port) {
-        m_client{"mongo://localhost:2017"};
-        db = conn["test"];
-//	connection = new mongo::DBClientConnection();
-//	connect(database, IP_Port);
-}
 
-MongoInterface::~MongoInterface() {
-//	mongo::client::shutdown();
-//	delete connection;
-}
-bool MongoInterface::connect(std::string database, std::string IP_Port) {
-	mongo::client::initialize();
-	try {
-		connection->connect(IP_Port);
-		std::cout << "connected ok" << std::endl;
-	} catch (const mongo::DBException &e) {
-		std::cout << "caught " << e.what() << std::endl;
-		return false;
-	}
-	this->IP_Port = IP_Port;
-	this->database = database;
+   /**
+    * \brief Constructor
+    * \param [in] database name of the database to connect to
+    * \param [in] uri address of machine hosting database
+    * \param [in] port database listening port
+    *
+    * If the input strings are not specified, do not connect. 
+    **/ 
+   MongoInterface::MongoInterface(std::string database, std::string uri, size_t port) 
+   {
+        if( !database.empty() && !uri.empty() && port ) {
+        connect( database, uri, port)
+   }
+
+
+   /**
+    * \brief Destructor
+    **/
+   MongoInterface::~MongoInterface() 
+   {
+   }
+
+   /**
+    * \brief Establishes a connection with a database
+    * \param [in] uri 
+    * \return true on success, false on failure
+    **/
+   bool MongoInterface::connect(std::string database, std::string uri, size_t port ) 
+   {
+        //Connect to the server
+
 	return true;
-}
-*/
+   }
+
    /**
    * \brief Converts a JSON string into a BSON object
-   * \return bsoncxx::document::value of the JsonBox data;
+   * \return bsoncxx::document::value of the JsonBox data
    **/
-   bsoncxx::document::value MongoInterface::BSON_from_JSON(JsonBox::Value data) const 
+   bsoncxx::document::value MongoInterface::BSON_from_JSON(JsonBox::Value data) 
    {
        std::stringstream ss;
 
@@ -58,72 +67,94 @@ bool MongoInterface::connect(std::string database, std::string IP_Port) {
    }
 
    /**
-    * \brief converts a mongo document into a json object
-    **/
-   JsonBox::Value MongoInterface::JSON_from_BSON(mongo::BSONObj* data) const {
+    * Helper method to convert a BSON object from MongoDB to a JsonBox Value
+    *
+    * \param [in] data the BSON object to convert
+    * \return the JsonBox Value
+    */
+   JsonBox::Value MongoInterface::JSON_from_BSON(bsoncxx::document::value data) {
 	JsonBox::Value j;
-	j.loadFromString(data->jsonString());
+	j.loadFromString(bsoncxx::to_json(data.view()));
 	return j;
    }
 
-bool MongoInterface::insertJSON(std::string collection,
-		JsonBox::Value* data) const {
-	try {
-		connection->insert(database + "." + collection, BSON_from_JSON(data));
-		return true;
-	} catch (const mongo::DBException& e) {
-		std::cout << "caught " << e.what() << std::endl;
-	}
+   /**
+    * Insert a JsonBox Value into the database with specified collection.
+    *
+    * \param [in] collection The name of the collection to insert Value into
+    * \param [in] data The JsonBox Value to insert
+    * \return true on success
+    **/
+   bool MongoInterface::insertJSON(std::string collection, JsonBox::Value & data) 
+   {
 	return false;
-}
+   }
 
-JsonBox::Value MongoInterface::query(std::string collection,
-		JsonBox::Value* data) const {
+
+   /**
+    * Query the specified collection according to a specified JsonBox Value
+    *
+    * \param [in] collection The name of the collection to query
+    * \param [in] data The JsonBox Value query
+    * \return Array of results
+    **/
+   JsonBox::Value MongoInterface::query(std::string collection, JsonBox::Value & data) 
+   {
 	JsonBox::Value results;
-	std::auto_ptr<mongo::DBClientCursor> cursor = connection->query(
-			database + "." + collection, BSON_from_JSON(data));
-	int counter = 0;
-	while (cursor->more()) {
-		mongo::BSONObj b = cursor->next();
-		results[counter] = JSON_from_BSON(&b);
-		counter++;
-	}
 	return results;
-}
+   }
 
-bool MongoInterface::removeEntry(std::string collection, JsonBox::Value* data,
-		bool onlyOne) {
-	try {
-		connection->remove(database + "." + collection, BSON_from_JSON(data),
-				onlyOne);
-	} catch (const mongo::DBException& e) {
-		return false;
-	}
+   /**
+    * Remove one or multiple entries from the specified collection
+    *
+    * \param [in] collection The name of the collection
+    * \param [in] data A JsonBox Value specifying what entries to remove
+    * \param [in] onlyOne If true, a maximum of one entry will be removed
+    * \return true on success
+    **/
+   bool MongoInterface::removeEntry(std::string collection, JsonBox::Value & data, bool onlyOne) 
+   {
 	return true;
-}
+   }
 
-bool MongoInterface::update(std::string collection, JsonBox::Value* query,
-			JsonBox::Value* update, bool onlyOne){
-
-	try{
-		connection->update(database + "." + collection, BSON_from_JSON(query), BSON_from_JSON(update), false, !onlyOne);
-	}catch(const mongo::DBException& e){
-
-	}
-
+   /**
+    * \brief this queries a collection for the specified value, and updates it with
+    * the passed parameters. 
+    * query matches multiple.
+    *
+    * \param [in] collection The name of the collection
+    * \param [in] query Which entry to update
+    * \param [in] update The parameters to update with
+    * \return true on success
+    *
+    * This function will only update one entry if the
+    **/
+   bool MongoInterface::update( std::string collection
+                              , JsonBox::Value & query
+                              , JsonBox::Value & update
+                              , bool onlyOne)
+   {
 	return true;
-}
+   }
 
-std::string MongoInterface::getDatabase() const {
-	return database;
-}
+   /**
+    * Returns a string containing the name of the current database
+    *
+    * \return The name of the current database
+    **/
+   std::string MongoInterface::getDatabase() 
+   {
+      return database;
+   }
 
-void MongoInterface::setDatabase(std::string database) {
-	this->database = database;
-}
 
-std::string MongoInterface::getIP_Port() const {
-	return IP_Port;
-}
-*/
+   /**
+    * \brief returns the uri, port and database 
+    * \return string that includes the uri, port and database or empty string if not connected
+    **/
+   std::string MongoInterface::getIP_Port() 
+   {
+      std::string result;
+	return result;
+   }
 }
