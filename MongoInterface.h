@@ -16,19 +16,22 @@
 #include <iostream>
 #include "JsonBox.h"
 #include <bson.h>
+ 
 //#include <mongoc.h>
 
 #include <mongocxx/client.hpp>
 #include <mongocxx/instance.hpp>
 #include <mongocxx/uri.hpp>
+#include <mongocxx/logger.hpp>
 #include <bsoncxx/types.hpp>
+
 
 /**
  * \brief Namespace for the mongoAPI code
  **/
 namespace mongoAPI 
 {
-
+   using namespace std;
    #define DEFAULT_PORT 27017
 
 /**
@@ -41,7 +44,8 @@ class MongoInterface {
    private:
         JsonBox::Value m_dbInfo;           //local database info (db name, uri, port)
    
-        mongocxx::database m_db;           //!< Database we are connected to
+        // mongocxx::database m_db;           //!< Database we are connected to
+        std::string m_db;
 	mongocxx::client   m_conn{};       //!< Database client
 
 
@@ -49,7 +53,7 @@ class MongoInterface {
 	JsonBox::Value JSON_from_BSON(bsoncxx::document::value data);
 
    public:
-	MongoInterface(std::string database="", std::string uri="", size_t port=DEFAULT_PORT );
+	MongoInterface(std::string database, std::string uri, size_t port=DEFAULT_PORT );
 	~MongoInterface();
 
 	bool connect(std::string database, std::string uri, size_t port = DEFAULT_PORT );
@@ -69,5 +73,21 @@ class MongoInterface {
    };
 
    bool mongoInterfaceTest();
+
+
+// class logger final : public mongocxx::logger {
+//    public:
+//     explicit logger(std::ostream* stream) : _stream(stream) {
+//     }
+
+//     void operator()(mongocxx::log_level level, mongocxx::stdx::string_view domain,
+//                     mongocxx::stdx::string_view message) noexcept override {
+//         if (level >= mongocxx::log_level::k_trace) return;
+//         *_stream << '[' << mongocxx::to_string(level) << '@' << domain << "] " << message << '\n';
+//     }
+
+//    private:
+//     std::ostream* const _stream;
+// };
 }
 

@@ -15,6 +15,13 @@
 #include <bsoncxx/builder/stream/document.hpp>
 #include <bsoncxx/json.hpp>
 
+using bsoncxx::builder::stream::document;
+using bsoncxx::builder::stream::open_document;
+using bsoncxx::builder::stream::close_document;
+using bsoncxx::builder::stream::open_array;
+using bsoncxx::builder::stream::close_array;
+using bsoncxx::builder::stream::finalize;
+
 namespace mongoAPI
 {
 
@@ -28,9 +35,10 @@ namespace mongoAPI
     **/ 
    MongoInterface::MongoInterface(std::string database, std::string uri, size_t port) 
    {
+
         if( !database.empty() && !uri.empty() && port ) {
-           connect( database, uri, port);
-         }
+            connect( database, uri, port);
+        }
    }
 
 
@@ -46,11 +54,58 @@ namespace mongoAPI
     * \param [in] uri 
     * \return true on success, false on failure
     **/
-   bool MongoInterface::connect(std::string database, std::string uri, size_t port ) 
+   bool MongoInterface::connect(std::string database, std::string uris, size_t port ) 
    {
-        //Connect to the server
+	 using bsoncxx::builder::stream::document;
 
-	return true;
+	    //mongocxx::instance inst{bsoncxx::stdx::make_unique<logger>(&std::cout)};
+
+
+	    try {
+
+	    	// create uri format
+		    std::string port_string = std::to_string(port);
+		    std::string buf("mongodb://");
+		    buf.append(uris);
+		    buf.append(":");
+		    buf.append(port_string);
+
+		    // create uri
+	        const auto uri = mongocxx::uri{buf};
+
+	        // generate client options
+	        mongocxx::options::client client_options;
+
+	        // if (uri.ssl()) {
+	        //     mongocxx::options::ssl ssl_options;
+	        //     // NOTE: To test SSL, you may need to set options. The following
+	        //     // would enable certificates for Homebrew OpenSSL on OS X.
+	        //     // options.ca_file("/usr/local/etc/openssl/cert.pem");
+	        //     // ssl_options.ca_file("/usr/local/etc/openssl/cert.pem");
+	        //     client_options.ssl_opts(ssl_options);
+	        // }
+
+	        // create client object
+	        m_conn = mongocxx::client{uri,client_options};
+	        m_db = database;
+	        auto admin = m_conn[m_db];
+
+
+	        document ismaster;
+	        ismaster << "isMaster" << 1;
+
+	        // view document
+	        auto result = admin.run_command(ismaster.view());
+
+	        //prints out master document
+	        // std::cout << bsoncxx::to_json(result) << "\n";
+
+	        return EXIT_SUCCESS;
+
+	    } catch (const std::exception& xcp) {
+	        std::cout << "connection failed: " << xcp.what() << "\n";
+	        return EXIT_FAILURE;
+	}
    }
 
    /**
@@ -89,7 +144,23 @@ namespace mongoAPI
     **/
    bool MongoInterface::insertJSON(std::string collection, JsonBox::Value & data) 
    {
-	return false;
+   		auto db = m_conn[m_db];
+
+   		try{
+	   		bsoncxx::document::value newData = BSON_from_JSON(data);
+
+			auto result = db[collection].insert_one(newData.view());
+
+
+			 // auto res = db[collection].insert_one(std::move(newData));
+
+			 return EXIT_SUCCESS;
+
+		}catch (const std::exception& xcp) {
+	        std::cout << "write failed: " << xcp.what() << "\n";
+	        return EXIT_FAILURE;
+	    }
+
    }
 
 
@@ -102,8 +173,23 @@ namespace mongoAPI
     **/
    JsonBox::Value MongoInterface::query(std::string collection, JsonBox::Value & data) 
    {
-	JsonBox::Value results;
-	return results;
+
+		auto db = m_conn[m_db];
+		
+
+		try{
+			//not sure what to use for restaurants
+	        auto cursor = db[collection].find({});
+	        // need to make this return
+	        for (auto&& doc : cursor) {
+	            std::cout << bsoncxx::to_json(doc) << std::endl;
+			}
+		return EXIT_SUCCESS;
+
+		}catch (const std::exception& xcp) {
+	        std::cout << "query failed: " << xcp.what() << "\n";
+	        return EXIT_FAILURE;
+	    }
    }
 
    /**
@@ -159,7 +245,7 @@ namespace mongoAPI
     **/ 
    bool testMongoInterface()
    {
-       MongoInterface interface( "test", "localhost", 27014 );
+       mongoAPI::MongoInterface interface( "test", "localhost", 27014 );
 
        JsonBox::Value dbinfo = interface.getDBInfo();
 
