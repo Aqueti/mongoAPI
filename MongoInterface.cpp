@@ -1,5 +1,5 @@
 /**
- * @file MongoInterface.h
+ * @file MongoInterface.cpp
  * @author Cameron Givler <cameron.givler@duke.edu>
  * @version 1.0
  *
@@ -98,7 +98,7 @@ namespace mongoAPI
 	        auto result = admin.run_command(ismaster.view());
 
 	        //prints out master document
-	        // std::cout << bsoncxx::to_json(result) << "\n";
+	        std::cout << JSON_from_BSON(result) << "\n";
 
 	        return EXIT_SUCCESS;
 
@@ -112,15 +112,11 @@ namespace mongoAPI
    * \brief Converts a JSON string into a BSON object
    * \return bsoncxx::document::value of the JsonBox data
    **/
-   bsoncxx::document::value MongoInterface::BSON_from_JSON(JsonBox::Value data) 
+   bsoncxx::document::view MongoInterface::BSON_from_JSON(JsonBox::Value data) 
    {
-       std::stringstream ss;
-
-       bsoncxx::builder::stream::document doc{};
+   	   std::stringstream ss;
        ss<<data;
-       doc << ss.str();
-
-       return doc.extract();
+       return bsoncxx::from_json(ss.str());
    }
 
    /**
@@ -129,9 +125,9 @@ namespace mongoAPI
     * \param [in] data the BSON object to convert
     * \return the JsonBox Value
     */
-   JsonBox::Value MongoInterface::JSON_from_BSON(bsoncxx::document::value data) {
+   JsonBox::Value MongoInterface::JSON_from_BSON(bsoncxx::document::view data) {
 	JsonBox::Value j;
-	j.loadFromString(bsoncxx::to_json(data.view()));
+	j.loadFromString(bsoncxx::to_json(data));
 	return j;
    }
 
@@ -147,14 +143,11 @@ namespace mongoAPI
    		auto db = m_conn[m_db];
 
    		try{
-	   		bsoncxx::document::value newData = BSON_from_JSON(data);
 
-			auto result = db[collection].insert_one(newData.view());
-
-
-			 // auto res = db[collection].insert_one(std::move(newData));
-
-			 return EXIT_SUCCESS;
+        	std::stringstream ss;
+        	ss<<data;
+			auto result = db[collection].insert_one(bsoncxx::from_json(ss.str()));
+			return EXIT_SUCCESS;
 
 		}catch (const std::exception& xcp) {
 	        std::cout << "write failed: " << xcp.what() << "\n";
@@ -175,14 +168,16 @@ namespace mongoAPI
    {
 
 		auto db = m_conn[m_db];
-		
 
 		try{
-			//not sure what to use for restaurants
-	        auto cursor = db[collection].find({});
-	        // need to make this return
+
+        	std::stringstream ss;
+        	ss<<data;
+	        auto cursor = db[collection].find(bsoncxx::from_json(ss.str()));
+
+	        // add values to jsonbox
 	        for (auto&& doc : cursor) {
-	            std::cout << bsoncxx::to_json(doc) << std::endl;
+	            return JSON_from_BSON(doc);
 			}
 		return EXIT_SUCCESS;
 
@@ -245,15 +240,51 @@ namespace mongoAPI
     **/ 
    bool testMongoInterface()
    {
-       mongoAPI::MongoInterface interface( "test", "localhost", 27014 );
 
-       JsonBox::Value dbinfo = interface.getDBInfo();
+   		try{
+   		// initializes a connection
+	    MongoInterface interface( "test", "10.0.0.160", 27017 );
 
-       JsonBox::Value value("{\"id\":1234, \"name\":\"test1\"}");
+	    // gets database information
+	    JsonBox::Value dbinfo = interface.getDBInfo();
 
-       interface.insertJSON( "test", value);
+	    // inserts a value
+		JsonBox::Value val1 = new JsonBox::Value();
+		(val1)["TestKey"] = JsonBox::Value("TestVal");
+		interface.insertJSON("test", val1);
+
+		// inserts another value
+		JsonBox::Value val2 = new JsonBox::Value();
+		(val2)["NextValue"] = JsonBox::Value("BlahBlah");
+		interface.insertJSON("test", val2);
+
+		//insets another value (different format)
+		JsonBox::Value val3 = new JsonBox::Value();
+		(val3)["1234"] = JsonBox::Value("test1");
+		interface.insertJSON("test", val3);
+
+		// query val1 checks if its there
+		std::cout << interface.query("test", val1) << std::endl;
+
+		// qery val2 checks if its there
+		std::cout << interface.query("test", val2) << std::endl;
+
+		// qery value checks if its there
+		std::cout << interface.query("test", val3) << std::endl;
+
+		// remove entry
+		// interface.removeEntry("test", val1, false);
+
+		// update entry
+
+
        
-       return true;
-   }
+       } catch (const std::exception& ex) {
+		std::cout << ex.what() << std::endl;
+		return 1;
+   		}
+   		return 0;
+	}
+
 
 }

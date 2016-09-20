@@ -49,8 +49,8 @@ class MongoInterface {
 	mongocxx::client   m_conn{};       //!< Database client
 
 
-	bsoncxx::document::value BSON_from_JSON(JsonBox::Value data);
-	JsonBox::Value JSON_from_BSON(bsoncxx::document::value data);
+	bsoncxx::document::view BSON_from_JSON(JsonBox::Value data);
+	JsonBox::Value JSON_from_BSON(bsoncxx::document::view data);
 
    public:
 	MongoInterface(std::string database, std::string uri, size_t port=DEFAULT_PORT );
@@ -72,7 +72,7 @@ class MongoInterface {
 	JsonBox::Value getDBInfo();
    };
 
-   bool mongoInterfaceTest();
+   bool testMongoInterface();
 
 
 // class logger final : public mongocxx::logger {
