@@ -62,7 +62,7 @@ class MongoInterface {
 	JsonBox::Value query(std::string collection, JsonBox::Value & data);
 	bool removeEntry(std::string collection
                         , JsonBox::Value & data
-			, bool onlyOne
+						, bool onlyOne
                         );
 	bool update(std::string collection
                    , JsonBox::Value & query
