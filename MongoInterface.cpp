@@ -36,9 +36,9 @@ namespace mongoAPI
    MongoInterface::MongoInterface(std::string database, std::string uri, size_t port) 
    {
 
-        if( !database.empty() && !uri.empty() && port ) {
-            connect( database, uri, port);
-        }
+      if( !database.empty() && !uri.empty() && port ) {
+        connect( database, uri, port);
+      }
    }
 
 
@@ -58,11 +58,7 @@ namespace mongoAPI
    {
 	 using bsoncxx::builder::stream::document;
 
-	    //mongocxx::instance inst{bsoncxx::stdx::make_unique<logger>(&std::cout)};
-
-
 	    try {
-
 	    	// create uri format
 		    std::string port_string = std::to_string(port);
 		    std::string buf("mongodb://");
@@ -70,20 +66,16 @@ namespace mongoAPI
 		    buf.append(":");
 		    buf.append(port_string);
 
+		    // create DB info
+			  (m_dbInfo)["uri"] = JsonBox::Value(uris);
+			  (m_dbInfo)["port"] = JsonBox::Value(port_string);
+			  (m_dbInfo)["database"] = JsonBox::Value(database);
+
 		    // create uri
 	        const auto uri = mongocxx::uri{buf};
 
 	        // generate client options
 	        mongocxx::options::client client_options;
-
-	        // if (uri.ssl()) {
-	        //     mongocxx::options::ssl ssl_options;
-	        //     // NOTE: To test SSL, you may need to set options. The following
-	        //     // would enable certificates for Homebrew OpenSSL on OS X.
-	        //     // options.ca_file("/usr/local/etc/openssl/cert.pem");
-	        //     // ssl_options.ca_file("/usr/local/etc/openssl/cert.pem");
-	        //     client_options.ssl_opts(ssl_options);
-	        // }
 
 	        // create client object
 	        m_conn = mongocxx::client{uri,client_options};
@@ -105,7 +97,7 @@ namespace mongoAPI
 	    } catch (const std::exception& xcp) {
 	        std::cout << "connection failed: " << xcp.what() << "\n";
 	        return EXIT_FAILURE;
-	}
+	    }
    }
 
    /**
@@ -143,7 +135,6 @@ namespace mongoAPI
    		auto db = m_conn[m_db];
 
    		try{
-
         	std::stringstream ss;
         	ss<<data;
 			auto result = db[collection].insert_one(bsoncxx::from_json(ss.str()));
@@ -170,17 +161,15 @@ namespace mongoAPI
 		auto db = m_conn[m_db];
 
 		try{
+      std::stringstream ss;
+      ss<<data;
+	    auto cursor = db[collection].find(bsoncxx::from_json(ss.str()));
 
-        	std::stringstream ss;
-        	ss<<data;
-	        auto cursor = db[collection].find(bsoncxx::from_json(ss.str()));
-
-	        // add values to jsonbox
-	        for (auto&& doc : cursor) {
-	            return JSON_from_BSON(doc);
-			}
-		return EXIT_SUCCESS;
-
+	    // add values to jsonbox
+	    for (auto&& doc : cursor) {
+	      return JSON_from_BSON(doc);
+			 }
+       return EXIT_SUCCESS;
 		}catch (const std::exception& xcp) {
 	        std::cout << "query failed: " << xcp.what() << "\n";
 	        return EXIT_FAILURE;
@@ -200,8 +189,8 @@ namespace mongoAPI
 	  	auto db = m_conn[m_db];
 
 		try{
-        	std::stringstream ss;
-        	ss<<data;
+      std::stringstream ss;
+      ss<<data;
 
 			if (onlyOne == true){
 				db[collection].delete_one(bsoncxx::from_json(ss.str()));
@@ -219,59 +208,6 @@ namespace mongoAPI
    }
 
    /**
-    * \brief this queries a collection for the specified value, and updates it with
-    * the passed parameters. 
-    * query matches multiple.
-    *
-    * \param [in] collection The name of the collection
-    * \param [in] query Which entry to update
-    * \param [in] update The parameters to update with
-    * \return true on success
-    *
-    * This function will only update one entry if the only one flag is set True
-    **/
-   bool MongoInterface::update( std::string collection
-                              , JsonBox::Value & query
-                              , JsonBox::Value & update
-                              , bool onlyOne)
-   {
-		auto db = m_conn[m_db];
-
-		try{
-
-			std::stringstream ss;
-        	ss<<query;
-        	
-        	std::stringstream sd;
-        	sd<<update;
-
-        	 // std::cout << sd.str() << std::endl;
-
-        	bsoncxx::builder::stream::document update_builder;
-        	// update_builder << "$set" << open_document << "TestKey" << "BlahBlahah" << close_document;
-        	// update_builder << "$set" << open_document << bsoncxx::from_json(sd.str()) << close_document;
-
-
-			if(onlyOne == true){
-
-				db[collection].update_one(bsoncxx::from_json(ss.str()),update_builder.view());
-				return true;
-
-			}else if(onlyOne == false){
-
-				db[collection].update_many(bsoncxx::from_json(ss.str()),bsoncxx::from_json(sd.str()));
-				return true;
-			}
-			return false;
-
-
-		}catch (const std::exception& xcp) {
-	        std::cout << "update failed: " << xcp.what() << "\n";
-	        return EXIT_FAILURE;
-	    }
-   }
-
-   /**
     * \brief returns the uri, port and database 
     * \return JsonBox value that includes the uri, port and database name. Empty if not connected
     *
@@ -283,7 +219,7 @@ namespace mongoAPI
     **/
    JsonBox::Value MongoInterface::getDBInfo() 
    {
-	return m_dbInfo;
+	  return m_dbInfo;
    }
 
    /**
@@ -301,77 +237,52 @@ namespace mongoAPI
 	    MongoInterface interface( "test", "10.0.0.160", 27017 );
 
 	    // gets database information
+	    std::cout << "database information:" << std::endl;	
 	    JsonBox::Value dbinfo = interface.getDBInfo();
+        std::cout << dbinfo << std::endl;  
 
 
 	    // inserts a value
 	    std::cout << "Insert Val1:" << std::endl;	
+  		JsonBox::Value val1 = new JsonBox::Value();
+  		(val1)["TestKey"] = JsonBox::Value("TestVal");
+  		interface.insertJSON("test", val1);
 
-		JsonBox::Value val1 = new JsonBox::Value();
-		(val1)["TestKey"] = JsonBox::Value("TestVal");
-		interface.insertJSON("test", val1);
+  		// inserts another value
+     	std::cout << "Insert Val2:" << std::endl;			
+  		JsonBox::Value val2 = new JsonBox::Value();
+  		(val2)["NextValue"] = JsonBox::Value("BlahBlah");
+  		interface.insertJSON("test", val2);
 
-		// inserts another value
-   		std::cout << "Insert Val2:" << std::endl;			
-
-		JsonBox::Value val2 = new JsonBox::Value();
-		(val2)["NextValue"] = JsonBox::Value("BlahBlah");
-		interface.insertJSON("test", val2);
-
-		//insets another value (different format)
-   		std::cout << "Insert Val3:" << std::endl;	
-
-		JsonBox::Value val3 = new JsonBox::Value();
-		(val3)["1234"] = JsonBox::Value("test1");
-		interface.insertJSON("test", val3);
+  		//insets another value (different format)
+     	std::cout << "Insert Val3:" << std::endl;	
+  		JsonBox::Value val3 = new JsonBox::Value();
+  		(val3)["1234"] = JsonBox::Value("test1");
+  		interface.insertJSON("test", val3);
 
 
-		// query val1 checks if its there
-		std::cout << "Query Val1:" << std::endl;	
+  		// query val1 checks if its there
+  		std::cout << "Query Val1:" << std::endl;	
+  		std::cout << interface.query("test", val1) << std::endl;
 
-		std::cout << interface.query("test", val1) << std::endl;
+  		// qery val2 checks if its there
+     	std::cout << "Query Val2:" << std::endl;	
+  		std::cout << interface.query("test", val2) << std::endl;
 
-		// qery val2 checks if its there
-   		std::cout << "Query Val2:" << std::endl;	
+  		// qery val3 checks if its there
+     	std::cout << "Query Val3:" << std::endl;	
+  		std::cout << interface.query("test", val3) << std::endl;
 
-		std::cout << interface.query("test", val2) << std::endl;
+  		// remove entry
+     	std::cout << "Remove Val1:" << std::endl;	
+  		interface.removeEntry("test", val1, false);
+      std::cout << "show its gone:" << std::endl;
+  		std::cout << interface.query("test", val1) << std::endl;
 
-		// qery val3 checks if its there
-   		std::cout << "Query Val3:" << std::endl;	
-
-		std::cout << interface.query("test", val3) << std::endl;
-
-		// remove entry
-   		std::cout << "Remove Val1:" << std::endl;	
-
-		interface.removeEntry("test", val1, false);
-		std::cout << interface.query("test", val1) << std::endl;
-
-
-		// update entry
-   		std::cout << "Attempt Update:" << std::endl;	
-   		std::cout << "" << std::endl;	
-   		std::cout << "Query Val2: (prove exist)" << std::endl;	
-
-		std::cout << interface.query("test", val2) << std::endl;
-		JsonBox::Value val4 = new JsonBox::Value();
-		(val4)["NEWValue"] = JsonBox::Value("asdasd");
-
-		std::cout << "Update Val2:" << std::endl;	
-
-		interface.update("test", val2, val4, true);
-   		std::cout << "Query Val2: (prove update)" << std::endl;	
-
-		std::cout << interface.query("test", val2) << std::endl;
-
-
-       
-       } catch (const std::exception& ex) {
-		std::cout << ex.what() << std::endl;
-		return 1;
+      } catch (const std::exception& ex) {
+		    std::cout << ex.what() << std::endl;
+		    return 1;
    		}
    		return 0;
-	}
-
-
+	  }
 }

@@ -41,53 +41,33 @@ namespace mongoAPI
  * with methods to insert, retrieve, and remove entries with JsonBox Values.
  */
 class MongoInterface {
-   private:
-        JsonBox::Value m_dbInfo;           //local database info (db name, uri, port)
-   
-        // mongocxx::database m_db;           //!< Database we are connected to
-        std::string m_db;
-	mongocxx::client   m_conn{};       //!< Database client
+  private:
+    JsonBox::Value m_dbInfo;            //local database info (db name, uri, port)
+    std::string m_db;                   //!< Database we are connected to
+    mongocxx::client   m_conn{};        //!< Database client
 
 
-	bsoncxx::document::view BSON_from_JSON(JsonBox::Value data);
-	JsonBox::Value JSON_from_BSON(bsoncxx::document::view data);
+    bsoncxx::document::view BSON_from_JSON(JsonBox::Value data);
+    JsonBox::Value JSON_from_BSON(bsoncxx::document::view data);
 
    public:
-	MongoInterface(std::string database, std::string uri, size_t port=DEFAULT_PORT );
-	~MongoInterface();
+    MongoInterface(std::string database, std::string uri, size_t port=DEFAULT_PORT );
 
-	bool connect(std::string database, std::string uri, size_t port = DEFAULT_PORT );
+    ~MongoInterface();
 
-	bool insertJSON(std::string collection, JsonBox::Value & data);
-	JsonBox::Value query(std::string collection, JsonBox::Value & data);
-	bool removeEntry(std::string collection
+    bool connect(std::string database, std::string uri, size_t port = DEFAULT_PORT );
+
+    bool insertJSON(std::string collection, JsonBox::Value & data);
+
+    JsonBox::Value query(std::string collection, JsonBox::Value & data);
+
+    bool removeEntry(std::string collection
                         , JsonBox::Value & data
-						, bool onlyOne
+                        , bool onlyOne
                         );
-	bool update(std::string collection
-                   , JsonBox::Value & query
-                   , JsonBox::Value & update
-                   , bool onlyOne
-                   );
-	JsonBox::Value getDBInfo();
+    JsonBox::Value getDBInfo();
    };
 
    bool testMongoInterface();
-
-
-// class logger final : public mongocxx::logger {
-//    public:
-//     explicit logger(std::ostream* stream) : _stream(stream) {
-//     }
-
-//     void operator()(mongocxx::log_level level, mongocxx::stdx::string_view domain,
-//                     mongocxx::stdx::string_view message) noexcept override {
-//         if (level >= mongocxx::log_level::k_trace) return;
-//         *_stream << '[' << mongocxx::to_string(level) << '@' << domain << "] " << message << '\n';
-//     }
-
-//    private:
-//     std::ostream* const _stream;
-// };
 }
 
