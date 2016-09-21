@@ -235,35 +235,30 @@ namespace mongoAPI
       std::string update_first ;
       std::string update_second ;
 
+      // iterate through query and get strings
       for(auto const &x : query.getObject()) {
-
               std::stringstream ss;
               ss<<x.second;
               query_first = x.first;
               query_second = ss.str();
-
-              std::cout << x.first  // string (key)
-              << ':' 
-              << ss.str() // string's value 
-              << std::endl ;
       }
+      //iterate through update and get strings
       for(auto const &x : update.getObject()) {
-
               std::stringstream ss;
               ss<<x.second;
               update_first = x.first;
               update_second = ss.str();
-
-              std::cout << x.first  // string (key)
-              << ':' 
-              << ss.str() // string's value 
-              << std::endl ;
       }
+      // remove stupid quotes
+      query_second = query_second.substr(1, query_second.size() - 2);
+      update_second = update_second.substr(1, update_second.size() - 2);
 
+      //build bson objects
       bsoncxx::builder::stream::document filter_builder, update_builder;
       filter_builder << query_first << query_second ;
       update_builder << "$set" << open_document << update_first << update_second << close_document;
 
+      // perform update
       if(onlyOne == true){
         db[collection].update_one(filter_builder.view(),update_builder.view());
         return true;
@@ -357,13 +352,20 @@ namespace mongoAPI
       std::cout << "Query Val2: (prove exist)" << std::endl;  
       std::cout << interface.query("test", val2) << std::endl;
       JsonBox::Value val4 = new JsonBox::Value();
-      (val4)["NEWValue"] = JsonBox::Value("asdasd");
+      (val4)["NextValue"] = JsonBox::Value("asdasdasdasd");
 
       std::cout << "Update Val2:" << std::endl; 
       interface.update("test", val2, val4, true);
       std::cout << "Query Val2: (prove update)" << std::endl; 
 
-      std::cout << interface.query("test", val2) << std::endl;
+      std::cout << interface.query("test", val4) << std::endl;
+
+      // tidy up
+      std::cout << "Remove everything:" << std::endl; 
+      interface.removeEntry("test", val2, false);
+      interface.removeEntry("test", val3, false);
+      interface.removeEntry("test", val4, false);
+
 
       } catch (const std::exception& ex) {
 		    std::cout << ex.what() << std::endl;
