@@ -1,7 +1,7 @@
 /**
  * @file MongoInterface.cpp
- * @author Cameron Givler <cameron.givler@duke.edu>
- * @version 1.0
+ * @author Bradley Schwarz <bjschwa2@aqueti.com>
+ * @version 2.0
  *
  * Interface class to MongoDB
  *
@@ -36,6 +36,7 @@ namespace mongoAPI
    MongoInterface::MongoInterface(std::string database, std::string uri, size_t port) 
    {
 
+      //checks for uri and database
       if( !database.empty() && !uri.empty() && port ) {
         connect( database, uri, port);
       }
@@ -46,7 +47,8 @@ namespace mongoAPI
     * \brief Destructor
     **/
    MongoInterface::~MongoInterface() 
-   {
+   {	
+
    }
 
    /**
@@ -67,11 +69,11 @@ namespace mongoAPI
 		    buf.append(port_string);
 
 		    // create DB info
-			  (m_dbInfo)["uri"] = JsonBox::Value(uris);
-			  (m_dbInfo)["port"] = JsonBox::Value(port_string);
-			  (m_dbInfo)["database"] = JsonBox::Value(database);
+		  (m_dbInfo)["uri"] = JsonBox::Value(uris);
+		  (m_dbInfo)["port"] = JsonBox::Value(port_string);
+		  (m_dbInfo)["database"] = JsonBox::Value(database);
 
-		    // create uri
+		// create uri
 	        const auto uri = mongocxx::uri{buf};
 
 	        // generate client options
@@ -126,6 +128,7 @@ namespace mongoAPI
    /**
     * Insert a JsonBox Value into the database with specified collection.
     *
+    * \param [in] collection The name of the collection to insert Value into
     * \param [in] collection The name of the collection to insert Value into
     * \param [in] data The JsonBox Value to insert
     * \return true on success
@@ -207,6 +210,75 @@ namespace mongoAPI
 	    }
    }
 
+ /**
+    * \brief this queries a collection for the specified value, and updates it with
+    * the passed parameters. 
+    * query matches multiple.
+    *
+    * \param [in] collection The name of the collection
+    * \param [in] query Which entry to update
+    * \param [in] update The parameters to update with
+    * \return true on success
+    *
+    * This function will only update one entry if the only one flag is set True
+    **/
+   bool MongoInterface::update( std::string collection
+                              , JsonBox::Value & query
+                              , JsonBox::Value & update
+                              , bool onlyOne)
+   {
+    auto db = m_conn[m_db];
+
+    try{
+      std::string query_first ;
+      std::string query_second ;
+      std::string update_first ;
+      std::string update_second ;
+
+      for(auto const &x : query.getObject()) {
+
+              std::stringstream ss;
+              ss<<x.second;
+              query_first = x.first;
+              query_second = ss.str();
+
+              std::cout << x.first  // string (key)
+              << ':' 
+              << ss.str() // string's value 
+              << std::endl ;
+      }
+      for(auto const &x : update.getObject()) {
+
+              std::stringstream ss;
+              ss<<x.second;
+              update_first = x.first;
+              update_second = ss.str();
+
+              std::cout << x.first  // string (key)
+              << ':' 
+              << ss.str() // string's value 
+              << std::endl ;
+      }
+
+      bsoncxx::builder::stream::document filter_builder, update_builder;
+      filter_builder << query_first << query_second ;
+      update_builder << "$set" << open_document << update_first << update_second << close_document;
+
+      if(onlyOne == true){
+        db[collection].update_one(filter_builder.view(),update_builder.view());
+        return true;
+      }else if(onlyOne == false){
+        db[collection].update_many(filter_builder.view(),update_builder.view());
+        return true;
+      }
+      return false;
+    }catch (const std::exception& xcp) {
+          std::cout << "update failed: " << xcp.what() << "\n";
+          return EXIT_FAILURE;
+      }
+      
+   }
+
    /**
     * \brief returns the uri, port and database 
     * \return JsonBox value that includes the uri, port and database name. Empty if not connected
@@ -234,28 +306,28 @@ namespace mongoAPI
    		std::cout << "" << std::endl;	
 
    		// initializes a connection
-	    MongoInterface interface( "test", "10.0.0.160", 27017 );
+	    	MongoInterface interface( "test", "10.0.0.160", 27017 );
 
-	    // gets database information
-	    std::cout << "database information:" << std::endl;	
-	    JsonBox::Value dbinfo = interface.getDBInfo();
-        std::cout << dbinfo << std::endl;  
+	    	// gets database information
+	    	std::cout << "database information:" << std::endl;	
+	    	JsonBox::Value dbinfo = interface.getDBInfo();
+        	std::cout << dbinfo << std::endl;  
 
 
-	    // inserts a value
-	    std::cout << "Insert Val1:" << std::endl;	
+	    	// inserts a value
+	    	std::cout << "Insert Val1:" << std::endl;	
   		JsonBox::Value val1 = new JsonBox::Value();
   		(val1)["TestKey"] = JsonBox::Value("TestVal");
   		interface.insertJSON("test", val1);
 
   		// inserts another value
-     	std::cout << "Insert Val2:" << std::endl;			
+     		std::cout << "Insert Val2:" << std::endl;			
   		JsonBox::Value val2 = new JsonBox::Value();
   		(val2)["NextValue"] = JsonBox::Value("BlahBlah");
   		interface.insertJSON("test", val2);
 
   		//insets another value (different format)
-     	std::cout << "Insert Val3:" << std::endl;	
+     		std::cout << "Insert Val3:" << std::endl;	
   		JsonBox::Value val3 = new JsonBox::Value();
   		(val3)["1234"] = JsonBox::Value("test1");
   		interface.insertJSON("test", val3);
@@ -266,18 +338,32 @@ namespace mongoAPI
   		std::cout << interface.query("test", val1) << std::endl;
 
   		// qery val2 checks if its there
-     	std::cout << "Query Val2:" << std::endl;	
+     		std::cout << "Query Val2:" << std::endl;	
   		std::cout << interface.query("test", val2) << std::endl;
 
   		// qery val3 checks if its there
-     	std::cout << "Query Val3:" << std::endl;	
+     		std::cout << "Query Val3:" << std::endl;	
   		std::cout << interface.query("test", val3) << std::endl;
 
   		// remove entry
-     	std::cout << "Remove Val1:" << std::endl;	
+     		std::cout << "Remove Val1:" << std::endl;	
   		interface.removeEntry("test", val1, false);
-      std::cout << "show its gone:" << std::endl;
+      		std::cout << "show its gone:" << std::endl;
   		std::cout << interface.query("test", val1) << std::endl;
+
+            // update entry
+      std::cout << "Attempt Update:" << std::endl;  
+      std::cout << "" << std::endl; 
+      std::cout << "Query Val2: (prove exist)" << std::endl;  
+      std::cout << interface.query("test", val2) << std::endl;
+      JsonBox::Value val4 = new JsonBox::Value();
+      (val4)["NEWValue"] = JsonBox::Value("asdasd");
+
+      std::cout << "Update Val2:" << std::endl; 
+      interface.update("test", val2, val4, true);
+      std::cout << "Query Val2: (prove update)" << std::endl; 
+
+      std::cout << interface.query("test", val2) << std::endl;
 
       } catch (const std::exception& ex) {
 		    std::cout << ex.what() << std::endl;

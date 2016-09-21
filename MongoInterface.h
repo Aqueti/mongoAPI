@@ -1,6 +1,6 @@
 /**
  * @file MongoInterface.h
- * @author Cameron Givler <cameron.givler@duke.edu>
+ * @author Bradley Schwarz  <bjschwa2@aqueti.com>
  * @version 2.0
  *
  * Interface class to MongoDB
@@ -65,6 +65,11 @@ class MongoInterface {
                         , JsonBox::Value & data
                         , bool onlyOne
                         );
+    bool update(std::string collection
+                   , JsonBox::Value & query
+                   , JsonBox::Value & update
+                   , bool onlyOne
+                   );
     JsonBox::Value getDBInfo();
    };
 
