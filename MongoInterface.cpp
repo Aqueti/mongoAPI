@@ -12,18 +12,16 @@
 #include "MongoInterface.h"
 
 MongoInterface::MongoInterface(std::string database, std::string IP_Port) {
-	connection = new mongo::DBClientConnection();
 	connect(database, IP_Port);
 }
 
 MongoInterface::~MongoInterface() {
 	mongo::client::shutdown();
-	delete connection;
 }
 bool MongoInterface::connect(std::string database, std::string IP_Port) {
 	mongo::client::initialize();
 	try {
-		connection->connect(IP_Port);
+		connection.connect(IP_Port);
 		std::cout << "connected ok" << std::endl;
 	} catch (const mongo::DBException &e) {
 		std::cout << "caught " << e.what() << std::endl;
@@ -34,22 +32,22 @@ bool MongoInterface::connect(std::string database, std::string IP_Port) {
 	return true;
 }
 
-mongo::BSONObj MongoInterface::BSON_from_JSON(JsonBox::Value* data) const {
+mongo::BSONObj MongoInterface::BSON_from_JSON(JsonBox::Value data){
 	std::stringstream stream;
-	data->writeToStream(stream, false);
+	data.writeToStream(stream, false);
 	return mongo::fromjson(stream.str());
 }
 
-JsonBox::Value MongoInterface::JSON_from_BSON(mongo::BSONObj* data) const {
+JsonBox::Value MongoInterface::JSON_from_BSON(mongo::BSONObj data){
 	JsonBox::Value j;
-	j.loadFromString(data->jsonString());
+	j.loadFromString(data.jsonString());
 	return j;
 }
 
 bool MongoInterface::insertJSON(std::string collection,
-		JsonBox::Value* data) const {
+		JsonBox::Value data){
 	try {
-		connection->insert(database + "." + collection, BSON_from_JSON(data));
+		connection.insert(database + "." + collection, BSON_from_JSON(data));
 		return true;
 	} catch (const mongo::DBException& e) {
 		std::cout << "caught " << e.what() << std::endl;
@@ -58,23 +56,23 @@ bool MongoInterface::insertJSON(std::string collection,
 }
 
 JsonBox::Value MongoInterface::query(std::string collection,
-		JsonBox::Value* data) const {
+		JsonBox::Value data){
 	JsonBox::Value results;
-	std::auto_ptr<mongo::DBClientCursor> cursor = connection->query(
+	std::auto_ptr<mongo::DBClientCursor> cursor = connection.query(
 			database + "." + collection, BSON_from_JSON(data));
 	int counter = 0;
 	while (cursor->more()) {
 		mongo::BSONObj b = cursor->next();
-		results[counter] = JSON_from_BSON(&b);
+		results[counter] = JSON_from_BSON(b);
 		counter++;
 	}
 	return results;
 }
 
-bool MongoInterface::removeEntry(std::string collection, JsonBox::Value* data,
+bool MongoInterface::removeEntry(std::string collection, JsonBox::Value data,
 		bool onlyOne) {
 	try {
-		connection->remove(database + "." + collection, BSON_from_JSON(data),
+		connection.remove(database + "." + collection, BSON_from_JSON(data),
 				onlyOne);
 	} catch (const mongo::DBException& e) {
 		return false;
@@ -82,11 +80,11 @@ bool MongoInterface::removeEntry(std::string collection, JsonBox::Value* data,
 	return true;
 }
 
-bool MongoInterface::update(std::string collection, JsonBox::Value* query,
-			JsonBox::Value* update, bool onlyOne){
+bool MongoInterface::update(std::string collection, JsonBox::Value query,
+			JsonBox::Value update, bool onlyOne){
 
 	try{
-		connection->update(database + "." + collection, BSON_from_JSON(query), BSON_from_JSON(update), false, !onlyOne);
+		connection.update(database + "." + collection, BSON_from_JSON(query), BSON_from_JSON(update), false, !onlyOne);
 	}catch(const mongo::DBException& e){
 
 	}

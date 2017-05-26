@@ -12,7 +12,7 @@ int main() {
 		MongoInterface mi;
 		JsonBox::Value val1;
 		val1["TestKey"] = "TestVal";
-		mi.insertJSON("Test", &val1);
+		mi.insertJSON("Test", val1);
 		JsonBox::Value val2;
 
 		val2["TestKey"]["$in"] = JsonBox::Array();
@@ -20,9 +20,9 @@ int main() {
 		val2["TestKey"]["$in"][size_t(1)] = JsonBox::Value("TestVal2");
 
 		std::cout << val2 << std::endl;
-		std::cout << mi.query("Test", &val2) << std::endl;
-		mi.removeEntry("Test", &val1, false);
-		std::cout << mi.query("test", &val2) << std::endl;
+		std::cout << mi.query("Test", val2) << std::endl;
+		mi.removeEntry("Test", val1, false);
+		std::cout << mi.query("test", val2) << std::endl;
 	} catch (const std::exception& ex) {
 		std::cout << ex.what() << std::endl;
 		return 1;

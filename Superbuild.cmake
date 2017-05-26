@@ -23,13 +23,11 @@ ExternalProject_Add(
 ExternalProject_Add(
   MongoDB
   GIT_REPOSITORY "https://github.com/mongodb/mongo-cxx-driver.git"
-  GIT_TAG "legacy"
-  CONFIGURE_COMMAND 
-  COMMAND echo "building mongo-cxx-driver"
-  BUILD_IN_SOURCE 1 
-  BUILD_COMMAND scons -j 4 --disable-warnings-as-errors --prefix=${CMAKE_BINARY_DIR}/INSTALL install
-  INSTALL_COMMAND 
-  COMMAND echo "built mongo-cxx-driver"
+  GIT_TAG "r3.1.1"
+  CMAKE_ARGS
+    ${cmake_common_args}
+  INSTALL_DIR ${CMAKE_BINARY_DIR}/INSTALL
+  DEPENDS JsonBox MongoDB
 )
 
 ExternalProject_Add (

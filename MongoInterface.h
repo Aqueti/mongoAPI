@@ -28,21 +28,21 @@ class MongoInterface {
 private:
 	std::string database;
 	std::string IP_Port;
-	mongo::DBClientConnection* connection;
+	mongo::DBClientConnection connection;
 	/**
 	 * Helper method to convert a JsonBox Value to a BSON object that MongoDB accepts
 	 *
 	 * @param data the JsonBox Value to convert
 	 * @return the BSON object
 	 */
-	mongo::BSONObj BSON_from_JSON(JsonBox::Value* data) const;
+	static mongo::BSONObj BSON_from_JSON(JsonBox::Value data);
 	/**
 	 * Helper method to convert a BSON object from MongoDB to a JsonBox Value
 	 *
 	 * @param data the BSON object to convert
 	 * @return the JsonBox Value
 	 */
-	JsonBox::Value JSON_from_BSON(mongo::BSONObj* data) const;
+	static JsonBox::Value JSON_from_BSON(mongo::BSONObj data);
 	/**
 	 * Helper method to connect to a specified database
 	 *
@@ -71,7 +71,7 @@ public:
 	 * @param data The JsonBox Value to insert
 	 * @return true on success
 	 */
-	bool insertJSON(std::string collection, JsonBox::Value* data) const;
+	bool insertJSON(std::string collection, JsonBox::Value data);
 	/**
 	 * Query the specified collection according to a specified JsonBox Value
 	 *
@@ -79,7 +79,7 @@ public:
 	 * @param data The JsonBox Value query
 	 * @return Array of results
 	 */
-	JsonBox::Value query(std::string collection, JsonBox::Value* data) const;
+	JsonBox::Value query(std::string collection, JsonBox::Value data);
 	/**
 	 * Remove one or multiple entries from the specified collection
 	 *
@@ -88,7 +88,7 @@ public:
 	 * @param onlyOne If true, a maximum of one entry will be removed
 	 * @return true on success
 	 */
-	bool removeEntry(std::string collection, JsonBox::Value* data,
+	bool removeEntry(std::string collection, JsonBox::Value data,
 			bool onlyOne);
 	/**
 	 * this queries a collection for the specified value, and updates it with
@@ -100,8 +100,8 @@ public:
 	 * @param update The parameters to update with
 	 * @return true on success
 	 */
-	bool update(std::string collection, JsonBox::Value* query,
-			JsonBox::Value* update, bool onlyOne);
+	bool update(std::string collection, JsonBox::Value query,
+			JsonBox::Value update, bool onlyOne);
 	/**
 	 * Returns a string containing the name of the current database
 	 *
