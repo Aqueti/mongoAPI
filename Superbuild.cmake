@@ -10,7 +10,7 @@ set(cmake_common_args
 ExternalProject_Add(
   JsonBox
   GIT_REPOSITORY "https://github.com/anhero/JsonBox.git"
-  GIT_TAG "0.4.4"
+  GIT_TAG "0.6.2"
   CMAKE_ARGS
     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
     -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
@@ -21,13 +21,32 @@ ExternalProject_Add(
 )
 
 ExternalProject_Add(
+  libbson
+  GIT_REPOSITORY "https://github.com/mongodb/libbson.git"
+  GIT_TAG "1.4.2"
+  CMAKE_ARGS ${cmake_common_args}
+  INSTALL_DIR ${CMAKE_BINARY_DIR}/INSTALL
+)
+
+ExternalProject_Add(
+  MongoC
+  GIT_REPOSITORY "https://github.com/mongodb/mongo-c-driver.git"
+  GIT_TAG "1.4.2"
+  CMAKE_ARGS ${cmake_common_args}
+  INSTALL_DIR ${CMAKE_BINARY_DIR}/INSTALL
+  DEPENDS libbson
+)
+
+ExternalProject_Add(
   MongoDB
   GIT_REPOSITORY "https://github.com/mongodb/mongo-cxx-driver.git"
-  GIT_TAG "r3.1.1"
+  GIT_TAG "r3.0.3"
   CMAKE_ARGS
     ${cmake_common_args}
+    -DLIBMONGOC_DIR=${CMAKE_BINARY_DIR}/INSTALL
+    -DLIBBSON_DIR=${CMAKE_BINARY_DIR}/INSTALL
   INSTALL_DIR ${CMAKE_BINARY_DIR}/INSTALL
-  DEPENDS JsonBox MongoDB
+  DEPENDS MongoC libbson
 )
 
 ExternalProject_Add (
