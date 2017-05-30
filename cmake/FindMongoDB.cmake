@@ -10,7 +10,8 @@ if(MongoDB_INCLUDE_DIR AND MongoDB_LIBRARIES)
 
 else(MongoDB_INCLUDE_DIR AND MongoDB_LIBRARIES)
 
-  find_path(MongoDB_INCLUDE_DIR mongo/client/dbclient.h
+#  find_path(MongoDB_INCLUDE_DIR mongo/client/dbclient.h
+  find_path(MongoDB_INCLUDE_DIR mongoc-1.0/mongoc-version.h
       /usr/include/
       /usr/local/include/
       /usr/include/mongo/
@@ -41,6 +42,7 @@ endif(WIN32)
     set(MongoDB_FOUND TRUE)
     message(STATUS "Found MongoDB: ${MongoDB_INCLUDE_DIR}, ${MongoDB_LIBRARIES}")
   else(MongoDB_INCLUDE_DIR AND MongoDB_LIBRARIES)
+    message(STATUS "Not Found MongoDB: ${MongoDB_INCLUDE_DIR}, ${MongoDB_LIBRARIES}")
     set(MongoDB_FOUND FALSE)
     if (MongoDB_FIND_REQUIRED)
 		message(FATAL_ERROR "MongoDB not found.")

@@ -15,8 +15,12 @@
 #include <cstdlib>
 #include <iostream>
 #include "JsonBox.h"
-#include "mongo/client/dbclient.h"
-#include "mongo/bson/bson.h"
+//#include <cstdint>
+#include <vector>
+#include <bsoncxx/json.hpp>
+#include <mongocxx/client.hpp>
+#include <mongocxx/stdx.hpp>
+#include <mongocxx/uri.hpp>
 
 /**
  * @class MongoInterface
