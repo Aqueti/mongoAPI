@@ -14,13 +14,23 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <sstream>
 #include "JsonBox.h"
 //#include <cstdint>
 #include <vector>
 #include <bsoncxx/json.hpp>
 #include <mongocxx/client.hpp>
+#include <mongocxx/instance.hpp>
 #include <mongocxx/stdx.hpp>
 #include <mongocxx/uri.hpp>
+#include <mongocxx/exception/bulk_write_exception.hpp>
+
+// using bsoncxx::builder::stream::close_array;
+// using bsoncxx::builder::stream::close_document;
+using bsoncxx::builder::stream::document;
+using bsoncxx::builder::stream::finalize;
+// using bsoncxx::builder::stream::open_array;
+// using bsoncxx::builder::stream::open_document;
 
 /**
  * @class MongoInterface
@@ -32,21 +42,24 @@ class MongoInterface {
 private:
 	std::string database;
 	std::string IP_Port;
-	mongo::DBClientConnection connection;
+	mongocxx::instance instance{};
+	mongocxx::client client{mongocxx::uri{}};	//by default port 27017
+	mongocxx::database db;
+
 	/**
 	 * Helper method to convert a JsonBox Value to a BSON object that MongoDB accepts
 	 *
 	 * @param data the JsonBox Value to convert
 	 * @return the BSON object
 	 */
-	static mongo::BSONObj BSON_from_JSON(JsonBox::Value data);
+	static bsoncxx::document::value BSON_from_JSON(JsonBox::Value data);
 	/**
 	 * Helper method to convert a BSON object from MongoDB to a JsonBox Value
 	 *
 	 * @param data the BSON object to convert
 	 * @return the JsonBox Value
 	 */
-	static JsonBox::Value JSON_from_BSON(mongo::BSONObj data);
+	static JsonBox::Value JSON_from_BSON(bsoncxx::document::view data);
 	/**
 	 * Helper method to connect to a specified database
 	 *
@@ -89,11 +102,9 @@ public:
 	 *
 	 * @param collection The name of the collection
 	 * @param data A JsonBox Value specifying what entries to remove
-	 * @param onlyOne If true, a maximum of one entry will be removed
 	 * @return true on success
 	 */
-	bool removeEntry(std::string collection, JsonBox::Value data,
-			bool onlyOne);
+	bool removeEntry(std::string collection, JsonBox::Value data);
 	/**
 	 * this queries a collection for the specified value, and updates it with
 	 * the passed parameters.  This function will only update one entry if the
@@ -104,8 +115,8 @@ public:
 	 * @param update The parameters to update with
 	 * @return true on success
 	 */
-	bool update(std::string collection, JsonBox::Value query,
-			JsonBox::Value update, bool onlyOne);
+//	bool update(std::string collection, JsonBox::Value query,
+//			JsonBox::Value update, bool onlyOne);
 	/**
 	 * Returns a string containing the name of the current database
 	 *
@@ -129,3 +140,4 @@ public:
 bool mongoInterfaceTest();
 
 #endif /* MONGOINTERFACE_H_ */
+

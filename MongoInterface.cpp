@@ -16,10 +16,10 @@ MongoInterface::MongoInterface(std::string database, std::string IP_Port) {
 }
 
 MongoInterface::~MongoInterface() {
-	mongo::client::shutdown();
 }
 bool MongoInterface::connect(std::string database, std::string IP_Port) {
-	mongo::client::initialize();
+	db = client[database];
+	/*
 	try {
 		connection.connect(IP_Port);
 		std::cout << "connected ok" << std::endl;
@@ -27,30 +27,35 @@ bool MongoInterface::connect(std::string database, std::string IP_Port) {
 		std::cout << "caught " << e.what() << std::endl;
 		return false;
 	}
+	*/
 	this->IP_Port = IP_Port;
 	this->database = database;
 	return true;
 }
 
-mongo::BSONObj MongoInterface::BSON_from_JSON(JsonBox::Value data){
+
+bsoncxx::document::value MongoInterface::BSON_from_JSON(JsonBox::Value data){
 	std::stringstream stream;
 	data.writeToStream(stream, false);
-	return mongo::fromjson(stream.str());
+	return bsoncxx::from_json(stream.str());
 }
 
-JsonBox::Value MongoInterface::JSON_from_BSON(mongo::BSONObj data){
+JsonBox::Value MongoInterface::JSON_from_BSON(bsoncxx::document::view data){
 	JsonBox::Value j;
-	j.loadFromString(data.jsonString());
+	j.loadFromString(bsoncxx::to_json(data));
 	return j;
 }
 
 bool MongoInterface::insertJSON(std::string collection,
 		JsonBox::Value data){
 	try {
-		connection.insert(database + "." + collection, BSON_from_JSON(data));
+		mongocxx::collection coll = db[collection];
+		mongocxx::stdx::optional<mongocxx::result::insert_one> result = coll.insert_one(BSON_from_JSON(data));
 		return true;
-	} catch (const mongo::DBException& e) {
-		std::cout << "caught " << e.what() << std::endl;
+	} catch (const mongocxx::bulk_write_exception& e) {
+		std::cout << "insertJSON: " << e.what() << std::endl;
+	} catch (...) {
+		std::cout << "insertJSON: default exception" << std::endl;
 	}
 	return false;
 }
@@ -58,28 +63,30 @@ bool MongoInterface::insertJSON(std::string collection,
 JsonBox::Value MongoInterface::query(std::string collection,
 		JsonBox::Value data){
 	JsonBox::Value results;
-	std::auto_ptr<mongo::DBClientCursor> cursor = connection.query(
-			database + "." + collection, BSON_from_JSON(data));
-	int counter = 0;
-	while (cursor->more()) {
-		mongo::BSONObj b = cursor->next();
-		results[counter] = JSON_from_BSON(b);
-		counter++;
+	mongocxx::collection coll = db[collection];
+	mongocxx::cursor cursor = coll.find(BSON_from_JSON(data));
+	int i = 0;
+	for(auto doc : cursor) {
+	  results[i] = JSON_from_BSON(doc);
+	  i++;
 	}
 	return results;
 }
 
-bool MongoInterface::removeEntry(std::string collection, JsonBox::Value data,
-		bool onlyOne) {
+bool MongoInterface::removeEntry(std::string collection, JsonBox::Value data) {
 	try {
-		connection.remove(database + "." + collection, BSON_from_JSON(data),
-				onlyOne);
-	} catch (const mongo::DBException& e) {
-		return false;
+		mongocxx::collection coll = db[collection];
+		coll.delete_many(BSON_from_JSON(data));
+		return true;
+	} catch (const mongocxx::bulk_write_exception& e) {
+		std::cout << "removeEntry: " << e.what() << std::endl;
+	} catch (...) {
+		std::cout << "removeEntry: default exception" << std::endl;
 	}
-	return true;
+	return false;
 }
 
+/*
 bool MongoInterface::update(std::string collection, JsonBox::Value query,
 			JsonBox::Value update, bool onlyOne){
 
@@ -91,13 +98,15 @@ bool MongoInterface::update(std::string collection, JsonBox::Value query,
 
 	return true;
 }
-
+*/
 std::string MongoInterface::getDatabase() const {
 	return database;
 }
 
 void MongoInterface::setDatabase(std::string database) {
 	this->database = database;
+	//probably should reset the connection here
+	//connect(database, IP_Port);
 }
 
 std::string MongoInterface::getIP_Port() const {

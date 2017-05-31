@@ -44,14 +44,17 @@ MESSAGE(STATUS "Boost: " ${Boost_INCLUDE_DIR})
 MESSAGE(STATUS "JsonBox: " ${JSONBOX_INCLUDE_DIRS})
 #MESSAGE(STATUS "MongoDB: " ${MongoDB_INCLUDE_DIR})
 
+message("MongoCxx: ${MONGOCXX_LIBRARY}")
+
+
 add_library(MongoInterface STATIC MongoInterface.cpp MongoInterface.h)
-TARGET_LINK_LIBRARIES(MongoInterface ${JSONBOX_LIBRARY_RELEASE} ${MONGOC_LIBRARIES} ${MONGOCXX_LIBRARIES} ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+TARGET_LINK_LIBRARIES(MongoInterface ${JSONBOX_LIBRARY_RELEASE} ${MONGOC_LIBRARY} ${MONGOCXX_LIBRARY} ${BSONCXX_LIBRARY} ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
 install(TARGETS MongoInterface ARCHIVE DESTINATION lib)
 install(FILES MongoInterface.h DESTINATION include)
 
 add_executable(MongoInterfaceTest mongotest/MongoInterface_test.cpp MongoInterface.h)
-TARGET_LINK_LIBRARIES(MongoInterfaceTest MongoInterface ${JSONBOX_LIBRARY_RELEASE} ${MONGOC_LIBRARIES} ${MONGOCXX_LIBRARIES} ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+TARGET_LINK_LIBRARIES(MongoInterfaceTest MongoInterface ${JSONBOX_LIBRARY_RELEASE} ${MONGOC_LIBRARY} ${MONGOCXX_LIBRARY} ${BSONCXX_LIBARY} ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 install(TARGETS MongoInterfaceTest DESTINATION test)
 
 # add a target to generate API documentation with Doxygen
