@@ -23,6 +23,7 @@
 #include <mongocxx/stdx.hpp>
 #include <mongocxx/uri.hpp>
 #include <mongocxx/exception/bulk_write_exception.hpp>
+#include <assert.h>
 
 using bsoncxx::builder::stream::document;
 using bsoncxx::builder::stream::finalize;
@@ -132,10 +133,28 @@ namespace atl
 
 
 
-
 		
 
 
+
+
+
+		
+		/**
+		 * Count the number of objects in the collection specified
+		 *
+		 * @param collection The name of the collection to query
+		 * @return integer value of number
+		 */
+		int count(std::string collection);
+		/**
+		 * Count the number of objects in the collection specified
+		 * that match the specified filter
+		 *
+		 * @param collection The name of the collection to query
+		 * @return integer value of number
+		 */
+		int countFilter(std::string collection, JsonBox::Value filter);
 		/**
 		 * Remove all entries from the specified collection
 		 *

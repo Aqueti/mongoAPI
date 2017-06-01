@@ -108,7 +108,45 @@ namespace atl
 		return m_URI;
 	}
 
-	//specific for the unit tests
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	//specific for the unit tests - talk to steve about these
+
+	int MongoInterface::count(std::string collection){
+		try {
+			mongocxx::collection coll = m_db[collection];
+			return coll.count(document{} << finalize);
+		} /*catch (const mongocxx::query_exception& e) {
+			std::cout << "count: " << e.what() << std::endl;
+		} */catch (...) {
+			std::cout << "count: default exception" << std::endl;
+		}
+	}
+
+	int MongoInterface::countFilter(std::string collection, JsonBox::Value filter){
+		try {
+			mongocxx::collection coll = m_db[collection];
+			return coll.count(BSON_from_JSON(filter));
+		} /*catch (const mongocxx::query_exception& e) {
+			std::cout << "count: " << e.what() << std::endl;
+		} */catch (...) {
+			std::cout << "count: default exception" << std::endl;
+		}
+	}
+
 	bool MongoInterface::removeAllEntries(std::string collection) {
 		try {
 			mongocxx::collection coll = m_db[collection];
@@ -147,19 +185,32 @@ namespace atl
 			JsonBox::Value val5;
 			JsonBox::Value val6;
 			JsonBox::Value val7;
+			JsonBox::Value val8;
+			JsonBox::Value val9;
+			JsonBox::Value val10;
+			JsonBox::Value result;
+			int count;
 
 			//test values for insert
 			val1["name"] = "erik";
 			val1["class"] = "senior";
+			val1["gender"] = "male";
 			val2["name"] = "alex";
 			val2["class"] = "sophomore";
+			val2["gender"] = "male";
 			val3["name"] = "emma";
 			val3["class"] = "freshman";
+			val3["gender"] = "female";
 			val4["name"] = "emma";
 			val4["class"] = "junior";
+			val4["gender"] = "female";
 
 			//test value for query and remove
 			val5["name"] = "emma";
+			val8["name"] = "erik";
+			val9["name"] = "alex";
+			val10["$or"][(size_t)0] = val8;
+			val10["$or"][1] = val9;
 
 			//test value for update 
 			val6["name"] = "erik";
@@ -169,20 +220,73 @@ namespace atl
 			mi.dropCollection("test");
 
 			//test insert function of database
-			//will create Test collection if it does not already exist
+			//will create test collection if it does not already exist
 			mi.insertJSON("test", val1);
 			mi.insertJSON("test", val2);
 			mi.insertJSON("test", val3);
 			mi.insertJSON("test", val4);
 
+			count = mi.count("test");
+			if(count != 4){
+				if(printFlag){
+					std::cout << "incorrect number of values inserted: " + count << std::endl;
+				}
+				if(asserFlag){
+					assert(false);
+				}
+			}
+
 			//test query function of database
-			std::cout << mi.query("test", val5) << std::endl;
+			result = mi.query("test", val5);
+
+			count = result.getArray().size();
+			if(count != 2){
+				if(printFlag){
+					std::cout << "query attempt 1 failed; results expected: 2, received: " + count << std::endl;
+				}
+				if(asserFlag){
+					assert(false);
+				}
+			}
+
+			result = mi.query("test", val10);
+
+			count = result.getArray().size();
+			if(count != 2){
+				if(printFlag){
+					std::cout << "query attempt 2 failed; results expected: 2, received: " + count << std::endl;
+				}
+				if(asserFlag){
+					assert(false);
+				}
+			}
 
 			//test remove function of database
 			mi.removeEntry("test", val5);
 
+			count = mi.countFilter("test", val5);
+			if(count != 0){
+				if(printFlag){
+					std::cout << "remove attempt failed, values matching filter still present" << std::endl;
+				}
+				if(asserFlag){
+					assert(false);
+				}
+			}
+
 			//test update function of database
 			mi.update("test", val6, val7);
+			result = mi.query("test", val6);
+
+			if(result[(size_t)0]["class"] != "graduate"){
+				if(printFlag){
+					std::cout << "update attempt failed" << std::endl;
+				}
+				if(asserFlag){
+					assert(false);
+				}
+			}
+
 		} catch (const std::exception& ex) {
 			std::cout << ex.what() << std::endl;
 			return 0;
