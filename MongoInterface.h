@@ -116,6 +116,22 @@ namespace atl
 		bool update(std::string collection, JsonBox::Value filter, 
 				JsonBox::Value update);
 		/**
+		 * Count the number of objects in the collection specified
+		 *
+		 * @param collection The name of the collection to query
+		 * @return integer value of number
+		 */
+		int count(std::string collection);
+		/**
+		 * Count the number of objects in the collection specified
+		 * that match the specified filter
+		 *
+		 * @param collection The name of the collection to query
+		 * @param JsonBox Value used as the filter 
+		 * @return integer value of number
+		 */
+		int countFilter(std::string collection, JsonBox::Value filter);
+		/**
 		 * Returns a string containing the name of the current database
 		 *
 		 * @return The name of the current database
@@ -141,20 +157,12 @@ namespace atl
 
 		
 		/**
-		 * Count the number of objects in the collection specified
+		 * Query the specified collection for all JsonBox Values
 		 *
 		 * @param collection The name of the collection to query
-		 * @return integer value of number
+		 * @return Array of results
 		 */
-		int count(std::string collection);
-		/**
-		 * Count the number of objects in the collection specified
-		 * that match the specified filter
-		 *
-		 * @param collection The name of the collection to query
-		 * @return integer value of number
-		 */
-		int countFilter(std::string collection, JsonBox::Value filter);
+		JsonBox::Value queryAll(std::string collection);
 		/**
 		 * Remove all entries from the specified collection
 		 *

@@ -100,6 +100,28 @@ namespace atl
 		return false;
 	}
 
+	int MongoInterface::count(std::string collection){
+		try {
+			mongocxx::collection coll = m_db[collection];
+			return coll.count(document{} << finalize);
+		} /*catch (const mongocxx::query_exception& e) {
+			std::cout << "count: " << e.what() << std::endl;
+		} */catch (...) {
+			std::cout << "count: default exception" << std::endl;
+		}
+	}
+
+	int MongoInterface::countFilter(std::string collection, JsonBox::Value filter){
+		try {
+			mongocxx::collection coll = m_db[collection];
+			return coll.count(BSON_from_JSON(filter));
+		} /*catch (const mongocxx::query_exception& e) {
+			std::cout << "count: " << e.what() << std::endl;
+		} */catch (...) {
+			std::cout << "count: default exception" << std::endl;
+		}
+	}
+
 	std::string MongoInterface::getDatabase() const {
 		return m_database;
 	}
@@ -123,27 +145,24 @@ namespace atl
 
 
 
+
 	//specific for the unit tests - talk to steve about these
 
-	int MongoInterface::count(std::string collection){
-		try {
+	JsonBox::Value MongoInterface::queryAll(std::string collection){
+		try{
+			JsonBox::Value results;
 			mongocxx::collection coll = m_db[collection];
-			return coll.count(document{} << finalize);
-		} /*catch (const mongocxx::query_exception& e) {
-			std::cout << "count: " << e.what() << std::endl;
+			mongocxx::cursor cursor = coll.find(document{} << finalize);
+			int i = 0;
+			for(auto doc : cursor) {
+			  results[i] = JSON_from_BSON(doc);
+			  i++;
+			}
+			return results;
+		} /*catch (const mongocxx::logic_error& e) {
+			std::cout << "query: " << e.what() << std::endl;
 		} */catch (...) {
-			std::cout << "count: default exception" << std::endl;
-		}
-	}
-
-	int MongoInterface::countFilter(std::string collection, JsonBox::Value filter){
-		try {
-			mongocxx::collection coll = m_db[collection];
-			return coll.count(BSON_from_JSON(filter));
-		} /*catch (const mongocxx::query_exception& e) {
-			std::cout << "count: " << e.what() << std::endl;
-		} */catch (...) {
-			std::cout << "count: default exception" << std::endl;
+			std::cout << "query: default exception" << std::endl;
 		}
 	}
 
