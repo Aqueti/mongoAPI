@@ -96,6 +96,13 @@ namespace atl
 		 */
 		JsonBox::Value query(std::string collection, JsonBox::Value data);
 		/**
+		 * Query the specified collection for all JsonBox Values
+		 *
+		 * @param collection The name of the collection to query
+		 * @return Array of results
+		 */
+		JsonBox::Value queryAll(std::string collection);
+		/**
 		 * Remove one or multiple entries from the specified collection
 		 *
 		 * @param collection The name of the collection
@@ -145,24 +152,10 @@ namespace atl
 		std::string getURI() const;
 
 
+		/****************************************************************************/
+		/************************** USED FOR TESTING ONLY ***************************/
+		/****************************************************************************/		
 
-
-
-
-		
-
-
-
-
-
-		
-		/**
-		 * Query the specified collection for all JsonBox Values
-		 *
-		 * @param collection The name of the collection to query
-		 * @return Array of results
-		 */
-		JsonBox::Value queryAll(std::string collection);
 		/**
 		 * Remove all entries from the specified collection
 		 *

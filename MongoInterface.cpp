@@ -74,6 +74,24 @@ namespace atl
 		}
 	}
 
+	JsonBox::Value MongoInterface::queryAll(std::string collection){
+		try{
+			JsonBox::Value results;
+			mongocxx::collection coll = m_db[collection];
+			mongocxx::cursor cursor = coll.find(document{} << finalize);
+			int i = 0;
+			for(auto doc : cursor) {
+			  results[i] = JSON_from_BSON(doc);
+			  i++;
+			}
+			return results;
+		} /*catch (const mongocxx::logic_error& e) {
+			std::cout << "query: " << e.what() << std::endl;
+		} */catch (...) {
+			std::cout << "query: default exception" << std::endl;
+		}
+	}
+
 	bool MongoInterface::removeEntry(std::string collection, JsonBox::Value data) {
 		try {
 			mongocxx::collection coll = m_db[collection];
@@ -130,41 +148,9 @@ namespace atl
 		return m_URI;
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	//specific for the unit tests - talk to steve about these
-
-	JsonBox::Value MongoInterface::queryAll(std::string collection){
-		try{
-			JsonBox::Value results;
-			mongocxx::collection coll = m_db[collection];
-			mongocxx::cursor cursor = coll.find(document{} << finalize);
-			int i = 0;
-			for(auto doc : cursor) {
-			  results[i] = JSON_from_BSON(doc);
-			  i++;
-			}
-			return results;
-		} /*catch (const mongocxx::logic_error& e) {
-			std::cout << "query: " << e.what() << std::endl;
-		} */catch (...) {
-			std::cout << "query: default exception" << std::endl;
-		}
-	}
+	/****************************************************************************/
+	/************************** USED FOR TESTING ONLY ***************************/
+	/****************************************************************************/
 
 	bool MongoInterface::removeAllEntries(std::string collection) {
 		try {
@@ -209,20 +195,21 @@ namespace atl
 			JsonBox::Value val10;
 			JsonBox::Value result;
 			int count;
+			bool pass;
 
 			//test values for insert
 			val1["name"] = "erik";
 			val1["class"] = "senior";
-			val1["gender"] = "male";
+			val1["age"] = 21;
 			val2["name"] = "alex";
 			val2["class"] = "sophomore";
-			val2["gender"] = "male";
+			val2["age"] = 19;
 			val3["name"] = "emma";
 			val3["class"] = "freshman";
-			val3["gender"] = "female";
+			val3["age"] = 14;
 			val4["name"] = "emma";
 			val4["class"] = "junior";
-			val4["gender"] = "female";
+			val4["age"] = 14;
 
 			//test value for query and remove
 			val5["name"] = "emma";
@@ -238,7 +225,7 @@ namespace atl
 			//drop collection before testing for a clean test environment
 			mi.dropCollection("test");
 
-			//test insert function of database
+			//test insert function of database (num and values)
 			//will create test collection if it does not already exist
 			mi.insertJSON("test", val1);
 			mi.insertJSON("test", val2);
@@ -255,9 +242,37 @@ namespace atl
 				}
 			}
 
-			//test query function of database
-			result = mi.query("test", val5);
 
+			result = mi.queryAll("test");
+			pass = true;
+			if(result[(size_t)0]["name"] != val1["name"] || result[(size_t)0]["class"] != val1["class"]
+					|| result[(size_t)0]["age"] != val1["age"]){
+				pass = false;
+			}
+			if(result[1]["name"] != val2["name"] || result[1]["class"] != val2["class"]
+					|| result[1]["age"] != val2["age"]){
+				pass = false;
+			}
+			if(result[2]["name"] != val3["name"] || result[2]["class"] != val3["class"]
+					|| result[2]["age"] != val3["age"]){
+				pass = false;
+			}
+			if(result[3]["name"] != val4["name"] || result[3]["class"] != val4["class"]
+					|| result[3]["age"] != val4["age"]){
+				pass = false;
+			}
+
+			if(!pass){
+				if(printFlag){
+					std::cout << "values incorrectly inserted" << std::endl;
+				}
+				if(asserFlag){
+					assert(false);
+				}
+			}
+
+			//test query function of database (num and values)
+			result = mi.query("test", val5);
 			count = result.getArray().size();
 			if(count != 2){
 				if(printFlag){
@@ -268,12 +283,49 @@ namespace atl
 				}
 			}
 
-			result = mi.query("test", val10);
+			pass = true;
+			if(result[(size_t)0]["name"] != val3["name"] || result[(size_t)0]["class"] != val3["class"]
+					|| result[(size_t)0]["age"] != val3["age"]){
+				pass = false;
+			}
+			if(result[1]["name"] != val4["name"] || result[1]["class"] != val4["class"]
+					|| result[1]["age"] != val4["age"]){
+				pass = false;
+			}
 
+			if(!pass){
+				if(printFlag){
+					std::cout << "query attempt 1 failed; incorrect values received" << std::endl;
+				}
+				if(asserFlag){
+					assert(false);
+				}
+			}
+
+			result = mi.query("test", val10);
 			count = result.getArray().size();
 			if(count != 2){
 				if(printFlag){
 					std::cout << "query attempt 2 failed; results expected: 2, received: " + count << std::endl;
+				}
+				if(asserFlag){
+					assert(false);
+				}
+			}
+
+			pass = true;
+			if(result[(size_t)0]["name"] != val1["name"] || result[(size_t)0]["class"] != val1["class"]
+					|| result[(size_t)0]["age"] != val1["age"]){
+				pass = false;
+			}
+			if(result[1]["name"] != val2["name"] || result[1]["class"] != val2["class"]
+					|| result[1]["age"] != val2["age"]){
+				pass = false;
+			}
+
+			if(!pass){
+				if(printFlag){
+					std::cout << "query attempt 2 failed; incorrect values received" << std::endl;
 				}
 				if(asserFlag){
 					assert(false);
