@@ -8,5 +8,5 @@
 #include "MongoInterface.h"
 
 int main() {
-	atl::testMongoInterface(true, true);
+	std::cout << atl::testMongoInterface(true, false) << std::endl;
 }

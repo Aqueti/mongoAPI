@@ -178,7 +178,7 @@ namespace atl
 		return false;
 	}
 
-	bool testMongoInterface(bool printFlag, bool asserFlag){
+	std::string testMongoInterface(bool printFlag, bool asserFlag){
 		try {
 			//construct the interface object, defualt constructor creates connection to database
 			//default parameters are database: "aqueti", URI: "127.0.0.1:27017"
@@ -194,6 +194,8 @@ namespace atl
 			JsonBox::Value val9;
 			JsonBox::Value val10;
 			JsonBox::Value result;
+			JsonBox::Value returnJson;
+			returnJson["pass"] = true;
 			int count;
 			bool pass;
 
@@ -234,6 +236,7 @@ namespace atl
 
 			count = mi.count("test");
 			if(count != 4){
+				returnJson["pass"] = false;
 				if(printFlag){
 					std::cout << "incorrect number of values inserted: " + count << std::endl;
 				}
@@ -241,7 +244,6 @@ namespace atl
 					assert(false);
 				}
 			}
-
 
 			result = mi.queryAll("test");
 			pass = true;
@@ -263,6 +265,7 @@ namespace atl
 			}
 
 			if(!pass){
+				returnJson["pass"] = false;
 				if(printFlag){
 					std::cout << "values incorrectly inserted" << std::endl;
 				}
@@ -275,6 +278,7 @@ namespace atl
 			result = mi.query("test", val5);
 			count = result.getArray().size();
 			if(count != 2){
+				returnJson["pass"] = false;
 				if(printFlag){
 					std::cout << "query attempt 1 failed; results expected: 2, received: " + count << std::endl;
 				}
@@ -294,6 +298,7 @@ namespace atl
 			}
 
 			if(!pass){
+				returnJson["pass"] = false;
 				if(printFlag){
 					std::cout << "query attempt 1 failed; incorrect values received" << std::endl;
 				}
@@ -305,6 +310,7 @@ namespace atl
 			result = mi.query("test", val10);
 			count = result.getArray().size();
 			if(count != 2){
+				returnJson["pass"] = false;
 				if(printFlag){
 					std::cout << "query attempt 2 failed; results expected: 2, received: " + count << std::endl;
 				}
@@ -324,6 +330,7 @@ namespace atl
 			}
 
 			if(!pass){
+				returnJson["pass"] = false;
 				if(printFlag){
 					std::cout << "query attempt 2 failed; incorrect values received" << std::endl;
 				}
@@ -337,6 +344,7 @@ namespace atl
 
 			count = mi.countFilter("test", val5);
 			if(count != 0){
+				returnJson["pass"] = false;
 				if(printFlag){
 					std::cout << "remove attempt failed, values matching filter still present" << std::endl;
 				}
@@ -350,6 +358,7 @@ namespace atl
 			result = mi.query("test", val6);
 
 			if(result[(size_t)0]["class"] != "graduate"){
+				returnJson["pass"] = false;
 				if(printFlag){
 					std::cout << "update attempt failed" << std::endl;
 				}
@@ -358,17 +367,27 @@ namespace atl
 				}
 			}
 
+			//return string version of returnJson
+			std::stringstream stream;
+			returnJson.writeToStream(stream, false);
+			return stream.str();
+
 		} catch (const std::exception& ex) {
 			std::cout << ex.what() << std::endl;
-			return 0;
+			JsonBox::Value returnJson;
+			returnJson["pass"] = "false";
+			return returnJson.getString();
 		} catch (const std::string& ex) {
 			std::cout << ex << std::endl;
-			return 0;
+			JsonBox::Value returnJson;
+			returnJson["pass"] = "false";
+			return returnJson.getString();
 		} catch (...) {
 			std::cout << "default exception";
-			return 0;
+			JsonBox::Value returnJson;
+			returnJson["pass"] = "false";
+			return returnJson.getString();
 		}
-		return 1;
 	}	
 }
 

@@ -173,7 +173,7 @@ namespace atl
 
 	};
 
-	bool testMongoInterface(bool printFlag, bool assertFlag);
+	std::string testMongoInterface(bool printFlag, bool assertFlag);
 
 }
 
