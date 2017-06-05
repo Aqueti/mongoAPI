@@ -1,5 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12)
-PROJECT(MongoInterface)
+cmake_policy(SET CMP0048 NEW)
+
+PROJECT(mongoapi VERSION "0.1.0.0")
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -15,9 +17,65 @@ if(USE_SUPERBUILD)
     return()
 endif()
 
+#############################################
+# Determine build information. Version specs
+# are specified at the top of the file
+#############################################
+# Get the current working branch
+execute_process(
+  COMMAND git rev-parse --abbrev-ref HEAD
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  OUTPUT_VARIABLE GIT_BRANCH
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+#set 
+if( "${GIT_BRANCH}" MATCHES "master" )
+   set(VERSION_TAG "dev")
+else()
+   set(VERSION_TAG "${GIT_BRANCH}")
+endif()
+
+message("VERSION TAG: ${VERSION_TAG}")
+
+# Get the latest abbreviated commit hash of the working branch
+execute_process(
+  COMMAND git log -1 --format=%h
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  OUTPUT_VARIABLE ATL_GIT_COMMIT_HASH
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+# Get the date
+execute_process(
+   COMMAND date +%F
+   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+   OUTPUT_VARIABLE ATL_BUILD_DATE 
+   OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+# Get the date
+execute_process(
+   COMMAND date +%T
+   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+   OUTPUT_VARIABLE ATL_BUILD_TIME
+   OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+#############################################
+# Generate the version.h file to integrate version
+# information.
+#############################################
+configure_file( 
+   "${PROJECT_SOURCE_DIR}/revision.h.in"
+   "${CMAKE_INSTALL_PREFIX}/include/mongoapi/revision.h"
+)
+
+
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
-list(APPEND CMAKE_MODULE_PATH ${MongoInterface_SOURCE_DIR} ${MongoInterface_SOURCE_DIR}/cmake)
+list(APPEND CMAKE_MODULE_PATH ${mongoapi_SOURCE_DIR} ${mongoapi_SOURCE_DIR}/cmake)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 
 #FIND_PACKAGE(Boost 1.54 COMPONENTS system regex thread filesystem program_options REQUIRED )
@@ -45,15 +103,15 @@ MESSAGE(STATUS "JsonBox: " ${JSONBOX_INCLUDE_DIRS})
 message("MongoCxx: ${MONGOCXX_LIBRARY}")
 
 
-add_library(MongoInterface STATIC MongoInterface.cpp MongoInterface.h)
-TARGET_LINK_LIBRARIES(MongoInterface ${JSONBOX_LIBRARY_RELEASE} ${MONGOC_LIBRARY} ${MONGOCXX_LIBRARY} ${BSONCXX_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
+add_library(mongoapi STATIC mongoapi.cpp mongoapi.h)
+TARGET_LINK_LIBRARIES(mongoapi ${JSONBOX_LIBRARY_RELEASE} ${MONGOC_LIBRARY} ${MONGOCXX_LIBRARY} ${BSONCXX_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 
-install(TARGETS MongoInterface ARCHIVE DESTINATION lib)
-install(FILES MongoInterface.h DESTINATION include)
+install(TARGETS mongoapi ARCHIVE DESTINATION lib)
+install(FILES mongoapi.h DESTINATION include/mongoapi)
 
-add_executable(MongoInterfaceTest mongotest/MongoInterface_test.cpp MongoInterface.h)
-TARGET_LINK_LIBRARIES(MongoInterfaceTest MongoInterface ${JSONBOX_LIBRARY_RELEASE} ${MONGOC_LIBRARY} ${MONGOCXX_LIBRARY} ${BSONCXX_LIBARY} ${CMAKE_THREAD_LIBS_INIT})
-install(TARGETS MongoInterfaceTest DESTINATION test)
+add_executable( mongoapitest mongotest/MongoInterface_test.cpp mongoapi.h)
+TARGET_LINK_LIBRARIES(mongoapitest mongoapi ${JSONBOX_LIBRARY_RELEASE} ${MONGOC_LIBRARY} ${MONGOCXX_LIBRARY} ${BSONCXX_LIBARY} ${CMAKE_THREAD_LIBS_INIT})
+install(TARGETS mongoapitest DESTINATION test)
 
 # add a target to generate API documentation with Doxygen
 find_package(Doxygen)
