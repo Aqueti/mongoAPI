@@ -5,7 +5,7 @@
  *      Author: cameron
  */
 
-#include "MongoInterface.h"
+#include "mongoapi.h"
 
 int main() {
 	std::cout << atl::testMongoInterface(true, false) << std::endl;
