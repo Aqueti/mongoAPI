@@ -1,6 +1,10 @@
 Recommended install:
 Use superbuild.  This is the default setting.
 
+#### Submodule initiation ####
+Run "git submodule init"
+Update: "git submodule update"
+
 ##### For Doxygen, run: #####
 sudo apt-get install doxygen
 sudo apt-get install graphviz

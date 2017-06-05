@@ -9,4 +9,6 @@
 
 int main() {
 	std::cout << atl::testMongoInterface(true, false) << std::endl;
+
+
 }

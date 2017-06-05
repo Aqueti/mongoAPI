@@ -1,0 +1,3 @@
+[submodule "AquetiTools"]
+	path = AquetiTools
+	url = https://github.com/Aqueti/AquetiTools.git

@@ -367,7 +367,8 @@ namespace atl
 				}
 			}
 
-			//return string version of returnJson
+			//return string version of returnJson to be inserted into the database
+			returnJson["date"] = atl::getTime();
 			std::stringstream stream;
 			returnJson.writeToStream(stream, false);
 			return stream.str();

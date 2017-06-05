@@ -50,9 +50,22 @@ ExternalProject_Add(
   DEPENDS MongoC libbson
 )
 
+message("AquetToolsDir: ${CMAKE_BINARY_DIR}/INSTALL")
+ExternalProject_Add( 
+    AquetiTools
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/AquetiTools
+#    INSTALL_COMMAND ""
+    BUILD_ALWAYS 1 
+    CMAKE_ARGS
+        ${cmake_common_args}
+    INSTALL_DIR ${CMAKE_BINARY_DIR}/INSTALL
+    DEPENDS JsonBox
+)
+
 ExternalProject_Add (
   MongoInterface
   SOURCE_DIR ${CMAKE_SOURCE_DIR}
+  BUILD_ALWAYS 1 
   CMAKE_ARGS
     ${cmake_common_args}
     -DUSE_SUPERBUILD:BOOL=OFF
@@ -60,3 +73,5 @@ ExternalProject_Add (
   INSTALL_DIR ${CMAKE_BINARY_DIR}/INSTALL
   DEPENDS JsonBox MongoDB
 )
+
+
