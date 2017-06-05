@@ -63,7 +63,7 @@ ExternalProject_Add(
 )
 
 ExternalProject_Add (
-  MongoInterface
+  mongoapi
   SOURCE_DIR ${CMAKE_SOURCE_DIR}
   BUILD_ALWAYS 1 
   CMAKE_ARGS

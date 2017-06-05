@@ -35,6 +35,9 @@ find_package(MongoCxx REQUIRED)
 
 message("BSON: ${BSON-1.0_INCLUDE_DIRS}")
 INCLUDE_DIRECTORIES( ${MONGOC_INCLUDE_DIR} ${MONGOCXX_INCLUDE_DIRS} ${BSON-1.0_INCLUDE_DIRS} ${BSONCXX_INCLUDE_DIRS})
+
+include_directories( ${CMAKE_INSTALL_PREFIX}/INSTALL/include/bsoncxx/v_noabi )
+
 link_directories( ${CMAKE_INSTALL_PREFIX}/lib )
 
 MESSAGE(STATUS "LIBRARY STATUS:")
@@ -46,7 +49,6 @@ message("MongoCxx: ${MONGOCXX_LIBRARY}")
 
 
 add_library(MongoInterface STATIC MongoInterface.cpp MongoInterface.h)
-<<<<<<< HEAD
 TARGET_LINK_LIBRARIES(MongoInterface 
    ${JSONBOX_LIBRARY_RELEASE} 
    ${MONGOC_LIBRARY} 
@@ -56,16 +58,15 @@ TARGET_LINK_LIBRARIES(MongoInterface
    ${CMAKE_THREAD_LIBS_INIT} 
    libaquetitools.a
 )
-=======
-TARGET_LINK_LIBRARIES(MongoInterface ${JSONBOX_LIBRARY_RELEASE} ${MONGOC_LIBRARY} ${MONGOCXX_LIBRARY} ${BSONCXX_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
->>>>>>> bc98be132a0f0870ac5b8f74b24e5fc9c5bc08ae
 
-install(TARGETS MongoInterface ARCHIVE DESTINATION lib)
-install(FILES MongoInterface.h DESTINATION include)
+
+
+
+
+
 
 add_executable(MongoInterfaceTest mongotest/MongoInterface_test.cpp MongoInterface.h)
 TARGET_LINK_LIBRARIES(MongoInterfaceTest MongoInterface ${JSONBOX_LIBRARY_RELEASE} ${MONGOC_LIBRARY} ${MONGOCXX_LIBRARY} ${BSONCXX_LIBARY} ${CMAKE_THREAD_LIBS_INIT})
-install(TARGETS MongoInterfaceTest DESTINATION test)
 
 # add a target to generate API documentation with Doxygen
 find_package(Doxygen)
@@ -80,3 +81,26 @@ COMMENT "Generating API documentation with Doxygen" VERBATIM
 endif(DOXYGEN_FOUND)
 
 MESSAGE(STATUS "DOXYGEN_DIR: " ${DOXYGEN_DIR})
+
+install(TARGETS 
+   MongoInterface 
+   ARCHIVE DESTINATION lib)
+install(FILES MongoInterface.h DESTINATION include)
+install(TARGETS MongoInterfaceTest DESTINATION test)
+
+
+
+#############################################
+#install library files
+# This sections initiates the build of the  components in th TARGET_LIST. 
+# Each component
+#############################################
+install( TARGETS 
+   ${TARGET_LIST}
+   RUNTIME DESTINATION bin
+   LIBRARY DESTINATION lib${LIB_SUFFIX}
+   ARCHIVE DESTINATION lib${LIB_SUFFIX}
+   INCLUDES DESTINATION include/aqueti
+   PUBLIC_HEADER DESTINATION include/aqueti
+)
+
