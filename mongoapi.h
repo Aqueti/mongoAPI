@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include "JsonBox.h"
 #include <vector>
 #include <bsoncxx/json.hpp>
@@ -29,7 +30,7 @@
 using bsoncxx::builder::stream::document;
 using bsoncxx::builder::stream::finalize;
 
-namespace atl
+namespace mongoapi
 {
 	/**
 	 * @class MongoInterface

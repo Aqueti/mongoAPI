@@ -11,7 +11,7 @@
 
 #include "mongoapi.h"
 
-namespace atl 
+namespace mongoapi
 {
 	MongoInterface::MongoInterface(std::string database, std::string URI) {
 		connect(database, URI);
@@ -368,7 +368,20 @@ namespace atl
 			}
 
 			//return string version of returnJson to be inserted into the database
-			returnJson["date"] = atl::getDateAsString();
+			//get /etc/quid
+			std::string guid;
+			std::ifstream nameFileout;
+			nameFileout.open("/etc/guid");
+			if(nameFileout.good()){
+				getline(nameFileout, guid);
+			}
+			nameFileout.close();
+			returnJson["componentId"] = guid;
+
+			//get timestamp
+			returnJson["date"] = aqt::getDateAsString();
+
+			//write to stream and return
 			std::stringstream stream;
 			returnJson.writeToStream(stream, false);
 			return stream.str();
