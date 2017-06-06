@@ -378,6 +378,9 @@ namespace mongoapi
 			nameFileout.close();
 			returnJson["componentId"] = guid;
 
+			//get repository and commitId
+			std::cout << VERSION << std::endl;
+
 			//get timestamp
 			returnJson["date"] = aqt::getDateAsString();
 

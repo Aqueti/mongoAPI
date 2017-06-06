@@ -8,7 +8,7 @@
 #include "mongoapi.h"
 
 int main() {
-	std::cout << atl::testMongoInterface(true, false) << std::endl;
+	std::cout << mongoapi::testMongoInterface(true, false) << std::endl;
 
 
 }

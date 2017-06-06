@@ -26,6 +26,7 @@
 #include <mongocxx/exception/bulk_write_exception.hpp>
 #include <assert.h>
 #include <aquetitools/Timer.h>
+#include <aquetitools/revision.h>
 
 using bsoncxx::builder::stream::document;
 using bsoncxx::builder::stream::finalize;
