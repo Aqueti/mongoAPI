@@ -388,10 +388,10 @@ namespace mongoapi
 			returnJson["componentId"] = guid;
 
 			//get commit hash id and version
-			returnJson["commit"] = GIT_COMMIT_HASH;
-			returnJson["version"] = VERSION;
-			std::string softwareId1 = VERSION;
-			std::string softwareId2 = GIT_COMMIT_HASH;
+			returnJson["commit"] = mongoapi::GIT_COMMIT_HASH;
+			returnJson["version"] = mongoapi::VERSION;
+			std::string softwareId1 = mongoapi::VERSION;
+			std::string softwareId2 = mongoapi::GIT_COMMIT_HASH;
 			std::string softwareId = softwareId1 + ":" + softwareId2;
 			returnJson["softwareId"] = softwareId;
 
@@ -399,8 +399,8 @@ namespace mongoapi
 			returnJson["date"] = aqt::getDateAsString();
 
 			//get submodules
-			subJson2["version"] = "filler";
-			subJson2["commit"] = "filler";
+			subJson2["version"] = aqt::VERSION;
+			subJson2["commit"] = aqt::GIT_COMMIT_HASH;
 			subJson1["aquetitools"] = subJson2;
 
 
