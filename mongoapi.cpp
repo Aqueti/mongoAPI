@@ -1,6 +1,6 @@
 /**
- * @file MongoInterface.h
- * @author Cameron Givler <cameron.givler@duke.edu>
+ * @file mongoapi.h
+ * @author Nils Persson <npersson@live.unc.edu>
  * @version 1.0
  *
  * Interface class to MongoDB

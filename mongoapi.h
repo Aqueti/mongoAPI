@@ -1,6 +1,6 @@
 /**
- * @file MongoInterface.h
- * @author Cameron Givler <cameron.givler@duke.edu>
+ * @file mongoapi.h
+ * @author Nils Persson <npersson@live.unc.edu>
  * @version 1.0
  *
  * Interface class to MongoDB
@@ -53,14 +53,14 @@ namespace mongoapi
 		 * Helper method to convert a JsonBox Value to a BSON object that MongoDB accepts
 		 *
 		 * @param data the JsonBox Value to convert
-		 * @return the BSON object
+		 * @return The BSON object
 		 */
 		static bsoncxx::document::value BSON_from_JSON(JsonBox::Value data);
 		/**
 		 * Helper method to convert a BSON object from MongoDB to a JsonBox Value
 		 *
-		 * @param data the BSON object to convert
-		 * @return the JsonBox Value
+		 * @param data the BSON object to convert in view form
+		 * @return The JsonBox Value
 		 */
 		static JsonBox::Value JSON_from_BSON(bsoncxx::document::view data);
 		/**
@@ -68,7 +68,7 @@ namespace mongoapi
 		 *
 		 * @param database The name of the database to connect to
 		 * @param URI The IP address and port given as a string in the form "IP:Port"
-		 * @return true if the connection was successful
+		 * @return True if the connection was successful
 		 */
 		bool connect(std::string database, std::string URI);
 	public:
@@ -76,7 +76,7 @@ namespace mongoapi
 		 * Constructor opens connection to database with specified name.
 		 *
 		 * @param database Name of the database to connect to
-		 * @param URI The IP address and port given as a string in the form "IP:Port"
+		 * @param URI The IP address and port given as a string in the form "IP:Port" default: "127.0.0.1:27017"
 		 */
 		MongoInterface(std::string database, std::string URI = "127.0.0.1:27017");
 		/**
@@ -88,7 +88,7 @@ namespace mongoapi
 		 *
 		 * @param collection The name of the collection to insert Value into
 		 * @param data The JsonBox Value to insert
-		 * @return true on success
+		 * @return True on success
 		 */
 		bool insertJSON(std::string collection, JsonBox::Value data);
 		/**
@@ -111,7 +111,7 @@ namespace mongoapi
 		 *
 		 * @param collection The name of the collection
 		 * @param data A JsonBox Value specifying what entries to remove
-		 * @return true on success
+		 * @return True on success
 		 */
 		bool removeEntry(std::string collection, JsonBox::Value data);
 		/**
@@ -122,7 +122,7 @@ namespace mongoapi
 		 * @param collection The name of the collection
 		 * @param filter Which entry to update
 		 * @param update The parameters to update with
-		 * @return true on success
+		 * @return True on success
 		 */
 		bool update(std::string collection, JsonBox::Value filter, 
 				JsonBox::Value update);
@@ -130,7 +130,7 @@ namespace mongoapi
 		 * Count the number of objects in the collection specified
 		 *
 		 * @param collection The name of the collection to query
-		 * @return integer value of number
+		 * @return Integer value of number
 		 */
 		int count(std::string collection);
 		/**
@@ -138,8 +138,8 @@ namespace mongoapi
 		 * that match the specified filter
 		 *
 		 * @param collection The name of the collection to query
-		 * @param JsonBox Value used as the filter 
-		 * @return integer value of number
+		 * @param filter The query used on collection  
+		 * @return Integer value of number
 		 */
 		int countFilter(std::string collection, JsonBox::Value filter);
 		/**
@@ -164,19 +164,26 @@ namespace mongoapi
 		 * Remove all entries from the specified collection
 		 *
 		 * @param collection The name of the collection
-		 * @return true on success
+		 * @return True on success
 		 */
 		bool removeAllEntries(std::string collection);
 		/**
 		 * Drop specified collection
 		 *
 		 * @param collection The name of the collection
-		 * @return true on success
+		 * @return True on success
 		 */
 		bool dropCollection(std::string collection);
 
 	};
 
+	/**
+		 * Perform unit tests for the mongoapi class
+		 *
+		 * @param printFlag The boolean, true if printed messages to console desired
+		 * @param assertFlag The boolean, true if quit desired upon error
+		 * @return True on success
+		 */
 	std::string testMongoInterface(bool printFlag, bool assertFlag);
 
 }

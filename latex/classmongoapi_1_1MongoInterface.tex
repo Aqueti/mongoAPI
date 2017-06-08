@@ -1,0 +1,274 @@
+\hypertarget{classmongoapi_1_1MongoInterface}{}\section{mongoapi\+:\+:Mongo\+Interface Class Reference}
+\label{classmongoapi_1_1MongoInterface}\index{mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}}
+
+
+An interface to a Mongo\+DB database with methods to insert, retrieve, and remove entries with Json\+Box Values.  
+
+
+
+
+{\ttfamily \#include $<$mongoapi.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classmongoapi_1_1MongoInterface_ab0be108c960a6cb1cf926e90c67dc6a2}{Mongo\+Interface} (std\+::string database, std\+::string U\+RI=\char`\"{}127.\+0.\+0.\+1\+:27017\char`\"{})
+\item 
+virtual \hyperlink{classmongoapi_1_1MongoInterface_ab04b30920b692570cf39a232bad39e31}{$\sim$\+Mongo\+Interface} ()
+\item 
+bool \hyperlink{classmongoapi_1_1MongoInterface_abd351b10712380d3cc3a9fdfea045816}{insert\+J\+S\+ON} (std\+::string collection, Json\+Box\+::\+Value data)
+\item 
+Json\+Box\+::\+Value \hyperlink{classmongoapi_1_1MongoInterface_a5be1cd9378f89523963212a58c126205}{query} (std\+::string collection, Json\+Box\+::\+Value data)
+\item 
+Json\+Box\+::\+Value \hyperlink{classmongoapi_1_1MongoInterface_ae85cc136f15074ba9e7dabcc7de1ac0b}{query\+All} (std\+::string collection)
+\item 
+bool \hyperlink{classmongoapi_1_1MongoInterface_a3ef36851d7f551223f72faa6bb355f99}{remove\+Entry} (std\+::string collection, Json\+Box\+::\+Value data)
+\item 
+bool \hyperlink{classmongoapi_1_1MongoInterface_a2dccbb59fb1fd7ea81d946e84e592561}{update} (std\+::string collection, Json\+Box\+::\+Value filter, Json\+Box\+::\+Value update)
+\item 
+int \hyperlink{classmongoapi_1_1MongoInterface_ad938ece65fafa37c0517f20fcf0fed9d}{count} (std\+::string collection)
+\item 
+int \hyperlink{classmongoapi_1_1MongoInterface_a889dc36348bbb47d0867c628d3c8534e}{count\+Filter} (std\+::string collection, Json\+Box\+::\+Value filter)
+\item 
+std\+::string \hyperlink{classmongoapi_1_1MongoInterface_a39d9fd2dc8b9bf2e6b9590504d02a811}{get\+Database} () const 
+\item 
+std\+::string \hyperlink{classmongoapi_1_1MongoInterface_a7f95673d3c950679fb64190862c127fc}{get\+U\+RI} () const 
+\item 
+bool \hyperlink{classmongoapi_1_1MongoInterface_a3721592cc497178f8c8e0567c7439991}{remove\+All\+Entries} (std\+::string collection)
+\item 
+bool \hyperlink{classmongoapi_1_1MongoInterface_a18c2763a4f06cf1e717875007bb47963}{drop\+Collection} (std\+::string collection)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+An interface to a Mongo\+DB database with methods to insert, retrieve, and remove entries with Json\+Box Values. 
+
+\subsection{Constructor \& Destructor Documentation}
+\index{mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}!Mongo\+Interface@{Mongo\+Interface}}
+\index{Mongo\+Interface@{Mongo\+Interface}!mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}}
+\subsubsection[{\texorpdfstring{Mongo\+Interface(std\+::string database, std\+::string U\+R\+I=""127.\+0.\+0.\+1\+:27017"")}{MongoInterface(std::string database, std::string URI="127.0.0.1:27017")}}]{\setlength{\rightskip}{0pt plus 5cm}mongoapi\+::\+Mongo\+Interface\+::\+Mongo\+Interface (
+\begin{DoxyParamCaption}
+\item[{std\+::string}]{database, }
+\item[{std\+::string}]{U\+RI = {\ttfamily \char`\"{}127.0.0.1\+:27017\char`\"{}}}
+\end{DoxyParamCaption}
+)}\hypertarget{classmongoapi_1_1MongoInterface_ab0be108c960a6cb1cf926e90c67dc6a2}{}\label{classmongoapi_1_1MongoInterface_ab0be108c960a6cb1cf926e90c67dc6a2}
+Constructor opens connection to database with specified name.
+
+
+\begin{DoxyParams}{Parameters}
+{\em database} & Name of the database to connect to \\
+\hline
+{\em U\+RI} & The IP address and port given as a string in the form \char`\"{}\+I\+P\+:\+Port\char`\"{} default\+: \char`\"{}127.\+0.\+0.\+1\+:27017\char`\"{} \\
+\hline
+\end{DoxyParams}
+\index{mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}!````~Mongo\+Interface@{$\sim$\+Mongo\+Interface}}
+\index{````~Mongo\+Interface@{$\sim$\+Mongo\+Interface}!mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}}
+\subsubsection[{\texorpdfstring{$\sim$\+Mongo\+Interface()}{~MongoInterface()}}]{\setlength{\rightskip}{0pt plus 5cm}mongoapi\+::\+Mongo\+Interface\+::$\sim$\+Mongo\+Interface (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classmongoapi_1_1MongoInterface_ab04b30920b692570cf39a232bad39e31}{}\label{classmongoapi_1_1MongoInterface_ab04b30920b692570cf39a232bad39e31}
+Destructor 
+
+\subsection{Member Function Documentation}
+\index{mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}!count@{count}}
+\index{count@{count}!mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}}
+\subsubsection[{\texorpdfstring{count(std\+::string collection)}{count(std::string collection)}}]{\setlength{\rightskip}{0pt plus 5cm}int mongoapi\+::\+Mongo\+Interface\+::count (
+\begin{DoxyParamCaption}
+\item[{std\+::string}]{collection}
+\end{DoxyParamCaption}
+)}\hypertarget{classmongoapi_1_1MongoInterface_ad938ece65fafa37c0517f20fcf0fed9d}{}\label{classmongoapi_1_1MongoInterface_ad938ece65fafa37c0517f20fcf0fed9d}
+Count the number of objects in the collection specified
+
+
+\begin{DoxyParams}{Parameters}
+{\em collection} & The name of the collection to query \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Integer value of number 
+\end{DoxyReturn}
+\index{mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}!count\+Filter@{count\+Filter}}
+\index{count\+Filter@{count\+Filter}!mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}}
+\subsubsection[{\texorpdfstring{count\+Filter(std\+::string collection, Json\+Box\+::\+Value filter)}{countFilter(std::string collection, JsonBox::Value filter)}}]{\setlength{\rightskip}{0pt plus 5cm}int mongoapi\+::\+Mongo\+Interface\+::count\+Filter (
+\begin{DoxyParamCaption}
+\item[{std\+::string}]{collection, }
+\item[{Json\+Box\+::\+Value}]{filter}
+\end{DoxyParamCaption}
+)}\hypertarget{classmongoapi_1_1MongoInterface_a889dc36348bbb47d0867c628d3c8534e}{}\label{classmongoapi_1_1MongoInterface_a889dc36348bbb47d0867c628d3c8534e}
+Count the number of objects in the collection specified that match the specified filter
+
+
+\begin{DoxyParams}{Parameters}
+{\em collection} & The name of the collection to query \\
+\hline
+{\em filter} & The query used on collection \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Integer value of number 
+\end{DoxyReturn}
+\index{mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}!drop\+Collection@{drop\+Collection}}
+\index{drop\+Collection@{drop\+Collection}!mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}}
+\subsubsection[{\texorpdfstring{drop\+Collection(std\+::string collection)}{dropCollection(std::string collection)}}]{\setlength{\rightskip}{0pt plus 5cm}bool mongoapi\+::\+Mongo\+Interface\+::drop\+Collection (
+\begin{DoxyParamCaption}
+\item[{std\+::string}]{collection}
+\end{DoxyParamCaption}
+)}\hypertarget{classmongoapi_1_1MongoInterface_a18c2763a4f06cf1e717875007bb47963}{}\label{classmongoapi_1_1MongoInterface_a18c2763a4f06cf1e717875007bb47963}
+Drop specified collection
+
+
+\begin{DoxyParams}{Parameters}
+{\em collection} & The name of the collection \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True on success 
+\end{DoxyReturn}
+\index{mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}!get\+Database@{get\+Database}}
+\index{get\+Database@{get\+Database}!mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}}
+\subsubsection[{\texorpdfstring{get\+Database() const }{getDatabase() const }}]{\setlength{\rightskip}{0pt plus 5cm}std\+::string mongoapi\+::\+Mongo\+Interface\+::get\+Database (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}\hypertarget{classmongoapi_1_1MongoInterface_a39d9fd2dc8b9bf2e6b9590504d02a811}{}\label{classmongoapi_1_1MongoInterface_a39d9fd2dc8b9bf2e6b9590504d02a811}
+Returns a string containing the name of the current database
+
+\begin{DoxyReturn}{Returns}
+The name of the current database 
+\end{DoxyReturn}
+\index{mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}!get\+U\+RI@{get\+U\+RI}}
+\index{get\+U\+RI@{get\+U\+RI}!mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}}
+\subsubsection[{\texorpdfstring{get\+U\+R\+I() const }{getURI() const }}]{\setlength{\rightskip}{0pt plus 5cm}std\+::string mongoapi\+::\+Mongo\+Interface\+::get\+U\+RI (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}\hypertarget{classmongoapi_1_1MongoInterface_a7f95673d3c950679fb64190862c127fc}{}\label{classmongoapi_1_1MongoInterface_a7f95673d3c950679fb64190862c127fc}
+Returns a string containing the IP and Port of the database
+
+\begin{DoxyReturn}{Returns}
+The IP and port in the form \char`\"{}\+I\+P\+:\+Port\char`\"{} 
+\end{DoxyReturn}
+\index{mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}!insert\+J\+S\+ON@{insert\+J\+S\+ON}}
+\index{insert\+J\+S\+ON@{insert\+J\+S\+ON}!mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}}
+\subsubsection[{\texorpdfstring{insert\+J\+S\+O\+N(std\+::string collection, Json\+Box\+::\+Value data)}{insertJSON(std::string collection, JsonBox::Value data)}}]{\setlength{\rightskip}{0pt plus 5cm}bool mongoapi\+::\+Mongo\+Interface\+::insert\+J\+S\+ON (
+\begin{DoxyParamCaption}
+\item[{std\+::string}]{collection, }
+\item[{Json\+Box\+::\+Value}]{data}
+\end{DoxyParamCaption}
+)}\hypertarget{classmongoapi_1_1MongoInterface_abd351b10712380d3cc3a9fdfea045816}{}\label{classmongoapi_1_1MongoInterface_abd351b10712380d3cc3a9fdfea045816}
+Insert a Json\+Box Value into the database with specified collection.
+
+
+\begin{DoxyParams}{Parameters}
+{\em collection} & The name of the collection to insert Value into \\
+\hline
+{\em data} & The Json\+Box Value to insert \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True on success 
+\end{DoxyReturn}
+\index{mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}!query@{query}}
+\index{query@{query}!mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}}
+\subsubsection[{\texorpdfstring{query(std\+::string collection, Json\+Box\+::\+Value data)}{query(std::string collection, JsonBox::Value data)}}]{\setlength{\rightskip}{0pt plus 5cm}Json\+Box\+::\+Value mongoapi\+::\+Mongo\+Interface\+::query (
+\begin{DoxyParamCaption}
+\item[{std\+::string}]{collection, }
+\item[{Json\+Box\+::\+Value}]{data}
+\end{DoxyParamCaption}
+)}\hypertarget{classmongoapi_1_1MongoInterface_a5be1cd9378f89523963212a58c126205}{}\label{classmongoapi_1_1MongoInterface_a5be1cd9378f89523963212a58c126205}
+Query the specified collection according to a specified Json\+Box Value
+
+
+\begin{DoxyParams}{Parameters}
+{\em collection} & The name of the collection to query \\
+\hline
+{\em data} & The Json\+Box Value query \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Array of results 
+\end{DoxyReturn}
+\index{mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}!query\+All@{query\+All}}
+\index{query\+All@{query\+All}!mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}}
+\subsubsection[{\texorpdfstring{query\+All(std\+::string collection)}{queryAll(std::string collection)}}]{\setlength{\rightskip}{0pt plus 5cm}Json\+Box\+::\+Value mongoapi\+::\+Mongo\+Interface\+::query\+All (
+\begin{DoxyParamCaption}
+\item[{std\+::string}]{collection}
+\end{DoxyParamCaption}
+)}\hypertarget{classmongoapi_1_1MongoInterface_ae85cc136f15074ba9e7dabcc7de1ac0b}{}\label{classmongoapi_1_1MongoInterface_ae85cc136f15074ba9e7dabcc7de1ac0b}
+Query the specified collection for all Json\+Box Values
+
+
+\begin{DoxyParams}{Parameters}
+{\em collection} & The name of the collection to query \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Array of results 
+\end{DoxyReturn}
+\index{mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}!remove\+All\+Entries@{remove\+All\+Entries}}
+\index{remove\+All\+Entries@{remove\+All\+Entries}!mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}}
+\subsubsection[{\texorpdfstring{remove\+All\+Entries(std\+::string collection)}{removeAllEntries(std::string collection)}}]{\setlength{\rightskip}{0pt plus 5cm}bool mongoapi\+::\+Mongo\+Interface\+::remove\+All\+Entries (
+\begin{DoxyParamCaption}
+\item[{std\+::string}]{collection}
+\end{DoxyParamCaption}
+)}\hypertarget{classmongoapi_1_1MongoInterface_a3721592cc497178f8c8e0567c7439991}{}\label{classmongoapi_1_1MongoInterface_a3721592cc497178f8c8e0567c7439991}
+Remove all entries from the specified collection
+
+
+\begin{DoxyParams}{Parameters}
+{\em collection} & The name of the collection \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True on success 
+\end{DoxyReturn}
+\index{mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}!remove\+Entry@{remove\+Entry}}
+\index{remove\+Entry@{remove\+Entry}!mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}}
+\subsubsection[{\texorpdfstring{remove\+Entry(std\+::string collection, Json\+Box\+::\+Value data)}{removeEntry(std::string collection, JsonBox::Value data)}}]{\setlength{\rightskip}{0pt plus 5cm}bool mongoapi\+::\+Mongo\+Interface\+::remove\+Entry (
+\begin{DoxyParamCaption}
+\item[{std\+::string}]{collection, }
+\item[{Json\+Box\+::\+Value}]{data}
+\end{DoxyParamCaption}
+)}\hypertarget{classmongoapi_1_1MongoInterface_a3ef36851d7f551223f72faa6bb355f99}{}\label{classmongoapi_1_1MongoInterface_a3ef36851d7f551223f72faa6bb355f99}
+Remove one or multiple entries from the specified collection
+
+
+\begin{DoxyParams}{Parameters}
+{\em collection} & The name of the collection \\
+\hline
+{\em data} & A Json\+Box Value specifying what entries to remove \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True on success 
+\end{DoxyReturn}
+\index{mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}!update@{update}}
+\index{update@{update}!mongoapi\+::\+Mongo\+Interface@{mongoapi\+::\+Mongo\+Interface}}
+\subsubsection[{\texorpdfstring{update(std\+::string collection, Json\+Box\+::\+Value filter, Json\+Box\+::\+Value update)}{update(std::string collection, JsonBox::Value filter, JsonBox::Value update)}}]{\setlength{\rightskip}{0pt plus 5cm}bool mongoapi\+::\+Mongo\+Interface\+::update (
+\begin{DoxyParamCaption}
+\item[{std\+::string}]{collection, }
+\item[{Json\+Box\+::\+Value}]{filter, }
+\item[{Json\+Box\+::\+Value}]{update}
+\end{DoxyParamCaption}
+)}\hypertarget{classmongoapi_1_1MongoInterface_a2dccbb59fb1fd7ea81d946e84e592561}{}\label{classmongoapi_1_1MongoInterface_a2dccbb59fb1fd7ea81d946e84e592561}
+this queries a collection for the specified value, and updates it with the passed parameters. This function will only update one entry if the query matches multiple.
+
+
+\begin{DoxyParams}{Parameters}
+{\em collection} & The name of the collection \\
+\hline
+{\em filter} & Which entry to update \\
+\hline
+{\em update} & The parameters to update with \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True on success 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{mongoapi_8h}{mongoapi.\+h}\item 
+mongoapi.\+cpp\end{DoxyCompactItemize}
