@@ -17,3 +17,54 @@
 {\ttfamily \#include $<$mongoapi/revision.\+h$>$}\\*
 {\ttfamily \#include $<$aquetitools/revision.\+h$>$}\\*
 Include dependency graph for mongoapi.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{mongoapi_8h__incl}
+\end{center}
+\end{figure}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{classmongoapi_1_1MongoInterface}{mongoapi\+::\+Mongo\+Interface}
+\begin{DoxyCompactList}\small\item\em An interface to a Mongo\+DB database with methods to insert, retrieve, and remove entries with Json\+Box Values. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+std\+::string {\bfseries mongoapi\+::test\+Mongo\+Interface} (bool print\+Flag, bool asser\+Flag)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\begin{DoxyAuthor}{Author}
+Nils Persson \href{mailto:npersson@live.unc.edu}{\tt npersson@live.\+unc.\+edu} 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+1.\+0
+\end{DoxyVersion}
+Interface class to Mongo\+DB
+
+A class to connect to a Mongo\+DB database with methods to insert, retrieve, and remove entries with Json\+Box Values. 
+
+\subsection{Function Documentation}
+\index{mongoapi.\+h@{mongoapi.\+h}!test\+Mongo\+Interface@{test\+Mongo\+Interface}}
+\index{test\+Mongo\+Interface@{test\+Mongo\+Interface}!mongoapi.\+h@{mongoapi.\+h}}
+\subsubsection[{\texorpdfstring{test\+Mongo\+Interface(bool print\+Flag, bool asser\+Flag)}{testMongoInterface(bool printFlag, bool asserFlag)}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::string mongoapi\+::test\+Mongo\+Interface (
+\begin{DoxyParamCaption}
+\item[{bool}]{print\+Flag, }
+\item[{bool}]{assert\+Flag}
+\end{DoxyParamCaption}
+)}\hypertarget{mongoapi_8cpp_file_a6578d7b7ffba7800730cbbcb295ad528}{}\label{mongoapi_8cpp_file_a6578d7b7ffba7800730cbbcb295ad528}
+Perform unit tests for the mongoapi class
+
+
+\begin{DoxyParams}{Parameters}
+{\em print\+Flag} & The boolean, true if printed messages to console desired \\
+\hline
+{\em assert\+Flag} & The boolean, true if quit desired upon error \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True on success 
+\end{DoxyReturn}
