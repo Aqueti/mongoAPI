@@ -117,7 +117,7 @@ list(APPEND TARGET_LIST mongoapi )
 
 #Add MongoAPI test as an executavble
 add_executable( MongoAPITest 
-   mongotest/MongoInterface_test.cpp 
+   mongotest/MongoAPITest.cpp 
 )
 TARGET_LINK_LIBRARIES(MongoAPITest 
    mongoapi 
