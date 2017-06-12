@@ -12,8 +12,6 @@ int main(int argc, char *argv[]) {
 	std::string jsonString = mongoapi::testMongoInterface(true, false);
 	JsonBox::Value jsonVal;
 	jsonVal.loadFromString(jsonString);
-	std::cout << jsonVal << std::endl;
-
 	//if the command line option is used then do not insert 
 	bool insert = true;
 	int i;
