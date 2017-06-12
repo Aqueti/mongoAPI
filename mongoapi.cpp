@@ -69,13 +69,17 @@ namespace mongoapi
 			mongocxx::cursor cursor = coll.find(BSON_from_JSON(data));
 			int i = 0;
 			for(auto doc : cursor) {
-			  results[i] = JSON_from_BSON(doc);
-			  i++;
+				results[i] = JSON_from_BSON(doc);
+				i++;
 			}
 			return results;
 		} /*catch (const mongocxx::logic_error& e) {
 			std::cout << "query: " << e.what() << std::endl;
-		} */catch (...) {
+		} */
+		catch (const mongocxx::query_exception& e) {
+			std::cout << "query returned empty" << std::endl;
+		}
+		catch (...) {
 			std::cout << "query: default exception" << std::endl;
 		}
 	}
@@ -87,14 +91,14 @@ namespace mongoapi
 			mongocxx::cursor cursor = coll.find(document{} << finalize);
 			int i = 0;
 			for(auto doc : cursor) {
-			  results[i] = JSON_from_BSON(doc);
-			  i++;
+				results[i] = JSON_from_BSON(doc);
+				i++;
 			}
 			return results;
 		} /*catch (const mongocxx::logic_error& e) {
 			std::cout << "query: " << e.what() << std::endl;
 		} */catch (...) {
-			std::cout << "query: default exception" << std::endl;
+			std::cout << "queryAll: default exception" << std::endl;
 		}
 	}
 
@@ -363,8 +367,8 @@ namespace mongoapi
 
 			//test update function of database
 			mi.update("test", val6, val7);
-			result = mi.query("test", val6);
 
+			result = mi.query("test", val6);
 			if(result[(size_t)0]["class"] != "graduate"){
 				returnJson["pass"] = false;
 				if(printFlag){
@@ -374,7 +378,7 @@ namespace mongoapi
 					assert(false);
 				}
 			}
-
+			
 			//drop the collection to clean up the database after testing
 			mi.dropCollection("test");
 
