@@ -21,9 +21,15 @@ namespace mongoapi
 	}
 
 	bool MongoInterface::connect(std::string database, std::string URI) {
-		m_uri = mongocxx::uri("mongodb://" + URI);
-		m_client = mongocxx::client(m_uri);
-		m_db = m_client[database];
+		try{
+			m_uri = mongocxx::uri("mongodb://" + URI);
+			m_client = mongocxx::client(m_uri);
+			m_db = m_client[database];
+		}
+		catch(const mongocxx::exception& e){
+			std::cout << "database connection failed" << std::endl;
+			return false;
+		}
 		this->m_URI = URI;
 		this->m_database = database;
 		return true;
