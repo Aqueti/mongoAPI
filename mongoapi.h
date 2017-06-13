@@ -64,26 +64,23 @@ namespace mongoapi
 		 * @return The JsonBox Value
 		 */
 		static JsonBox::Value JSON_from_BSON(bsoncxx::document::view data);
-		/**
-		 * Helper method to connect to a specified database
-		 *
-		 * @param database The name of the database to connect to
-		 * @param URI The IP address and port given as a string in the form "IP:Port"
-		 * @return True if the connection was successful
-		 */
-		bool connect(std::string database, std::string URI);
 	public:
 		/**
-		 * Constructor opens connection to database with specified name.
-		 *
-		 * @param database Name of the database to connect to
-		 * @param URI The IP address and port given as a string in the form "IP:Port" default: "127.0.0.1:27017"
+		 * Constructor 
 		 */
-		MongoInterface(std::string database, std::string URI = "127.0.0.1:27017");
+		MongoInterface();
 		/**
 		 * Destructor
 		 */
 		virtual ~MongoInterface();
+		/**
+		 * Connect to a specified database
+		 *
+		 * @param database The name of the database to connect to
+		 * @param URI The IP address and port given as a string in the form "IP:Port" default: "127.0.0.1:27017"
+		 * @return True if the connection was successful
+		 */
+		bool connect(std::string database, std::string URI = "127.0.0.1:27017");
 		/**
 		 * Insert a JsonBox Value into the database with specified collection.
 		 *

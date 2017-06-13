@@ -13,8 +13,7 @@
 
 namespace mongoapi
 {
-	MongoInterface::MongoInterface(std::string database, std::string URI) {
-		connect(database, URI);
+	MongoInterface::MongoInterface() {
 	}
 
 	MongoInterface::~MongoInterface() {
@@ -25,6 +24,10 @@ namespace mongoapi
 			m_uri = mongocxx::uri("mongodb://" + URI);
 			m_client = mongocxx::client(m_uri);
 			m_db = m_client[database];
+
+			JsonBox::Value val;
+			val["ismaster"] = 1;
+			auto result = m_db.run_command(BSON_from_JSON(val));
 		}
 		catch(const mongocxx::exception& e){
 			std::cout << "database connection failed" << std::endl;
@@ -190,9 +193,7 @@ namespace mongoapi
 
 	std::string testMongoInterface(bool printFlag, bool asserFlag){
 		try {
-			//construct the interface object, defualt constructor creates connection to database
-			//default parameters are database: "aqueti", URI: "127.0.0.1:27017"
-			MongoInterface mi("aqueti");
+			//create variables used in testing
 			JsonBox::Value val1;
 			JsonBox::Value val2;
 			JsonBox::Value val3;
@@ -210,6 +211,15 @@ namespace mongoapi
 			int count;
 			bool pass;
 			returnJson["pass"] = true;
+
+			//connect to database
+			//default parameters are database: "aqueti", URI: "127.0.0.1:27017"
+			MongoInterface mi;
+			bool connected = mi.connect("aqueti");
+			if(!connected){
+				std::cout << "testing halted" << std::endl;
+				returnJson["pass"] = false;
+			}
 
 			//test values for insert
 			val1["name"] = "erik";
@@ -236,151 +246,153 @@ namespace mongoapi
 			val6["name"] = "erik";
 			val7["$set"]["class"] = "graduate";
 
-			//drop collection before testing for a clean test environment
-			mi.dropCollection("test");
+			if(connected){
+				//drop collection before testing for a clean test environment
+				mi.dropCollection("test");
 
-			//test insert function of database (num and values)
-			//will create test collection if it does not already exist
-			mi.insertJSON("test", val1);
-			mi.insertJSON("test", val2);
-			mi.insertJSON("test", val3);
-			mi.insertJSON("test", val4);
+				//test insert function of database (num and values)
+				//will create test collection if it does not already exist
+				mi.insertJSON("test", val1);
+				mi.insertJSON("test", val2);
+				mi.insertJSON("test", val3);
+				mi.insertJSON("test", val4);
 
-			count = mi.count("test");
-			if(count != 4){
-				returnJson["pass"] = false;
-				if(printFlag){
-					std::cout << "incorrect number of values inserted: " + count << std::endl;
+				count = mi.count("test");
+				if(count != 4){
+					returnJson["pass"] = false;
+					if(printFlag){
+						std::cout << "incorrect number of values inserted: " + count << std::endl;
+					}
+					if(asserFlag){
+						assert(false);
+					}
 				}
-				if(asserFlag){
-					assert(false);
-				}
-			}
 
-			result = mi.queryAll("test");
-			pass = true;
-			if(result[(size_t)0]["name"] != val1["name"] || result[(size_t)0]["class"] != val1["class"]
-					|| result[(size_t)0]["age"] != val1["age"]){
-				pass = false;
-			}
-			if(result[1]["name"] != val2["name"] || result[1]["class"] != val2["class"]
-					|| result[1]["age"] != val2["age"]){
-				pass = false;
-			}
-			if(result[2]["name"] != val3["name"] || result[2]["class"] != val3["class"]
-					|| result[2]["age"] != val3["age"]){
-				pass = false;
-			}
-			if(result[3]["name"] != val4["name"] || result[3]["class"] != val4["class"]
-					|| result[3]["age"] != val4["age"]){
-				pass = false;
-			}
+				result = mi.queryAll("test");
+				pass = true;
+				if(result[(size_t)0]["name"] != val1["name"] || result[(size_t)0]["class"] != val1["class"]
+						|| result[(size_t)0]["age"] != val1["age"]){
+					pass = false;
+				}
+				if(result[1]["name"] != val2["name"] || result[1]["class"] != val2["class"]
+						|| result[1]["age"] != val2["age"]){
+					pass = false;
+				}
+				if(result[2]["name"] != val3["name"] || result[2]["class"] != val3["class"]
+						|| result[2]["age"] != val3["age"]){
+					pass = false;
+				}
+				if(result[3]["name"] != val4["name"] || result[3]["class"] != val4["class"]
+						|| result[3]["age"] != val4["age"]){
+					pass = false;
+				}
 
-			if(!pass){
-				returnJson["pass"] = false;
-				if(printFlag){
-					std::cout << "values incorrectly inserted" << std::endl;
+				if(!pass){
+					returnJson["pass"] = false;
+					if(printFlag){
+						std::cout << "values incorrectly inserted" << std::endl;
+					}
+					if(asserFlag){
+						assert(false);
+					}
 				}
-				if(asserFlag){
-					assert(false);
-				}
-			}
 
-			//test query function of database (num and values)
-			result = mi.query("test", val5);
-			count = result.getArray().size();
-			if(count != 2){
-				returnJson["pass"] = false;
-				if(printFlag){
-					std::cout << "query attempt 1 failed; results expected: 2, received: " + count << std::endl;
+				//test query function of database (num and values)
+				result = mi.query("test", val5);
+				count = result.getArray().size();
+				if(count != 2){
+					returnJson["pass"] = false;
+					if(printFlag){
+						std::cout << "query attempt 1 failed; results expected: 2, received: " + count << std::endl;
+					}
+					if(asserFlag){
+						assert(false);
+					}
 				}
-				if(asserFlag){
-					assert(false);
-				}
-			}
 
-			pass = true;
-			if(result[(size_t)0]["name"] != val3["name"] || result[(size_t)0]["class"] != val3["class"]
-					|| result[(size_t)0]["age"] != val3["age"]){
-				pass = false;
-			}
-			if(result[1]["name"] != val4["name"] || result[1]["class"] != val4["class"]
-					|| result[1]["age"] != val4["age"]){
-				pass = false;
-			}
+				pass = true;
+				if(result[(size_t)0]["name"] != val3["name"] || result[(size_t)0]["class"] != val3["class"]
+						|| result[(size_t)0]["age"] != val3["age"]){
+					pass = false;
+				}
+				if(result[1]["name"] != val4["name"] || result[1]["class"] != val4["class"]
+						|| result[1]["age"] != val4["age"]){
+					pass = false;
+				}
 
-			if(!pass){
-				returnJson["pass"] = false;
-				if(printFlag){
-					std::cout << "query attempt 1 failed; incorrect values received" << std::endl;
+				if(!pass){
+					returnJson["pass"] = false;
+					if(printFlag){
+						std::cout << "query attempt 1 failed; incorrect values received" << std::endl;
+					}
+					if(asserFlag){
+						assert(false);
+					}
 				}
-				if(asserFlag){
-					assert(false);
-				}
-			}
 
-			result = mi.query("test", val10);
-			count = result.getArray().size();
-			if(count != 2){
-				returnJson["pass"] = false;
-				if(printFlag){
-					std::cout << "query attempt 2 failed; results expected: 2, received: " + count << std::endl;
+				result = mi.query("test", val10);
+				count = result.getArray().size();
+				if(count != 2){
+					returnJson["pass"] = false;
+					if(printFlag){
+						std::cout << "query attempt 2 failed; results expected: 2, received: " + count << std::endl;
+					}
+					if(asserFlag){
+						assert(false);
+					}
 				}
-				if(asserFlag){
-					assert(false);
-				}
-			}
 
-			pass = true;
-			if(result[(size_t)0]["name"] != val1["name"] || result[(size_t)0]["class"] != val1["class"]
-					|| result[(size_t)0]["age"] != val1["age"]){
-				pass = false;
-			}
-			if(result[1]["name"] != val2["name"] || result[1]["class"] != val2["class"]
-					|| result[1]["age"] != val2["age"]){
-				pass = false;
-			}
+				pass = true;
+				if(result[(size_t)0]["name"] != val1["name"] || result[(size_t)0]["class"] != val1["class"]
+						|| result[(size_t)0]["age"] != val1["age"]){
+					pass = false;
+				}
+				if(result[1]["name"] != val2["name"] || result[1]["class"] != val2["class"]
+						|| result[1]["age"] != val2["age"]){
+					pass = false;
+				}
 
-			if(!pass){
-				returnJson["pass"] = false;
-				if(printFlag){
-					std::cout << "query attempt 2 failed; incorrect values received" << std::endl;
+				if(!pass){
+					returnJson["pass"] = false;
+					if(printFlag){
+						std::cout << "query attempt 2 failed; incorrect values received" << std::endl;
+					}
+					if(asserFlag){
+						assert(false);
+					}
 				}
-				if(asserFlag){
-					assert(false);
+
+				//test remove function of database
+				mi.removeEntry("test", val5);
+
+				count = mi.countFilter("test", val5);
+				if(count != 0){
+					returnJson["pass"] = false;
+					if(printFlag){
+						std::cout << "remove attempt failed, values matching filter still present" << std::endl;
+					}
+					if(asserFlag){
+						assert(false);
+					}
 				}
+
+				//test update function of database
+				mi.update("test", val6, val7);
+
+				result = mi.query("test", val6);
+				if(result[(size_t)0]["class"] != "graduate"){
+					returnJson["pass"] = false;
+					if(printFlag){
+						std::cout << "update attempt failed" << std::endl;
+					}
+					if(asserFlag){
+						assert(false);
+					}
+				}
+				
+				//drop the collection to clean up the database after testing
+				mi.dropCollection("test");
 			}
-
-			//test remove function of database
-			mi.removeEntry("test", val5);
-
-			count = mi.countFilter("test", val5);
-			if(count != 0){
-				returnJson["pass"] = false;
-				if(printFlag){
-					std::cout << "remove attempt failed, values matching filter still present" << std::endl;
-				}
-				if(asserFlag){
-					assert(false);
-				}
-			}
-
-			//test update function of database
-			mi.update("test", val6, val7);
-
-			result = mi.query("test", val6);
-			if(result[(size_t)0]["class"] != "graduate"){
-				returnJson["pass"] = false;
-				if(printFlag){
-					std::cout << "update attempt failed" << std::endl;
-				}
-				if(asserFlag){
-					assert(false);
-				}
-			}
-			
-			//drop the collection to clean up the database after testing
-			mi.dropCollection("test");
 
 			//return string version of returnJson to be inserted into the database
 			//make a testId using the 

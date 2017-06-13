@@ -12,6 +12,7 @@ int main(int argc, char *argv[]) {
 	std::string jsonString = mongoapi::testMongoInterface(true, false);
 	JsonBox::Value jsonVal;
 	jsonVal.loadFromString(jsonString);
+	
 	//if the command line option is used then do not insert 
 	bool insert = true;
 	int i;
@@ -23,7 +24,13 @@ int main(int argc, char *argv[]) {
 
 	//connect to database and insert JsonValue if "-n" was not used
 	if(insert){
-		mongoapi::MongoInterface mi("aqueti");
-		mi.insertJSON("unit_tests", jsonVal);
+		mongoapi::MongoInterface mi;
+		bool connected = mi.connect("aqueti");
+		if(connected){
+			mi.insertJSON("unit_tests", jsonVal);
+		}
+		else{
+			std::cout << "failed to insert unit test results" << std::endl;
+		}
 	}
 }
