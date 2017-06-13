@@ -191,7 +191,7 @@ namespace mongoapi
 		return false;
 	}
 
-	std::string testMongoInterface(bool printFlag, bool asserFlag){
+	std::string testMongoInterface(bool printFlag, bool asserFlag, std::string uri){
 		try {
 			//create variables used in testing
 			JsonBox::Value val1;
@@ -215,7 +215,7 @@ namespace mongoapi
 			//connect to database
 			//default parameters are database: "aqueti", URI: "127.0.0.1:27017"
 			MongoInterface mi;
-			bool connected = mi.connect("aqueti");
+			bool connected = mi.connect("aqueti", uri);
 			if(!connected){
 				std::cout << "testing halted" << std::endl;
 				returnJson["pass"] = false;
