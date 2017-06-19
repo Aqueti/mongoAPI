@@ -1,8 +1,8 @@
 /*
  * MongoInterface_test.cpp
  *
- *  Created on: Nov 13, 2014
- *      Author: cameron
+ *  Created on: June 19, 2017
+ *      Author: Nils Persson
  */
 
 #include "mongoapi.h"
@@ -12,27 +12,23 @@
  **/
 JsonBox::Value testMongoAPI( bool testSubmodules = true)
 {
-	JsonBox::Value value;
-    value["mongoInterface"] = mongoapi::testMongoInterface(true, false);
+	JsonBox::Value jsonReturn;
+	JsonBox::Value jsonValue;
+	std::string jsonString = mongoapi::testMongoInterface(true, false);
+	jsonValue.loadFromString(jsonString);
+    jsonReturn["mongoInterface"] = jsonValue;
 
     /*
     if( testSubmodules) {
        value["submodule"]["AquetiTools"] = atl::testAquetiTools();
     }
 	*/
-    return value;
+    return jsonReturn;
 }
 
-
 int main(int argc, char *argv[]) {
-	//call unit test function and store result in JsonValue
-//	std::string jsonString = mongoapi::testMongoInterface(true, false);
-//	JsonBox::Value jsonVal;
-//	jsonVal.loadFromString(jsonString);
-
+	//call test function for mongoAPI
 	JsonBox::Value result = testMongoAPI();
-
-
 
 	//if the command line option is used then do not insert 
 	bool insert = true;
