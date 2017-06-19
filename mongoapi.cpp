@@ -206,8 +206,6 @@ namespace mongoapi
 			JsonBox::Value val10;
 			JsonBox::Value result;
 			JsonBox::Value returnJson;
-			JsonBox::Value subJson1;
-			JsonBox::Value subJson2;
 			int count;
 			bool pass;
 			returnJson["pass"] = true;
@@ -395,39 +393,6 @@ namespace mongoapi
 			}
 
 			//return string version of returnJson to be inserted into the database
-			//make a testId using the 
-			int time = (size_t)aqt::getTimestamp();
-			returnJson["testId"] = time;
-
-			//get /etc/quid
-			std::string guid;
-			std::ifstream nameFileout;
-			nameFileout.open("/etc/guid");
-			if(nameFileout.good()){
-				getline(nameFileout, guid);
-			}
-			nameFileout.close();
-			returnJson["componentId"] = guid;
-
-			//get commit hash id and version
-			returnJson["commit"] = mongoapi::GIT_COMMIT_HASH;
-			returnJson["version"] = mongoapi::VERSION;
-			std::string softwareId1 = mongoapi::VERSION;
-			std::string softwareId2 = mongoapi::GIT_COMMIT_HASH;
-			std::string softwareId = softwareId1 + ":" + softwareId2;
-			returnJson["softwareId"] = softwareId;
-
-			//get timestamp
-			returnJson["date"] = aqt::getDateAsString();
-
-			//get submodules
-			subJson2["version"] = aqt::VERSION;
-			subJson2["commit"] = aqt::GIT_COMMIT_HASH;
-			subJson1["aquetitools"] = subJson2;
-
-
-			returnJson["submodules"] = subJson1;
-
 			//write to stream and return
 			std::stringstream stream;
 			returnJson.writeToStream(stream, false);

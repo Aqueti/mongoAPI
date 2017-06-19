@@ -12,11 +12,51 @@
  **/
 JsonBox::Value testMongoAPI( bool testSubmodules = true)
 {
+	//define variables used
 	JsonBox::Value jsonReturn;
+	JsonBox::Value jsonResults;
 	JsonBox::Value jsonValue;
+	JsonBox::Value subJson1;
+	JsonBox::Value subJson2;
+
+	//get type
+	jsonReturn["type"] = "unit_tests";
+
+	//get repository
+	jsonReturn["component"] = "mongoAPI";
+
+	//get timestamp
+	jsonReturn["date"] = aqt::getDateAsString();
+
+	//get /etc/quid
+	std::string guid;
+	std::ifstream nameFileout;
+	nameFileout.open("/etc/guid");
+	if(nameFileout.good()){
+		getline(nameFileout, guid);
+	}
+	nameFileout.close();
+	jsonReturn["hardwareId"] = guid;
+
+    //get commit hash id and version
+	jsonReturn["commit"] = mongoapi::GIT_COMMIT_HASH;
+	jsonReturn["version"] = mongoapi::VERSION;
+	std::string softwareId1 = mongoapi::VERSION;
+	std::string softwareId2 = mongoapi::GIT_COMMIT_HASH;
+	std::string softwareId = softwareId1 + ":" + softwareId2;
+	jsonReturn["softwareId"] = softwareId;
+
+	//get test results from all classes (units)
 	std::string jsonString = mongoapi::testMongoInterface(true, false);
 	jsonValue.loadFromString(jsonString);
-    jsonReturn["mongoInterface"] = jsonValue;
+    jsonResults["MongoInterface"] = jsonValue;
+    jsonReturn["results"] = jsonResults;
+
+	//get submodules
+	subJson2["version"] = aqt::VERSION;
+	subJson2["commit"] = aqt::GIT_COMMIT_HASH;
+	subJson1["AquetiTools"] = subJson2;
+	jsonReturn["submodules"] = subJson1;
 
     /*
     if( testSubmodules) {
@@ -29,6 +69,7 @@ JsonBox::Value testMongoAPI( bool testSubmodules = true)
 int main(int argc, char *argv[]) {
 	//call test function for mongoAPI
 	JsonBox::Value result = testMongoAPI();
+	std::cout << result << std::endl;
 
 	//if the command line option is used then do not insert 
 	bool insert = true;
