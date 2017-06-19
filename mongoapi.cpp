@@ -54,6 +54,20 @@ namespace mongoapi
 			JsonBox::Value data){
 		try {
 			mongocxx::collection coll = m_db[collection];
+ 			coll.insert_one(BSON_from_JSON(data));
+			return true;
+		} catch (const mongocxx::bulk_write_exception& e) {
+			std::cout << "insertJSON: " << e.what() << std::endl;
+		} catch (...) {
+			std::cout << "insertJSON: default exception" << std::endl;
+		}
+		return false;
+	}
+
+	bool MongoInterface::insertUnitTests(std::string collection,
+			JsonBox::Value data){
+		try {
+			mongocxx::collection coll = m_db[collection];
 			coll.insert_one(BSON_from_JSON(data));
 			return true;
 		} catch (const mongocxx::bulk_write_exception& e) {

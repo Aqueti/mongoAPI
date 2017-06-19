@@ -14,7 +14,7 @@ JsonBox::Value testMongoAPI( bool testSubmodules = true)
 {
 	//define variables used
 	JsonBox::Value jsonReturn;
-	JsonBox::Value jsonResults;
+	JsonBox::Value jsonUnits;
 	JsonBox::Value jsonValue;
 	JsonBox::Value subJson1;
 	JsonBox::Value subJson2;
@@ -49,8 +49,8 @@ JsonBox::Value testMongoAPI( bool testSubmodules = true)
 	//get test results from all classes (units)
 	std::string jsonString = mongoapi::testMongoInterface(true, false);
 	jsonValue.loadFromString(jsonString);
-    jsonResults["MongoInterface"] = jsonValue;
-    jsonReturn["results"] = jsonResults;
+    jsonUnits["MongoInterface"] = jsonValue;
+    jsonReturn["units"] = jsonUnits;
 
 	//get submodules
 	subJson2["version"] = aqt::VERSION;

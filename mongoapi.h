@@ -90,6 +90,14 @@ namespace mongoapi
 		 */
 		bool insertJSON(std::string collection, JsonBox::Value data);
 		/**
+		 * Insert submodules into specified collection as individual documents for unit testing.
+		 *
+		 * @param collection The name of the collection to insert Value into
+		 * @param data The JsonBox Value to insert
+		 * @return True on success
+		 */
+		bool insertUnitTests(std::string collection, JsonBox::Value data);
+		/**
 		 * Query the specified collection according to a specified JsonBox Value
 		 *
 		 * @param collection The name of the collection to query
