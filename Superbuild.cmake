@@ -71,7 +71,7 @@ ExternalProject_Add (
     ${cmake_common_args}
     -DDOXYGEN_DIR=${CMAKE_BINARY_DIR}/INSTALL/Doxygen
   INSTALL_DIR ${CMAKE_BINARY_DIR}/INSTALL
-  DEPENDS JsonBox MongoDB
+  DEPENDS JsonBox MongoDB AquetiTools
 )
 
 
