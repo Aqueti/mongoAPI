@@ -13,12 +13,13 @@
 JsonBox::Value testMongoAPI( bool testSubmodules = true)
 {
 	JsonBox::Value value;
-    value["mongoInterface"] = testMongoInterface();
+    value["mongoInterface"] = mongoapi::testMongoInterface(true, false);
 
+    /*
     if( testSubmodules) {
        value["submodule"]["AquetiTools"] = atl::testAquetiTools();
     }
-
+	*/
     return value;
 }
 
@@ -29,7 +30,7 @@ int main(int argc, char *argv[]) {
 //	JsonBox::Value jsonVal;
 //	jsonVal.loadFromString(jsonString);
 
-	jsonBox::Value result = testMongoAPI();
+	JsonBox::Value result = testMongoAPI();
 
 
 
@@ -47,7 +48,7 @@ int main(int argc, char *argv[]) {
 		mongoapi::MongoInterface mi;
 		bool connected = mi.connect("aqueti");
 		if(connected){
-			mi.insertJSON("unit_tests", jsonVal);
+			mi.insertJSON("unit_tests", result);
 		}
 		else{
 			std::cout << "failed to insert unit test results" << std::endl;
