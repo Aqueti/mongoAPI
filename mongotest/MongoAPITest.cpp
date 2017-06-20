@@ -85,7 +85,9 @@ int main(int argc, char *argv[]) {
 		mongoapi::MongoInterface mi;
 		bool connected = mi.connect("aqueti");
 		if(connected){
+			std::cout << "inserting...." << std::endl;
 			mi.insertJSON("unit_tests", result);
+			std::cout << mi.query("unit_tests", result) << std::endl;
 		}
 		else{
 			std::cout << "failed to insert unit test results" << std::endl;
