@@ -58,6 +58,9 @@ JsonBox::Value testMongoAPI( bool testSubmodules = true)
 	subJson1["AquetiTools"] = subJson2;
 	jsonReturn["submodules"] = subJson1;
 
+	JsonBox::Value testVal1;
+	jsonReturn["testField"] = testVal1;
+
     /*
     if( testSubmodules) {
        value["submodule"]["AquetiTools"] = atl::testAquetiTools();
@@ -84,7 +87,8 @@ int main(int argc, char *argv[]) {
 		mongoapi::MongoInterface mi;
 		bool connected = mi.connect("aqueti");
 		if(connected){
-			mi.insert("unit_tests", result);
+		//	mi.insert("unit_tests", result);
+			mi.insertUnitTests("unit_tests", result);
 		}
 		else{
 			std::cout << "failed to insert unit test results" << std::endl;

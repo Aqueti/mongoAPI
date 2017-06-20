@@ -63,10 +63,6 @@ namespace mongoapi
  					return strReturn;
  				}
  			}
- 			//std::cout << result << std::endl;
- 			// JsonBox::Value jsonReturn = this->query(collection, data);
- 			// std::cout << jsonReturn << std::endl;
- 			// std::cout << jsonReturn[(size_t)0]["_id"]["$oid"] << std::endl;
 			return 0;
 		} catch (const mongocxx::bulk_write_exception& e) {
 			std::cout << "insert: " << e.what() << std::endl;
@@ -80,7 +76,21 @@ namespace mongoapi
 			JsonBox::Value data){
 		try {
 			mongocxx::collection coll = m_db[collection];
-			coll.insert_one(BSON_from_JSON(data));
+			if(data["submodules"].getObject().size() > 0){
+
+				for(JsonBox::Object::const_iterator it = data["submodules"].getObject().begin(); 
+						it !=data["submodules"].getObject().end(); ++it){
+					std::cout << it->first << std::endl;
+					// JsonBox::Value key = it.key();
+					// JsonBox::Value value = (*it);
+					// cout << "Key: " << key.toStyledString();
+					// cout << "Value: " << value.toStyledString();
+				}
+			}
+
+
+
+
 			return true;
 		} catch (const mongocxx::bulk_write_exception& e) {
 			std::cout << "insert: " << e.what() << std::endl;
