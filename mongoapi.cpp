@@ -50,7 +50,7 @@ namespace mongoapi
 		return j;
 	}
 
-	std::string MongoInterface::insertJSON(std::string collection,
+	std::string MongoInterface::insert(std::string collection,
 			JsonBox::Value data){
 		try {
 			mongocxx::collection coll = m_db[collection];
@@ -69,9 +69,9 @@ namespace mongoapi
  			// std::cout << jsonReturn[(size_t)0]["_id"]["$oid"] << std::endl;
 			return 0;
 		} catch (const mongocxx::bulk_write_exception& e) {
-			std::cout << "insertJSON: " << e.what() << std::endl;
+			std::cout << "insert: " << e.what() << std::endl;
 		} catch (...) {
-			std::cout << "insertJSON: default exception" << std::endl;
+			std::cout << "insert: default exception" << std::endl;
 		}
 		return 0;
 	}
@@ -83,9 +83,9 @@ namespace mongoapi
 			coll.insert_one(BSON_from_JSON(data));
 			return true;
 		} catch (const mongocxx::bulk_write_exception& e) {
-			std::cout << "insertJSON: " << e.what() << std::endl;
+			std::cout << "insert: " << e.what() << std::endl;
 		} catch (...) {
-			std::cout << "insertJSON: default exception" << std::endl;
+			std::cout << "insert: default exception" << std::endl;
 		}
 		return false;
 	}
@@ -276,10 +276,10 @@ namespace mongoapi
 
 				//test insert function of database (num and values)
 				//will create test collection if it does not already exist
-				mi.insertJSON("test", val1);
-				mi.insertJSON("test", val2);
-				mi.insertJSON("test", val3);
-				mi.insertJSON("test", val4);
+				mi.insert("test", val1);
+				mi.insert("test", val2);
+				mi.insert("test", val3);
+				mi.insert("test", val4);
 
 				count = mi.count("test");
 				if(count != 4){

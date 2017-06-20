@@ -90,7 +90,7 @@ namespace mongoapi
 		 * @param data The JsonBox Value to insert
 		 * @return id of inserted value or 0 if error encountered
 		 */
-		std::string insertJSON(std::string collection, JsonBox::Value data);
+		std::string insert(std::string collection, JsonBox::Value data);
 		/**
 		 * Insert submodules into specified collection as individual documents for unit testing.
 		 *
