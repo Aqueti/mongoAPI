@@ -50,7 +50,7 @@ namespace mongoapi
 		return j;
 	}
 
-	bool MongoInterface::insertJSON(std::string collection,
+	std::string MongoInterface::insertJSON(std::string collection,
 			JsonBox::Value data){
 		try {
 			mongocxx::collection coll = m_db[collection];
@@ -58,26 +58,22 @@ namespace mongoapi
  			if(result){
  				bsoncxx::types::value id = result->inserted_id();
  				if(id.type() == bsoncxx::type::k_oid){
- 					
+ 					bsoncxx::oid oid = id.get_oid().value;
+ 					std::string strReturn = oid.to_string();
+ 					return strReturn;
  				}
- 				// JsonBox::Value jsonId = JSON_from_BSON(id.view());
- 				// if(id.type() == 0x07){
- 				// 	std::cout << "good good" << std::endl;
- 				// std::cout << id << std::endl;
- 				// }
-
  			}
  			//std::cout << result << std::endl;
  			// JsonBox::Value jsonReturn = this->query(collection, data);
  			// std::cout << jsonReturn << std::endl;
  			// std::cout << jsonReturn[(size_t)0]["_id"]["$oid"] << std::endl;
-			return true;
+			return 0;
 		} catch (const mongocxx::bulk_write_exception& e) {
 			std::cout << "insertJSON: " << e.what() << std::endl;
 		} catch (...) {
 			std::cout << "insertJSON: default exception" << std::endl;
 		}
-		return false;
+		return 0;
 	}
 
 	bool MongoInterface::insertUnitTests(std::string collection,

@@ -20,6 +20,7 @@
 #include <vector>
 #include <bsoncxx/json.hpp>
 #include <bsoncxx/types.hpp>
+#include <bsoncxx/oid.hpp>
 #include <mongocxx/client.hpp>
 #include <mongocxx/instance.hpp>
 #include <mongocxx/stdx.hpp>
@@ -87,9 +88,9 @@ namespace mongoapi
 		 *
 		 * @param collection The name of the collection to insert Value into
 		 * @param data The JsonBox Value to insert
-		 * @return True on success
+		 * @return id of inserted value or 0 if error encountered
 		 */
-		bool insertJSON(std::string collection, JsonBox::Value data);
+		std::string insertJSON(std::string collection, JsonBox::Value data);
 		/**
 		 * Insert submodules into specified collection as individual documents for unit testing.
 		 *

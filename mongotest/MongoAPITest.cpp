@@ -69,7 +69,6 @@ JsonBox::Value testMongoAPI( bool testSubmodules = true)
 int main(int argc, char *argv[]) {
 	//call test function for mongoAPI
 	JsonBox::Value result = testMongoAPI();
-	std::cout << result << std::endl;
 
 	//if the command line option is used then do not insert 
 	bool insert = true;
@@ -85,9 +84,7 @@ int main(int argc, char *argv[]) {
 		mongoapi::MongoInterface mi;
 		bool connected = mi.connect("aqueti");
 		if(connected){
-			std::cout << "inserting...." << std::endl;
 			mi.insertJSON("unit_tests", result);
-			std::cout << mi.query("unit_tests", result) << std::endl;
 		}
 		else{
 			std::cout << "failed to insert unit test results" << std::endl;
