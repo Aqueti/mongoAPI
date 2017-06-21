@@ -6,7 +6,10 @@ PROJECT(mongoapi VERSION "0.1.0.0")
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+#CCMake options
 option(USE_SUPERBUILD "Use superbuild to pull in and build dependencies." ON)
+option(MAKE_TESTS "Build test libraries and excutables." ON)
+
 set(DOXYGEN_DIR CACHE STRING "${CMAKE_BINARY_DIR}/Doxygen")
 
 # Superbuild rules
@@ -90,21 +93,17 @@ find_package(BSONCxx REQUIRED)
 find_package(MongoC REQUIRED)
 find_package(MongoCxx REQUIRED)
 
-
-message("BSON: ${BSON-1.0_INCLUDE_DIRS}")
+#Specify where header files are located
 INCLUDE_DIRECTORIES( ${MONGOC_INCLUDE_DIR} ${MONGOCXX_INCLUDE_DIRS} ${BSON-1.0_INCLUDE_DIRS} ${BSONCXX_INCLUDE_DIRS})
-
 include_directories( ${CMAKE_INSTALL_PREFIX}/INSTALL/include/bsoncxx/v_noabi )
 
+#specify where to look for libraries
 link_directories( ${CMAKE_INSTALL_PREFIX}/lib )
 
-MESSAGE(STATUS "LIBRARY STATUS:")
-#MESSAGE(STATUS "Threads: " ${Threads_INCLUDE_DIR})
-MESSAGE(STATUS "JsonBox: " ${JSONBOX_INCLUDE_DIRS})
-#MESSAGE(STATUS "MongoDB: " ${MongoDB_INCLUDE_DIR})
-
 #create hte mongoapi library
-add_library(mongoapi STATIC mongoapi.cpp )
+add_library(mongoapi STATIC
+    mongoapi.cpp 
+)
 TARGET_LINK_LIBRARIES(mongoapi 
    ${JSONBOX_LIBRARY_RELEASE} 
    ${MONGOC_LIBRARY} 
@@ -115,21 +114,27 @@ TARGET_LINK_LIBRARIES(mongoapi
 )
 list(APPEND TARGET_LIST mongoapi )
 
-#Add MongoAPI test as an executavble
-add_executable( MongoAPITest 
-   mongotest/MongoAPITest.cpp 
-)
-TARGET_LINK_LIBRARIES(MongoAPITest 
-   mongoapi 
-#   ${JSONBOX_LIBRARY_RELEASE} 
-#   ${MONGOC_LIBRARY} 
-#   ${MONGOCXX_LIBRARY} 
-#   ${BSONCXX_LIBARY} 
-#   ${CMAKE_THREAD_LIBS_INIT}
-)
+if( MAKE_TESTS )
+   #Make a dedicated test library
+   add_library( mongoapi_test STATIC
+       test/MongoAPITest.cpp
+   )
+   target_link_libraries( mongoapi_test
+      mongoapi
+   )
+   list(APPEND TARGET_LIST mongoapi )
+   
+   #Add MongoAPI test as an executavble
+   add_executable( testMongoAPI
+      test/testMongoAPI.cpp 
+   )
+   TARGET_LINK_LIBRARIES(testMongoAPI
+      mongoapi_test
+   )
+   list(APPEND TARGET_LIST testMongoAPI )
+endif()
 
-list(APPEND TARGET_LIST MongoAPITest )
-
+# Doxygen support
 # add a target to generate API documentation with Doxygen
 find_package(Doxygen)
 if(DOXYGEN_FOUND)

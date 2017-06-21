@@ -186,15 +186,14 @@ namespace mongoapi
 	};
 
 	/**
-		 * Perform unit tests for the mongoapi class
-		 *
-		 * @param uri The string representation of the ip and port in format "IP:PORT".
-		 * @param printFlag The boolean, true if printed messages to console desired
-		 * @param assertFlag The boolean, true if quit desired upon error
-		 * @return True on success
-		 */
+	 * Perform unit tests for the MongoInterface class
+	 *
+	 * @param uri The string representation of the ip and port in format "IP:PORT"
+	 * @param printFlag The boolean, true if printed messages to console desired
+	 * @param assertFlag The boolean, true if quit desired upon error
+	 * @return True on success
+	 */
 	std::string testMongoInterface(bool printFlag, bool assertFlag, std::string uri = "127.0.0.1:27017");
-
 }
 
 #endif /* MONGOINTERFACE_H_ */

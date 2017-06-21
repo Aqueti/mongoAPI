@@ -5,13 +5,12 @@
  *      Author: Nils Persson
  */
 
-#include "mongoapi.h"
+#include "MongoAPITest.h"
 
 /**
  * \brief Run tests on all components in the mongoapi library
  **/
-JsonBox::Value testMongoAPI( bool testSubmodules = true)
-{
+JsonBox::Value testMongoAPI( bool testSubmodules) {
 	//define variables used
 	JsonBox::Value jsonReturn;
 	JsonBox::Value jsonUnits;
@@ -55,37 +54,8 @@ JsonBox::Value testMongoAPI( bool testSubmodules = true)
        value["submodules"]["AquetiTools"] = atl::testAquetiTools();
     }
 	*/
-
 	//get pass
     jsonReturn["pass"] = false;
 
     return jsonReturn;
-}
-
-int main(int argc, char *argv[]) {
-	//call test function for mongoAPI
-	JsonBox::Value result = testMongoAPI(false);
-
-	//if the command line option is used then do not insert 
-	bool insert = true;
-	int i;
-	for(i = 0; i < argc; i++){
-		if(strcmp(argv[i], "-n") == 0){
-			insert = false;
-		}
-	}
-
-	//connect to database and insert JsonValue if "-n" was not used
-	if(insert){
-		mongoapi::MongoInterface mi;
-		bool connected = mi.connect("aqueti");
-		if(connected){
-		//	mi.insert("unit_tests", result);
-			mi.insertUnitTests("unit_tests", result);
-		}
-		else{
-			std::cout << "failed to insert unit test results" << std::endl;
-			return 0;
-		}
-	}
 }
