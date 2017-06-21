@@ -51,7 +51,6 @@ ExternalProject_Add(
   DEPENDS MongoC libbson
 )
 
-message("AquetToolsDir: ${CMAKE_BINARY_DIR}/INSTALL")
 ExternalProject_Add( 
     AquetiTools
     SOURCE_DIR ${CMAKE_SOURCE_DIR}/AquetiTools
