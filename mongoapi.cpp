@@ -63,7 +63,6 @@ namespace mongoapi
  					return strReturn;
  				}
  			}
-			return 0;
 		} catch (const mongocxx::bulk_write_exception& e) {
 			std::cout << "insert: " << e.what() << std::endl;
 		} catch (...) {
@@ -72,32 +71,29 @@ namespace mongoapi
 		return 0;
 	}
 
-	bool MongoInterface::insertUnitTests(std::string collection,
+	std::string MongoInterface::insertUnitTests(std::string collection,
 			JsonBox::Value data){
 		try {
 			mongocxx::collection coll = m_db[collection];
+			//std::cout << data << std::endl;
 			if(data["submodules"].getObject().size() > 0){
 
 				for(JsonBox::Object::const_iterator it = data["submodules"].getObject().begin(); 
 						it !=data["submodules"].getObject().end(); ++it){
-					std::cout << it->first << std::endl;
-					// JsonBox::Value key = it.key();
-					// JsonBox::Value value = (*it);
-					// cout << "Key: " << key.toStyledString();
-					// cout << "Value: " << value.toStyledString();
+					std::string str = this->insertUnitTests(collection, data["submodules"][it->first]);
+					JsonBox::Value json;
+					json["_id"] = str;
+					json["pass"] = data["submodules"][it->first]["pass"];
+					data["submodules"][it->first] = json;
 				}
 			}
-
-
-
-
-			return true;
+			return this->insert(collection, data);
 		} catch (const mongocxx::bulk_write_exception& e) {
 			std::cout << "insert: " << e.what() << std::endl;
 		} catch (...) {
 			std::cout << "insert: default exception" << std::endl;
 		}
-		return false;
+		return 0;
 	}
 
 	JsonBox::Value MongoInterface::query(std::string collection,

@@ -16,8 +16,6 @@ JsonBox::Value testMongoAPI( bool testSubmodules = true)
 	JsonBox::Value jsonReturn;
 	JsonBox::Value jsonUnits;
 	JsonBox::Value jsonValue;
-	JsonBox::Value subJson1;
-	JsonBox::Value subJson2;
 
 	//get type
 	jsonReturn["type"] = "unit_tests";
@@ -52,26 +50,21 @@ JsonBox::Value testMongoAPI( bool testSubmodules = true)
     jsonUnits["MongoInterface"] = jsonValue;
     jsonReturn["units"] = jsonUnits;
 
-	//get submodules
-	subJson2["version"] = aqt::VERSION;
-	subJson2["commit"] = aqt::GIT_COMMIT_HASH;
-	subJson1["AquetiTools"] = subJson2;
-	jsonReturn["submodules"] = subJson1;
-
-	JsonBox::Value testVal1;
-	jsonReturn["testField"] = testVal1;
-
     /*
     if( testSubmodules) {
-       value["submodule"]["AquetiTools"] = atl::testAquetiTools();
+       value["submodules"]["AquetiTools"] = atl::testAquetiTools();
     }
 	*/
+
+	//get pass
+    jsonReturn["pass"] = false;
+
     return jsonReturn;
 }
 
 int main(int argc, char *argv[]) {
 	//call test function for mongoAPI
-	JsonBox::Value result = testMongoAPI();
+	JsonBox::Value result = testMongoAPI(false);
 
 	//if the command line option is used then do not insert 
 	bool insert = true;
@@ -95,5 +88,4 @@ int main(int argc, char *argv[]) {
 			return 0;
 		}
 	}
-
 }

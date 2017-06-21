@@ -88,7 +88,7 @@ namespace mongoapi
 		 *
 		 * @param collection The name of the collection to insert Value into
 		 * @param data The JsonBox Value to insert
-		 * @return id of inserted value or 0 if error encountered
+		 * @return Id of inserted value or 0 if error encountered
 		 */
 		std::string insert(std::string collection, JsonBox::Value data);
 		/**
@@ -96,9 +96,9 @@ namespace mongoapi
 		 *
 		 * @param collection The name of the collection to insert Value into
 		 * @param data The JsonBox Value to insert
-		 * @return True on success
+		 * @return Id of inserted value or 0 if error encountered
 		 */
-		bool insertUnitTests(std::string collection, JsonBox::Value data);
+		std::string insertUnitTests(std::string collection, JsonBox::Value data);
 		/**
 		 * Query the specified collection according to a specified JsonBox Value
 		 *
