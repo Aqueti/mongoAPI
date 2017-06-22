@@ -44,8 +44,7 @@ JsonBox::Value testMongoAPI( bool testSubmodules) {
 	jsonReturn["softwareId"] = softwareId;
 
 	//get test results from all classes (units)
-	std::string jsonString = mongoapi::testMongoInterface(true, false);
-	jsonValue.loadFromString(jsonString);
+	jsonValue = mongoapi::testMongoInterface(true, false);
     jsonUnits["MongoInterface"] = jsonValue;
     jsonReturn["units"] = jsonUnits;
 

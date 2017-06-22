@@ -193,7 +193,7 @@ namespace mongoapi
 	 * @param assertFlag The boolean, true if quit desired upon error
 	 * @return True on success
 	 */
-	std::string testMongoInterface(bool printFlag, bool assertFlag, std::string uri = "127.0.0.1:27017");
+	JsonBox::Value testMongoInterface(bool printFlag, bool assertFlag, std::string uri = "127.0.0.1:27017");
 }
 
 #endif /* MONGOINTERFACE_H_ */

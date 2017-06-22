@@ -223,7 +223,7 @@ namespace mongoapi
 		return false;
 	}
 
-	std::string testMongoInterface(bool printFlag, bool asserFlag, std::string uri){
+	JsonBox::Value testMongoInterface(bool printFlag, bool asserFlag, std::string uri){
 		try {
 			//create variables used in testing
 			JsonBox::Value val1;
@@ -424,27 +424,24 @@ namespace mongoapi
 				mi.dropCollection("test");
 			}
 
-			//return string version of returnJson to be inserted into the database
-			//write to stream and return
-			std::stringstream stream;
-			returnJson.writeToStream(stream, false);
-			return stream.str();
+			//return the Json value
+			return returnJson;
 
 		} catch (const std::exception& ex) {
 			std::cout << ex.what() << std::endl;
 			JsonBox::Value returnJson;
 			returnJson["pass"] = "false";
-			return returnJson.getString();
+			return returnJson;
 		} catch (const std::string& ex) {
 			std::cout << ex << std::endl;
 			JsonBox::Value returnJson;
 			returnJson["pass"] = "false";
-			return returnJson.getString();
+			return returnJson;
 		} catch (...) {
 			std::cout << "default exception";
 			JsonBox::Value returnJson;
 			returnJson["pass"] = "false";
-			return returnJson.getString();
+			return returnJson;
 		}
 	}	
 }
