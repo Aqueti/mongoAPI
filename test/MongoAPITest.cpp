@@ -15,6 +15,7 @@ JsonBox::Value testMongoAPI( bool testSubmodules) {
 	JsonBox::Value jsonReturn;
 	JsonBox::Value jsonUnits;
 	JsonBox::Value jsonValue;
+	bool pass = true;
 
 	//get type
 	jsonReturn["type"] = "unit_tests";
@@ -23,7 +24,7 @@ JsonBox::Value testMongoAPI( bool testSubmodules) {
 	jsonReturn["component"] = "mongoAPI";
 
 	//get timestamp
-	jsonReturn["date"] = aqt::getDateAsString();
+	jsonReturn["date"] = atl::getDateAsString();
 
 	//get /etc/quid
 	std::string guid;
@@ -47,6 +48,7 @@ JsonBox::Value testMongoAPI( bool testSubmodules) {
 	jsonValue = mongoapi::testMongoInterface(true, false);
     jsonUnits["MongoInterface"] = jsonValue;
     jsonReturn["units"] = jsonUnits;
+    pass = pass && jsonValue["pass"].getBoolean();
 
     /*
     if( testSubmodules) {
@@ -54,7 +56,7 @@ JsonBox::Value testMongoAPI( bool testSubmodules) {
     }
 	*/
 	//get pass
-    jsonReturn["pass"] = false;
+    jsonReturn["pass"] = pass; //logical and with submodules once implemented
 
     return jsonReturn;
 }
