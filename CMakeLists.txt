@@ -122,7 +122,7 @@ if( MAKE_TESTS )
    target_link_libraries( mongoapi_test
       mongoapi
    )
-   list(APPEND TARGET_LIST mongoapi )
+   list(APPEND TARGET_LIST mongoapi_test )
    
    #Add MongoAPI test as an executavble
    add_executable( testMongoAPI

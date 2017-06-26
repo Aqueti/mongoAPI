@@ -64,20 +64,20 @@ JsonBox::Value testMongoAPI(std::vector<std::string> unitList, bool testSubmodul
 	}
 
     //get test results from all submodules
-    if(testSubmodules) {
-    	std::cout << "Testing AquetiTools..." << std::endl;
-        jsonValue = atl::testAquetiTools();
-        jsonSub["AquetiTools"] = jsonValue;
-        jsonReturn["submodules"] = jsonUnits;
-        if(jsonValue["pass"].getBoolean()){
-	        std::cout << "AquetiTools passed successfully!" << std::endl;
-	        pass = pass && true;
-	    }
-	    else{
-	        std::cout << "AquetiTools failed to pass!" << std::endl;
-	        pass = pass && false;
-	    }
-    }
+    // if(testSubmodules) {
+    // 	std::cout << "Testing AquetiTools..." << std::endl;
+    //     jsonValue = testAquetiTools();
+    //     jsonSub["AquetiTools"] = jsonValue;
+    //     jsonReturn["submodules"] = jsonUnits;
+    //     if(jsonValue["pass"].getBoolean()){
+	   //      std::cout << "AquetiTools passed successfully!" << std::endl;
+	   //      pass = pass && true;
+	   //  }
+	   //  else{
+	   //      std::cout << "AquetiTools failed to pass!" << std::endl;
+	   //      pass = pass && false;
+	   //  }
+    // }
 	
 	//get pass
     jsonReturn["pass"] = pass;
