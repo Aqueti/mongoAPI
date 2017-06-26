@@ -7,9 +7,12 @@
 
 #include "MongoAPITest.h"
 
+std::vector<std::string> unitList{"MongoInterface"};
+
 int main(int argc, char *argv[]) {
 
 	bool testSubmodules = true;
+	bool testAll = true;
 	bool insert = true;
 
 	//if the command line option is used then do not insert 
@@ -17,19 +20,26 @@ int main(int argc, char *argv[]) {
 	for(i = 0; i < argc; i++){
 		if(strcmp(argv[i], "-n") == 0){
 			insert = false;
-		} else if(strcmp(argv[i], "-s") == 0){
+		} else if(!strcmp(argv[i], "-u")) {
+            if (testAll) {
+                unitList.clear();
+                testAll = false;
+            }
+            i++;
+            unitList.push_back( argv[i]);
+        } else if(strcmp(argv[i], "-s") == 0){
 			testSubmodules = false;
 		}
 	}
 
 	//run tests
 	std::cout << "Testing mongoAPI..." << std::endl;
-	JsonBox::Value result = testMongoAPI(testSubmodules);
+	JsonBox::Value result = testMongoAPI(unitList, testSubmodules);
 	if(result["pass"] == true){
-		std::cout << "All tests passed successfully!" << std::endl;
+		std::cout << "mongoAPI passed successfully!" << std::endl;
 	}
 	else{
-		std::cout << "One or more tests failed to pass!" << std::endl;
+		std::cout << "mongoAPI failed to pass!" << std::endl;
 	}
 
 	//connect to database and insert JsonValue if "-n" was not used

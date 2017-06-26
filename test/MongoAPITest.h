@@ -7,4 +7,4 @@
  * @param testSubmodules The boolean, if true run unit tests on submodules as well.
  * @return True on success
  */
-JsonBox::Value testMongoAPI( bool testSubmodules = true);
+JsonBox::Value testMongoAPI(std::vector<std::string> unitList = {"MongoInterface"}, bool testSubmodules = true);

@@ -10,10 +10,11 @@
 /**
  * \brief Run tests on all components in the mongoapi library
  **/
-JsonBox::Value testMongoAPI( bool testSubmodules) {
+JsonBox::Value testMongoAPI(std::vector<std::string> unitList, bool testSubmodules) {
 	//define variables used
 	JsonBox::Value jsonReturn;
 	JsonBox::Value jsonUnits;
+	JsonBox::Value jsonSub;
 	JsonBox::Value jsonValue;
 	bool pass = true;
 
@@ -45,18 +46,41 @@ JsonBox::Value testMongoAPI( bool testSubmodules) {
 	jsonReturn["softwareId"] = softwareId;
 
 	//get test results from all classes (units)
-	jsonValue = mongoapi::testMongoInterface(true, false);
-    jsonUnits["MongoInterface"] = jsonValue;
-    jsonReturn["units"] = jsonUnits;
-    pass = pass && jsonValue["pass"].getBoolean();
+	for(std::vector<std::string>::iterator it = unitList.begin(); it != unitList.end(); ++it ) {
+		if( !it->compare("MongoInterface")) {
+			std::cout << "Testing MongoInterface..." << std::endl;
+			jsonValue = mongoapi::testMongoInterface(true, false);
+		    jsonUnits["MongoInterface"] = jsonValue;
+		    jsonReturn["units"] = jsonUnits;
+		    if(jsonValue["pass"].getBoolean()){
+		        std::cout << "MongoInterface passed successfully!" << std::endl;
+		        pass = pass && true;
+		    }
+		    else{
+		        std::cout << "MongoInterface failed to pass!" << std::endl;
+		        pass = pass && false;
+		    }
+		}
+	}
 
-    /*
-    if( testSubmodules) {
-       value["submodules"]["AquetiTools"] = atl::testAquetiTools();
+    //get test results from all submodules
+    if(testSubmodules) {
+    	std::cout << "Testing AquetiTools..." << std::endl;
+        jsonValue = atl::testAquetiTools();
+        jsonSub["AquetiTools"] = jsonValue;
+        jsonReturn["submodules"] = jsonUnits;
+        if(jsonValue["pass"].getBoolean()){
+	        std::cout << "AquetiTools passed successfully!" << std::endl;
+	        pass = pass && true;
+	    }
+	    else{
+	        std::cout << "AquetiTools failed to pass!" << std::endl;
+	        pass = pass && false;
+	    }
     }
-	*/
+	
 	//get pass
-    jsonReturn["pass"] = pass; //logical and with submodules once implemented
-
+    jsonReturn["pass"] = pass;
+    std::cout << jsonReturn << std::endl;
     return jsonReturn;
 }
