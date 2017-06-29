@@ -9,18 +9,27 @@ set(cmake_common_args
     -DUSE_SUPERBUILD:BOOL=FALSE
 )
 
-ExternalProject_Add(
-  JsonBox
-  GIT_REPOSITORY "https://github.com/anhero/JsonBox.git"
-  GIT_TAG "0.6.2"
-  CMAKE_ARGS
-    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-    -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-    -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-    -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
-    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_BINARY_DIR}/INSTALL
-  INSTALL_DIR ${CMAKE_BINARY_DIR}/INSTALL
-)
+# if MASTER is true, project will always be built. Else, only built if dependency
+macro(add_external_project MYNAME LOCATION MASTER DEPENDS ARGS)
+    if(NOT ${MASTER})
+        set(EXCLUDE ON)
+    else()
+        set(EXCLUDE OFF)
+    endif(NOT ${MASTER})
+    ExternalProject_Add( ${MYNAME}
+        SOURCE_DIR ${CMAKE_SOURCE_DIR}/${LOCATION}
+        BUILD_ALWAYS 1
+        EXCLUDE_FROM_ALL ${EXCLUDE}
+        DOWNLOAD_COMMAND git submodule update --init ${CMAKE_SOURCE_DIR}/${LOCATION}
+        DOWNLOAD_DIR ${CMAKE_SOURCE_DIR}
+        CMAKE_ARGS ${cmake_common_args} ${ARGS}
+        INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+        DEPENDS ${DEPENDS}
+    )
+endmacro(add_external_project)
+
+add_external_project(JsonBox dependencies/JsonBox OFF "" "")
+add_external_project(libbson dependencies/libbson OFF "" "")
 
 ExternalProject_Add(
   libbson
