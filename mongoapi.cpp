@@ -50,18 +50,50 @@ namespace mongoapi
 		return j;
 	}
 
-	bool MongoInterface::insertJSON(std::string collection,
+	std::string MongoInterface::insert(std::string collection,
 			JsonBox::Value data){
 		try {
 			mongocxx::collection coll = m_db[collection];
-			coll.insert_one(BSON_from_JSON(data));
-			return true;
+ 			mongocxx::stdx::optional<mongocxx::result::insert_one> result = coll.insert_one(BSON_from_JSON(data));
+ 			if(result){
+ 				bsoncxx::types::value id = result->inserted_id();
+ 				if(id.type() == bsoncxx::type::k_oid){
+ 					bsoncxx::oid oid = id.get_oid().value;
+ 					std::string strReturn = oid.to_string();
+ 					return strReturn;
+ 				}
+ 			}
 		} catch (const mongocxx::bulk_write_exception& e) {
-			std::cout << "insertJSON: " << e.what() << std::endl;
+			std::cout << "insert: " << e.what() << std::endl;
 		} catch (...) {
-			std::cout << "insertJSON: default exception" << std::endl;
+			std::cout << "insert: default exception" << std::endl;
 		}
-		return false;
+		return 0;
+	}
+
+	std::string MongoInterface::insertUnitTests(std::string collection,
+			JsonBox::Value data){
+		try {
+			mongocxx::collection coll = m_db[collection];
+			//std::cout << data << std::endl;
+			if(data["submodules"].getObject().size() > 0){
+
+				for(JsonBox::Object::const_iterator it = data["submodules"].getObject().begin(); 
+						it !=data["submodules"].getObject().end(); ++it){
+					std::string str = this->insertUnitTests(collection, data["submodules"][it->first]);
+					JsonBox::Value json;
+					json["_id"] = str;
+					json["pass"] = data["submodules"][it->first]["pass"];
+					data["submodules"][it->first] = json;
+				}
+			}
+			return this->insert(collection, data);
+		} catch (const mongocxx::bulk_write_exception& e) {
+			std::cout << "insert: " << e.what() << std::endl;
+		} catch (...) {
+			std::cout << "insert: default exception" << std::endl;
+		}
+		return 0;
 	}
 
 	JsonBox::Value MongoInterface::query(std::string collection,
@@ -191,7 +223,7 @@ namespace mongoapi
 		return false;
 	}
 
-	std::string testMongoInterface(bool printFlag, bool asserFlag, std::string uri){
+	JsonBox::Value testMongoInterface(bool printFlag, bool asserFlag, std::string uri){
 		try {
 			//create variables used in testing
 			JsonBox::Value val1;
@@ -206,8 +238,6 @@ namespace mongoapi
 			JsonBox::Value val10;
 			JsonBox::Value result;
 			JsonBox::Value returnJson;
-			JsonBox::Value subJson1;
-			JsonBox::Value subJson2;
 			int count;
 			bool pass;
 			returnJson["pass"] = true;
@@ -252,10 +282,10 @@ namespace mongoapi
 
 				//test insert function of database (num and values)
 				//will create test collection if it does not already exist
-				mi.insertJSON("test", val1);
-				mi.insertJSON("test", val2);
-				mi.insertJSON("test", val3);
-				mi.insertJSON("test", val4);
+				mi.insert("test", val1);
+				mi.insert("test", val2);
+				mi.insert("test", val3);
+				mi.insert("test", val4);
 
 				count = mi.count("test");
 				if(count != 4){
@@ -394,60 +424,24 @@ namespace mongoapi
 				mi.dropCollection("test");
 			}
 
-			//return string version of returnJson to be inserted into the database
-			//make a testId using the 
-			int time = (size_t)aqt::getTimestamp();
-			returnJson["testId"] = time;
-
-			//get /etc/quid
-			std::string guid;
-			std::ifstream nameFileout;
-			nameFileout.open("/etc/guid");
-			if(nameFileout.good()){
-				getline(nameFileout, guid);
-			}
-			nameFileout.close();
-			returnJson["componentId"] = guid;
-
-			//get commit hash id and version
-			returnJson["commit"] = mongoapi::GIT_COMMIT_HASH;
-			returnJson["version"] = mongoapi::VERSION;
-			std::string softwareId1 = mongoapi::VERSION;
-			std::string softwareId2 = mongoapi::GIT_COMMIT_HASH;
-			std::string softwareId = softwareId1 + ":" + softwareId2;
-			returnJson["softwareId"] = softwareId;
-
-			//get timestamp
-			returnJson["date"] = aqt::getDateAsString();
-
-			//get submodules
-			subJson2["version"] = aqt::VERSION;
-			subJson2["commit"] = aqt::GIT_COMMIT_HASH;
-			subJson1["aquetitools"] = subJson2;
-
-
-			returnJson["submodules"] = subJson1;
-
-			//write to stream and return
-			std::stringstream stream;
-			returnJson.writeToStream(stream, false);
-			return stream.str();
+			//return the Json value
+			return returnJson;
 
 		} catch (const std::exception& ex) {
 			std::cout << ex.what() << std::endl;
 			JsonBox::Value returnJson;
 			returnJson["pass"] = "false";
-			return returnJson.getString();
+			return returnJson;
 		} catch (const std::string& ex) {
 			std::cout << ex << std::endl;
 			JsonBox::Value returnJson;
 			returnJson["pass"] = "false";
-			return returnJson.getString();
+			return returnJson;
 		} catch (...) {
 			std::cout << "default exception";
 			JsonBox::Value returnJson;
 			returnJson["pass"] = "false";
-			return returnJson.getString();
+			return returnJson;
 		}
 	}	
 }

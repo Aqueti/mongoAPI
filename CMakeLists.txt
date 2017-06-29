@@ -4,6 +4,8 @@ cmake_policy(SET CMP0048 NEW)
 PROJECT(mongoapi VERSION "0.1.0.0")
 
 option(USE_SUPERBUILD "Use superbuild to pull in and build dependencies." ON)
+option(MAKE_TESTS "Build test libraries and excutables." ON)
+
 set(DOXYGEN_DIR CACHE STRING "${CMAKE_BINARY_DIR}/Doxygen")
 
 #Hack? but We can't find bson.h
@@ -93,8 +95,6 @@ find_package(BSONCxx REQUIRED)
 find_package(MongoC REQUIRED)
 find_package(MongoCxx REQUIRED)
 
-message("dirs: ${BSON_INCLUDE_DIRS}")
-
 include_directories(
     ${MONGOC_INCLUDE_DIR}
     ${MONGOCXX_INCLUDE_DIRS}
@@ -104,7 +104,9 @@ include_directories(
 )
 
 #create hte mongoapi library
-add_library(mongoapi STATIC mongoapi.cpp )
+add_library(mongoapi STATIC
+    mongoapi.cpp 
+)
 TARGET_LINK_LIBRARIES(mongoapi 
     libaquetitools.a
     JsonBox
@@ -116,17 +118,27 @@ TARGET_LINK_LIBRARIES(mongoapi
 )
 list(APPEND TARGET_LIST mongoapi)
 
-#Add MongoAPI test as an executavble
-if(MAKE_TESTS)
-    add_executable( MongoAPITest 
-        mongotest/MongoAPITest.cpp 
-    )
-    TARGET_LINK_LIBRARIES(MongoAPITest 
-        mongoapi 
-    )
-    list(APPEND TARGET_LIST MongoAPITest )
-endif(MAKE_TESTS)
+if( MAKE_TESTS )
+   #Make a dedicated test library
+   add_library( mongoapi_test STATIC
+       test/MongoAPITest.cpp
+   )
+   target_link_libraries( mongoapi_test
+      mongoapi
+   )
+   list(APPEND TARGET_LIST mongoapi_test )
+   
+   #Add MongoAPI test as an executavble
+   add_executable( testMongoAPI
+      test/testMongoAPI.cpp 
+   )
+   TARGET_LINK_LIBRARIES(testMongoAPI
+      mongoapi_test
+   )
+   list(APPEND TARGET_LIST testMongoAPI )
+endif()
 
+# Doxygen support
 # add a target to generate API documentation with Doxygen
 find_package(Doxygen)
 if(DOXYGEN_FOUND)

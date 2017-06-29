@@ -19,6 +19,8 @@
 #include "JsonBox.h"
 #include <vector>
 #include <bsoncxx/json.hpp>
+#include <bsoncxx/types.hpp>
+#include <bsoncxx/oid.hpp>
 #include <mongocxx/client.hpp>
 #include <mongocxx/instance.hpp>
 #include <mongocxx/stdx.hpp>
@@ -86,9 +88,17 @@ namespace mongoapi
 		 *
 		 * @param collection The name of the collection to insert Value into
 		 * @param data The JsonBox Value to insert
-		 * @return True on success
+		 * @return Id of inserted value or 0 if error encountered
 		 */
-		bool insertJSON(std::string collection, JsonBox::Value data);
+		std::string insert(std::string collection, JsonBox::Value data);
+		/**
+		 * Insert submodules into specified collection as individual documents for unit testing.
+		 *
+		 * @param collection The name of the collection to insert Value into
+		 * @param data The JsonBox Value to insert
+		 * @return Id of inserted value or 0 if error encountered
+		 */
+		std::string insertUnitTests(std::string collection, JsonBox::Value data);
 		/**
 		 * Query the specified collection according to a specified JsonBox Value
 		 *
@@ -176,15 +186,14 @@ namespace mongoapi
 	};
 
 	/**
-		 * Perform unit tests for the mongoapi class
-		 *
-		 * @param uri The string representation of the ip and port in format "IP:PORT".
-		 * @param printFlag The boolean, true if printed messages to console desired
-		 * @param assertFlag The boolean, true if quit desired upon error
-		 * @return True on success
-		 */
-	std::string testMongoInterface(bool printFlag, bool assertFlag, std::string uri = "127.0.0.1:27017");
-
+	 * Perform unit tests for the MongoInterface class
+	 *
+	 * @param uri The string representation of the ip and port in format "IP:PORT"
+	 * @param printFlag The boolean, true if printed messages to console desired
+	 * @param assertFlag The boolean, true if quit desired upon error
+	 * @return True on success
+	 */
+	JsonBox::Value testMongoInterface(bool printFlag, bool assertFlag, std::string uri = "127.0.0.1:27017");
 }
 
 #endif /* MONGOINTERFACE_H_ */
