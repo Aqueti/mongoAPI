@@ -30,47 +30,9 @@ endmacro(add_external_project)
 
 add_external_project(JsonBox dependencies/JsonBox OFF "" "")
 add_external_project(libbson dependencies/libbson OFF "" "")
-
-ExternalProject_Add(
-  libbson
-  GIT_REPOSITORY "https://github.com/mongodb/libbson.git"
-  GIT_TAG "1.4.2"
-  CMAKE_ARGS ${cmake_common_args}
-  INSTALL_DIR ${CMAKE_BINARY_DIR}/INSTALL
-)
-
-ExternalProject_Add(
-  MongoC
-  GIT_REPOSITORY "https://github.com/mongodb/mongo-c-driver.git"
-  GIT_TAG "1.4.2"
-  CMAKE_ARGS ${cmake_common_args}
-  INSTALL_DIR ${CMAKE_BINARY_DIR}/INSTALL
-  DEPENDS libbson
-)
-
-ExternalProject_Add(
-  MongoDB
-  GIT_REPOSITORY "https://github.com/mongodb/mongo-cxx-driver.git"
-  GIT_TAG "r3.0.3"
-  CMAKE_ARGS
-    ${cmake_common_args}
-    -DLIBMONGOC_DIR=${CMAKE_BINARY_DIR}/INSTALL
-    -DLIBBSON_DIR=${CMAKE_BINARY_DIR}/INSTALL
-  INSTALL_DIR ${CMAKE_BINARY_DIR}/INSTALL
-  DEPENDS MongoC libbson
-)
-
-message("AquetToolsDir: ${CMAKE_BINARY_DIR}/INSTALL")
-ExternalProject_Add( 
-    AquetiTools
-    SOURCE_DIR ${CMAKE_SOURCE_DIR}/AquetiTools
-#    INSTALL_COMMAND ""
-    BUILD_ALWAYS 1 
-    CMAKE_ARGS
-        ${cmake_common_args}
-    INSTALL_DIR ${CMAKE_BINARY_DIR}/INSTALL
-    DEPENDS JsonBox
-)
+add_external_project(MongoC dependencies/mongo-c-driver OFF "libbson" "")
+add_external_project(MongoCXX dependencies/mongo-cxx-driver OFF "MongoC" "")
+add_external_project(AquetiTools dependencies/AquetiTools OFF "" "")
 
 ExternalProject_Add (
   mongoapi
@@ -79,8 +41,8 @@ ExternalProject_Add (
   CMAKE_ARGS
     ${cmake_common_args}
     -DDOXYGEN_DIR=${CMAKE_BINARY_DIR}/INSTALL/Doxygen
-  INSTALL_DIR ${CMAKE_BINARY_DIR}/INSTALL
-  DEPENDS JsonBox MongoDB
+  INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+  DEPENDS JsonBox MongoCXX AquetiTools
 )
 
 

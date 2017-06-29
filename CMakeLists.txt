@@ -11,7 +11,6 @@ set(DOXYGEN_DIR CACHE STRING "${CMAKE_BINARY_DIR}/Doxygen")
 
 # Superbuild rules
 if(USE_SUPERBUILD)
-    option(GIT_HTTPS "Clone git repositories with HTTPS" ON)
     include(ExternalProject)
     include(Superbuild.cmake)
     return()

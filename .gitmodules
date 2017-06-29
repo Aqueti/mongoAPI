@@ -10,3 +10,6 @@
 [submodule "dependencies/libbson"]
 	path = dependencies/libbson
 	url = https://github.com/mongodb/libbson
+[submodule "dependencies/JsonBox"]
+	path = dependencies/JsonBox
+	url = https://github.com/anhero/JsonBox
