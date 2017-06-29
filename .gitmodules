@@ -1,15 +1,24 @@
 [submodule "AquetiTools"]
 	path = dependencies/AquetiTools
 	url = https://github.com/Aqueti/AquetiTools.git
+    fetchRecurseSubmodules = false
 [submodule "dependencies/mongo-cxx-driver"]
 	path = dependencies/mongo-cxx-driver
 	url = https://github.com/mongodb/mongo-cxx-driver
+    fetchRecurseSubmodules = false
+    ignore = all
 [submodule "dependencies/mongo-c-driver"]
 	path = dependencies/mongo-c-driver
 	url = https://github.com/mongodb/mongo-c-driver
+    fetchRecurseSubmodules = false
+    ignore = all
 [submodule "dependencies/libbson"]
 	path = dependencies/libbson
 	url = https://github.com/mongodb/libbson
+    fetchRecurseSubmodules = false
+    ignore = all
 [submodule "dependencies/JsonBox"]
 	path = dependencies/JsonBox
 	url = https://github.com/anhero/JsonBox
+    fetchRecurseSubmodules = false
+    ignore = all

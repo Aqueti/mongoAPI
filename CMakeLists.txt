@@ -3,11 +3,20 @@ cmake_policy(SET CMP0048 NEW)
 
 PROJECT(mongoapi VERSION "0.1.0.0")
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
 option(USE_SUPERBUILD "Use superbuild to pull in and build dependencies." ON)
 set(DOXYGEN_DIR CACHE STRING "${CMAKE_BINARY_DIR}/Doxygen")
+
+#Hack? but We can't find bson.h
+include_directories(
+    ${CMAKE_INSTALL_PREFIX}/include/bsoncxx/v_noabi
+    ${CMAKE_INSTALL_PREFIX}/include/libbson-1.0
+)
+
+list(APPEND CMAKE_PREFIX_PATH
+    ${CMAKE_INSTALL_PREFIX}/lib/cmake
+    usr/lib/cmake
+)
+
 
 # Superbuild rules
 if(USE_SUPERBUILD)
@@ -70,64 +79,53 @@ configure_file(
    "${CMAKE_INSTALL_PREFIX}/include/mongoapi/revision.h"
 )
 
-
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
-
-list(APPEND CMAKE_MODULE_PATH ${mongoapi_SOURCE_DIR} ${mongoapi_SOURCE_DIR}/cmake)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 
-#FIND_PACKAGE(Boost 1.54 COMPONENTS system regex thread filesystem program_options REQUIRED )
-FIND_PACKAGE(Threads REQUIRED)
-#INCLUDE_DIRECTORIES( ${Threads_INCLUDE_DIR})
-FIND_PACKAGE(JsonBox REQUIRED)
-INCLUDE_DIRECTORIES( ${JSONBOX_INCLUDE_DIRS})
+list(APPEND CMAKE_MODULE_PATH ${mongoapi_SOURCE_DIR}/cmake)
 
-#FIND_PACKAGE(MongoDB REQUIRED)
+find_package(Threads REQUIRED)
+find_package(JsonBox CONFIG REQUIRED)
+find_package(AquetiTools CONFIG REQUIRED)
+
 find_package(BSON-1.0 REQUIRED)
 find_package(BSONCxx REQUIRED)
 find_package(MongoC REQUIRED)
 find_package(MongoCxx REQUIRED)
 
+message("dirs: ${BSON_INCLUDE_DIRS}")
 
-message("BSON: ${BSON-1.0_INCLUDE_DIRS}")
-INCLUDE_DIRECTORIES( ${MONGOC_INCLUDE_DIR} ${MONGOCXX_INCLUDE_DIRS} ${BSON-1.0_INCLUDE_DIRS} ${BSONCXX_INCLUDE_DIRS})
-
-include_directories( ${CMAKE_INSTALL_PREFIX}/INSTALL/include/bsoncxx/v_noabi )
-
-link_directories( ${CMAKE_INSTALL_PREFIX}/lib )
-
-MESSAGE(STATUS "LIBRARY STATUS:")
-#MESSAGE(STATUS "Threads: " ${Threads_INCLUDE_DIR})
-MESSAGE(STATUS "JsonBox: " ${JSONBOX_INCLUDE_DIRS})
-#MESSAGE(STATUS "MongoDB: " ${MongoDB_INCLUDE_DIR})
+include_directories(
+    ${MONGOC_INCLUDE_DIR}
+    ${MONGOCXX_INCLUDE_DIRS}
+    ${BSON_INCLUDE_DIRS}
+    ${BSONCXX_INCLUDE_DIRS}
+    ${CMAKE_INSTALL_PREFIX}/include/bsoncxx/v_noabi
+)
 
 #create hte mongoapi library
 add_library(mongoapi STATIC mongoapi.cpp )
 TARGET_LINK_LIBRARIES(mongoapi 
-   ${JSONBOX_LIBRARY_RELEASE} 
-   ${MONGOC_LIBRARY} 
-   ${MONGOCXX_LIBRARY} 
-   ${BSONCXX_LIBRARY} 
-   ${CMAKE_THREAD_LIBS_INIT}
-   libaquetitools.a
+    libaquetitools.a
+    JsonBox
+    ${MONGOC_LIBRARY} 
+    ${MONGOCXX_LIBRARY} 
+    ${BSONCXX_LIBRARY} 
+    ${BSON_LIBRARIES}
+    Threads::Threads
 )
-list(APPEND TARGET_LIST mongoapi )
+list(APPEND TARGET_LIST mongoapi)
 
 #Add MongoAPI test as an executavble
-add_executable( MongoAPITest 
-   mongotest/MongoAPITest.cpp 
-)
-TARGET_LINK_LIBRARIES(MongoAPITest 
-   mongoapi 
-#   ${JSONBOX_LIBRARY_RELEASE} 
-#   ${MONGOC_LIBRARY} 
-#   ${MONGOCXX_LIBRARY} 
-#   ${BSONCXX_LIBARY} 
-#   ${CMAKE_THREAD_LIBS_INIT}
-)
-
-list(APPEND TARGET_LIST MongoAPITest )
+if(MAKE_TESTS)
+    add_executable( MongoAPITest 
+        mongotest/MongoAPITest.cpp 
+    )
+    TARGET_LINK_LIBRARIES(MongoAPITest 
+        mongoapi 
+    )
+    list(APPEND TARGET_LIST MongoAPITest )
+endif(MAKE_TESTS)
 
 # add a target to generate API documentation with Doxygen
 find_package(Doxygen)
@@ -148,13 +146,24 @@ MESSAGE(STATUS "DOXYGEN_DIR: " ${DOXYGEN_DIR})
 # This sections initiates the build of the  components in th TARGET_LIST. 
 # Each component
 #############################################
-install( TARGETS 
-   ${TARGET_LIST}
-   RUNTIME DESTINATION bin
-   LIBRARY DESTINATION lib${LIB_SUFFIX}
-   ARCHIVE DESTINATION lib${LIB_SUFFIX}
-   INCLUDES DESTINATION include/aqueti
-   PUBLIC_HEADER DESTINATION include/aqueti
+configure_file(${CMAKE_SOURCE_DIR}/MongoAPIConfig.cmake.in
+               ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+               @ONLY)
+
+export(TARGETS ${TARGET_LIST} FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake)
+
+install(TARGETS ${TARGET_LIST} EXPORT ${PROJECT_NAME}
+   RUNTIME DESTINATION bin COMPONENT lib
+   LIBRARY DESTINATION lib${LIB_SUFFIX} COMPONENT lib
+   ARCHIVE DESTINATION lib${LIB_SUFFIX} COMPONENT lib
+   INCLUDES DESTINATION include/mongoapi
+   PUBLIC_HEADER DESTINATION include/mongoapi
 )
 
 install(FILES mongoapi.h DESTINATION include/mongoapi)
+
+install(FILES ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+        DESTINATION lib${LIB_SUFFIX}/cmake)
+install(EXPORT ${PROJECT_NAME}
+        DESTINATION lib${LIB_SUFFIX}/cmake
+        FILE ${PROJECT_NAME}Targets.cmake)
