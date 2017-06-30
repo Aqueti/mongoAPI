@@ -3,7 +3,6 @@
 	url = https://github.com/Aqueti/AquetiTools.git
     fetchRecurseSubmodules = false
     branch = master
-    update = none
 [submodule "dependencies/mongo-cxx-driver"]
 	path = dependencies/mongo-cxx-driver
 	url = https://github.com/mongodb/mongo-cxx-driver
