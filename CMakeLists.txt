@@ -8,17 +8,10 @@ option(MAKE_TESTS "Build test libraries and excutables." ON)
 
 set(DOXYGEN_DIR CACHE STRING "${CMAKE_BINARY_DIR}/Doxygen")
 
-#Hack? but We can't find bson.h
-include_directories(
-    ${CMAKE_INSTALL_PREFIX}/include/bsoncxx/v_noabi
-    ${CMAKE_INSTALL_PREFIX}/include/libbson-1.0
-)
-
 list(APPEND CMAKE_PREFIX_PATH
     ${CMAKE_INSTALL_PREFIX}/lib/cmake
     usr/lib/cmake
 )
-
 
 # Superbuild rules
 if(USE_SUPERBUILD)
@@ -100,15 +93,15 @@ include_directories(
     ${MONGOCXX_INCLUDE_DIRS}
     ${BSON_INCLUDE_DIRS}
     ${BSONCXX_INCLUDE_DIRS}
-    ${CMAKE_INSTALL_PREFIX}/include/bsoncxx/v_noabi
 )
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 #create hte mongoapi library
 add_library(mongoapi STATIC
     mongoapi.cpp 
 )
 TARGET_LINK_LIBRARIES(mongoapi 
-    libaquetitools.a
+    AquetiTools
     JsonBox
     ${MONGOC_LIBRARY} 
     ${MONGOCXX_LIBRARY} 
@@ -116,7 +109,7 @@ TARGET_LINK_LIBRARIES(mongoapi
     ${BSON_LIBRARIES}
     Threads::Threads
 )
-list(APPEND TARGET_LIST mongoapi)
+set(TARGET_LIST mongoapi)
 
 if( MAKE_TESTS )
    #Make a dedicated test library
@@ -132,7 +125,7 @@ if( MAKE_TESTS )
    add_executable( testMongoAPI
       test/testMongoAPI.cpp 
    )
-   TARGET_LINK_LIBRARIES(testMongoAPI
+   target_link_libraries(testMongoAPI
       mongoapi_test
    )
    list(APPEND TARGET_LIST testMongoAPI )
