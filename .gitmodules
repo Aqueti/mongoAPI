@@ -8,21 +8,25 @@
     fetchRecurseSubmodules = false
     ignore = dirty
     update = none
+    branch = none
 [submodule "dependencies/mongo-c-driver"]
 	path = dependencies/mongo-c-driver
 	url = https://github.com/mongodb/mongo-c-driver
     fetchRecurseSubmodules = false
     ignore = dirty
     update = none
+    branch = none
 [submodule "dependencies/libbson"]
 	path = dependencies/libbson
 	url = https://github.com/mongodb/libbson
     fetchRecurseSubmodules = false
     ignore = dirty
     update = none
+    branch = none
 [submodule "dependencies/JsonBox"]
 	path = dependencies/JsonBox
 	url = https://github.com/anhero/JsonBox
     fetchRecurseSubmodules = false
     ignore = dirty
     update = none
+    branch = none
