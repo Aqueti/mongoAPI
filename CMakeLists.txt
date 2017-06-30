@@ -111,15 +111,20 @@ TARGET_LINK_LIBRARIES(mongoapi
 )
 set(TARGET_LIST mongoapi)
 
+set(MONGO_HEADERS mongoapi.h)
+
 if( MAKE_TESTS )
    #Make a dedicated test library
    add_library( mongoapi_test STATIC
        test/MongoAPITest.cpp
+       test/MongoInterfaceTest.cpp
    )
    target_link_libraries( mongoapi_test
       mongoapi
    )
    list(APPEND TARGET_LIST mongoapi_test )
+
+   list(APPEND MONGO_HEADERS test/MongoAPITest.h)
    
    #Add MongoAPI test as an executavble
    add_executable( testMongoAPI
@@ -165,7 +170,7 @@ install(TARGETS ${TARGET_LIST} EXPORT ${PROJECT_NAME}
    PUBLIC_HEADER DESTINATION include/mongoapi
 )
 
-install(FILES mongoapi.h DESTINATION include/mongoapi)
+install(FILES ${MONGO_HEADERS} DESTINATION include/mongoapi)
 
 install(FILES ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
         DESTINATION lib${LIB_SUFFIX}/cmake)

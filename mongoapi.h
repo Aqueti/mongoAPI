@@ -1,7 +1,7 @@
 /**
  * @file mongoapi.h
  * @author Nils Persson <npersson@live.unc.edu>
- * @version 1.0
+ * @version 2.0
  *
  * Interface class to MongoDB
  *
@@ -184,16 +184,6 @@ namespace mongoapi
 		bool dropCollection(std::string collection);
 
 	};
-
-	/**
-	 * Perform unit tests for the MongoInterface class
-	 *
-	 * @param uri The string representation of the ip and port in format "IP:PORT"
-	 * @param printFlag The boolean, true if printed messages to console desired
-	 * @param assertFlag The boolean, true if quit desired upon error
-	 * @return True on success
-	 */
-	JsonBox::Value testMongoInterface(bool printFlag, bool assertFlag, std::string uri = "127.0.0.1:27017");
 }
 
 #endif /* MONGOINTERFACE_H_ */

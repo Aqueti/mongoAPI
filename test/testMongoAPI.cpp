@@ -1,9 +1,10 @@
-/*
- * MongoInterface_test.cpp
+
+/**
+ * \file testMongoAPI.cpp
  *
- *  Created on: June 19, 2017
- *      Author: Nils Persson
- */
+ * Created on: June 19, 2017
+ * Author: Nils Persson
+ **/
 
 #include "MongoAPITest.h"
 
@@ -34,7 +35,7 @@ int main(int argc, char *argv[]) {
 
 	//run tests
 	std::cout << "Testing mongoAPI..." << std::endl;
-	JsonBox::Value result = testMongoAPI(unitList, testSubmodules);
+	JsonBox::Value result = mongoapi::testMongoAPI(unitList, testSubmodules);
 	if(result["pass"] == true){
 		std::cout << "mongoAPI passed successfully!" << std::endl;
 	}
