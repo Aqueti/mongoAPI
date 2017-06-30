@@ -6,7 +6,20 @@ PROJECT(mongoapi VERSION "0.1.0.0")
 option(USE_SUPERBUILD "Use superbuild to pull in and build dependencies." ON)
 option(MAKE_TESTS "Build test libraries and excutables." ON)
 
-set(DOXYGEN_DIR CACHE STRING "${CMAKE_BINARY_DIR}/Doxygen")
+# Doxygen support
+# add a target to generate API documentation with Doxygen
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+    set(DOXYGEN_DIR "${CMAKE_BINARY_DIR}/Doxygen" CACHE STRING "Where to build Doxygen")
+    file(MAKE_DIRECTORY ${DOXYGEN_DIR})
+    configure_file(${CMAKE_SOURCE_DIR}/Doxyfile.in ${DOXYGEN_DIR}/Doxyfile @ONLY)
+    add_custom_target(doc
+        ${DOXYGEN_EXECUTABLE} ${DOXYGEN_DIR}/Doxyfile
+        WORKING_DIRECTORY ${DOXYGEN_DIR}
+        COMMENT "Generating API documentation with Doxygen" VERBATIM
+    )
+endif(DOXYGEN_FOUND)
+
 
 list(APPEND CMAKE_PREFIX_PATH
     ${CMAKE_INSTALL_PREFIX}/lib/cmake
@@ -130,21 +143,6 @@ if( MAKE_TESTS )
    )
    list(APPEND TARGET_LIST testMongoAPI )
 endif()
-
-# Doxygen support
-# add a target to generate API documentation with Doxygen
-find_package(Doxygen)
-if(DOXYGEN_FOUND)
-   file(MAKE_DIRECTORY ${DOXYGEN_DIR})
-   configure_file(${CMAKE_SOURCE_DIR}/Doxyfile.in ${DOXYGEN_DIR}/Doxyfile @ONLY)
-   add_custom_target(doc
-      ${DOXYGEN_EXECUTABLE} ${DOXYGEN_DIR}/Doxyfile
-      WORKING_DIRECTORY ${DOXYGEN_DIR}
-      COMMENT "Generating API documentation with Doxygen" VERBATIM
-   )
-endif(DOXYGEN_FOUND)
-
-MESSAGE(STATUS "DOXYGEN_DIR: " ${DOXYGEN_DIR})
 
 #############################################
 #install library files
