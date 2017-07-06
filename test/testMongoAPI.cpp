@@ -44,8 +44,8 @@ int main(int argc, char *argv[]) {
 	}
 
 	//connect to database and insert JsonValue if "-n" was not used
-	std::cout << "Inserting unit test results in database..." << std::endl;
 	if(insert){
+		std::cout << "Inserting unit test results in database..." << std::endl;
 		mongoapi::MongoInterface mi;
 		bool connected = mi.connect("aqueti");
 		if(connected){
