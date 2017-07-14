@@ -4,7 +4,7 @@ cmake_policy(SET CMP0048 NEW)
 PROJECT(mongoapi VERSION "0.1.0.0")
 
 option(USE_SUPERBUILD "Use superbuild to pull in and build dependencies." ON)
-option(MAKE_TESTS "Build test libraries and excutables." ON)
+option(BUILD_TESTS "Build test libraries and excutables." ON)
 
 # Doxygen support
 # add a target to generate API documentation with Doxygen
@@ -124,7 +124,7 @@ set(TARGET_LIST mongoapi)
 
 set(MONGO_HEADERS mongoapi.h)
 
-if( MAKE_TESTS )
+if( BUILD_TESTS )
    #Make a dedicated test library
    add_library( mongoapi_test STATIC
        test/MongoAPITest.cpp
