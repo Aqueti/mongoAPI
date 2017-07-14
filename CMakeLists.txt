@@ -92,8 +92,6 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 
 list(APPEND CMAKE_MODULE_PATH ${mongoapi_SOURCE_DIR}/cmake)
 
-find_package(Threads REQUIRED)
-find_package(JsonBox CONFIG REQUIRED)
 find_package(AquetiTools CONFIG REQUIRED)
 
 find_package(BSON-1.0 REQUIRED)
