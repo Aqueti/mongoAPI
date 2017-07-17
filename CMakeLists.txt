@@ -98,6 +98,7 @@ find_package(BSON-1.0 REQUIRED)
 find_package(BSONCxx REQUIRED)
 find_package(MongoC REQUIRED)
 find_package(MongoCxx REQUIRED)
+find_package(JsonBox CONFIG REQUIRED)
 
 include_directories(
     ${MONGOC_INCLUDE_DIR}
