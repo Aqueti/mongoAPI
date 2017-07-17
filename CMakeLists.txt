@@ -92,12 +92,11 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 
 list(APPEND CMAKE_MODULE_PATH ${mongoapi_SOURCE_DIR}/cmake)
 
-find_package(AquetiTools CONFIG REQUIRED)
-
 find_package(BSON-1.0 REQUIRED)
 find_package(BSONCxx REQUIRED)
 find_package(MongoC REQUIRED)
 find_package(MongoCxx REQUIRED)
+find_package(JsonBox CONFIG REQUIRED)
 
 include_directories(
     ${MONGOC_INCLUDE_DIR}
@@ -112,13 +111,11 @@ add_library(mongoapi STATIC
     mongoapi.cpp 
 )
 TARGET_LINK_LIBRARIES(mongoapi 
-    AquetiTools
     JsonBox
     ${MONGOC_LIBRARY} 
     ${MONGOCXX_LIBRARY} 
     ${BSONCXX_LIBRARY} 
     ${BSON_LIBRARIES}
-    Threads::Threads
 )
 set(TARGET_LIST mongoapi)
 
