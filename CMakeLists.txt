@@ -6,6 +6,9 @@ PROJECT(mongoapi VERSION "0.1.0.0")
 option(USE_SUPERBUILD "Use superbuild to pull in and build dependencies." ON)
 option(BUILD_TESTS "Build test libraries and excutables." ON)
 
+#We need a git executable so we can determine versions
+find_package(Git REQUIRED)
+
 # Doxygen support
 # add a target to generate API documentation with Doxygen
 find_package(Doxygen)
@@ -39,7 +42,7 @@ endif()
 #############################################
 # Get the current working branch
 execute_process(
-  COMMAND git rev-parse --abbrev-ref HEAD
+  COMMAND ${GIT_EXECUTABLE} rev-parse --abbrev-ref HEAD
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   OUTPUT_VARIABLE GIT_BRANCH
   OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -56,7 +59,7 @@ message("VERSION TAG: ${VERSION_TAG}")
 
 # Get the latest abbreviated commit hash of the working branch
 execute_process(
-  COMMAND git log -1 --format=%h
+  COMMAND ${GIT_EXECUTABLE} log -1 --format=%h
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   OUTPUT_VARIABLE GIT_COMMIT_HASH
   OUTPUT_STRIP_TRAILING_WHITESPACE
