@@ -30,8 +30,6 @@
 #include <assert.h>
 #include <atl/Timer.h>
 #include <mongoapi/revision.h>
-#include <aquetitools/revision.h>
-
 using bsoncxx::builder::stream::document;
 using bsoncxx::builder::stream::finalize;
 
