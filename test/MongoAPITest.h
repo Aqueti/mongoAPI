@@ -24,7 +24,7 @@
 #include <mongocxx/exception/query_exception.hpp>
 #include <assert.h>
 #include <mongoapi/revision.h>
-#include <mongoapi/revision.h>
+#include <ctime>
 
 namespace mongoapi {
 /**

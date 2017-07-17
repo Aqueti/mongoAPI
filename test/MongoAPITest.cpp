@@ -27,7 +27,11 @@ JsonBox::Value testMongoAPI(std::vector<std::string> unitList, bool testSubmodul
 	jsonReturn["component"] = "mongoAPI";
 
 	//get timestamp
-	jsonReturn["date"] = atl::getDateAsString();
+	std::time_t time = std::time(NULL);
+	char mbstr[100];
+	if (std::strftime(mbstr, sizeof(mbstr), "%c", std::localtime(&time))) {
+        jsonReturn["date"] = mbstr;
+    }
 
 	//get /etc/quid
 	std::string guid;

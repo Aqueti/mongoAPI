@@ -28,7 +28,6 @@
 #include <mongocxx/exception/bulk_write_exception.hpp>
 #include <mongocxx/exception/query_exception.hpp>
 #include <assert.h>
-#include <atl/Timer.h>
 #include <mongoapi/revision.h>
 using bsoncxx::builder::stream::document;
 using bsoncxx::builder::stream::finalize;
