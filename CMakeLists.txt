@@ -110,30 +110,30 @@ include_directories(
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 #create hte mongoapi library
-add_library(mongoapi STATIC
+add_library(mongoAPI STATIC
     mongoapi.cpp 
 )
-TARGET_LINK_LIBRARIES(mongoapi 
+TARGET_LINK_LIBRARIES(mongoAPI 
     JsonBox
     ${MONGOC_LIBRARY} 
     ${MONGOCXX_LIBRARY} 
     ${BSONCXX_LIBRARY} 
     ${BSON_LIBRARIES}
 )
-set(TARGET_LIST mongoapi)
+set(TARGET_LIST mongoAPI)
 
 set(MONGO_HEADERS mongoapi.h)
 
 if( BUILD_TESTS )
    #Make a dedicated test library
-   add_library( mongoapi_test STATIC
+   add_library( mongoAPI_test STATIC
        test/MongoAPITest.cpp
        test/MongoInterfaceTest.cpp
    )
-   target_link_libraries( mongoapi_test
-      mongoapi
+   target_link_libraries( mongoAPI_test
+      mongoAPI
    )
-   list(APPEND TARGET_LIST mongoapi_test )
+   list(APPEND TARGET_LIST mongoAPI_test )
 
    list(APPEND MONGO_HEADERS test/MongoAPITest.h)
    
@@ -142,7 +142,7 @@ if( BUILD_TESTS )
       test/testMongoAPI.cpp 
    )
    target_link_libraries(testMongoAPI
-      mongoapi_test
+      mongoAPI_test
    )
    list(APPEND TARGET_LIST testMongoAPI )
 endif()
