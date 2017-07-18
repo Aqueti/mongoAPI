@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12)
 cmake_policy(SET CMP0048 NEW)
 
-PROJECT(mongoapi VERSION "0.1.0.0")
+PROJECT(mongoAPI VERSION "0.1.0.0")
 
 option(USE_SUPERBUILD "Use superbuild to pull in and build dependencies." ON)
 option(BUILD_TESTS "Build test libraries and excutables." ON)
@@ -93,7 +93,7 @@ configure_file(
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 
-list(APPEND CMAKE_MODULE_PATH ${mongoapi_SOURCE_DIR}/cmake)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 find_package(BSON-1.0 REQUIRED)
 find_package(BSONCxx REQUIRED)
