@@ -87,7 +87,6 @@ JsonBox::Value testMongoAPI(std::vector<std::string> unitList, bool testSubmodul
 	
 	//get pass
     jsonReturn["pass"] = pass;
-    std::cout << jsonReturn << std::endl;
     return jsonReturn;
 }
 }
