@@ -14,6 +14,11 @@ set(cmake_common_args
     -DUSE_SUPERBUILD:BOOL=OFF
 )
 
+add_custom_target(submodule_init
+    COMMAND ${GIT_EXECUTABLE} submodule init ${CMAKE_SOURCE_DIR}
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+)
+
 # if MASTER is true, project will always be built. Else, only built if dependency
 macro(add_external_project MYNAME LOCATION MASTER DEPENDS ARGS)
     if(NOT ${MASTER})
@@ -25,11 +30,11 @@ macro(add_external_project MYNAME LOCATION MASTER DEPENDS ARGS)
         SOURCE_DIR ${CMAKE_SOURCE_DIR}/${LOCATION}
         BUILD_ALWAYS 1
         EXCLUDE_FROM_ALL ${EXCLUDE}
-        DOWNLOAD_COMMAND ${GIT_EXECUTABLE} submodule update --init --checkout ${CMAKE_SOURCE_DIR}/${LOCATION}
+        DOWNLOAD_COMMAND ${GIT_EXECUTABLE} submodule update --checkout ${CMAKE_SOURCE_DIR}/${LOCATION}
         DOWNLOAD_DIR ${CMAKE_SOURCE_DIR}
         CMAKE_ARGS ${cmake_common_args} ${ARGS}
         INSTALL_DIR ${CMAKE_BINARY_DIR}/INSTALL
-        DEPENDS ${DEPENDS}
+        DEPENDS ${DEPENDS} submodule_init
     )
 endmacro(add_external_project)
 
@@ -60,7 +65,7 @@ ExternalProject_Add (
     ${cmake_common_args}
     -DDOXYGEN_DIR=${CMAKE_BINARY_DIR}/INSTALL/Doxygen
   INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-  DEPENDS JsonBox MongoCXX
+  DEPENDS JsonBox MongoCXX submodule_init
 )
 
 
