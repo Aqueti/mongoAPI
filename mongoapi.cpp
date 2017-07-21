@@ -21,7 +21,7 @@ namespace mongoapi
 
 	bool MongoInterface::connect(std::string database, std::string URI) {
 		try{
-			m_uri = mongocxx::uri("mongodb://" + URI);
+			m_uri = mongocxx::uri("mongodb://" + URI + "");
 			m_client = mongocxx::client(m_uri);
 			m_db = m_client[database];
 
