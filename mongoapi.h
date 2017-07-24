@@ -45,7 +45,7 @@ namespace mongoapi
 	private:
 		std::string m_database;
 		std::string m_URI;
-		mongocxx::instance m_instance{};
+		static mongocxx::instance m_instance;
 		mongocxx::uri m_uri;
 		mongocxx::pool m_pool;
 		mongocxx::pool::entry m_client;

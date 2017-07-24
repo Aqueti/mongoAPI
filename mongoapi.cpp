@@ -13,6 +13,8 @@
 
 namespace mongoapi
 {
+	mongocxx::instance MongoInterface::m_instance{};
+
 	MongoInterface::MongoInterface(std::string URI) : m_uri("mongodb://" + URI + "/?minPoolSize=1&maxPoolSize=3"), m_pool(m_uri){
 		this->m_URI = URI;
 	}
