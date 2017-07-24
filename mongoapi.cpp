@@ -13,17 +13,18 @@
 
 namespace mongoapi
 {
-	MongoInterface::MongoInterface() {
+	MongoInterface::MongoInterface(std::string URI) : m_uri("mongodb://" + URI + "/?minPoolSize=1&maxPoolSize=3"), m_pool(m_uri){
+		this->m_URI = URI;
 	}
 
 	MongoInterface::~MongoInterface() {
 	}
 
-	bool MongoInterface::connect(std::string database, std::string URI) {
+	bool MongoInterface::connect(std::string database) {
 		try{
-			m_uri = mongocxx::uri("mongodb://" + URI + "");
-			m_client = mongocxx::client(m_uri);
-			m_db = m_client[database];
+			m_client = m_pool.acquire();
+			m_db = (*m_client)[database];
+			//auto coll = m_db["coll name"];
 
 			JsonBox::Value val;
 			val["ismaster"] = 1;
@@ -33,7 +34,6 @@ namespace mongoapi
 			std::cout << "database connection failed" << std::endl;
 			return false;
 		}
-		this->m_URI = URI;
 		this->m_database = database;
 		return true;
 	}

@@ -23,6 +23,7 @@
 #include <bsoncxx/oid.hpp>
 #include <mongocxx/client.hpp>
 #include <mongocxx/instance.hpp>
+#include <mongocxx/pool.hpp>
 #include <mongocxx/stdx.hpp>
 #include <mongocxx/uri.hpp>
 #include <mongocxx/exception/bulk_write_exception.hpp>
@@ -46,7 +47,8 @@ namespace mongoapi
 		std::string m_URI;
 		mongocxx::instance m_instance{};
 		mongocxx::uri m_uri;
-		mongocxx::client m_client;
+		mongocxx::pool m_pool;
+		mongocxx::pool::entry m_client;
 		mongocxx::database m_db;
 
 		/**
@@ -67,7 +69,7 @@ namespace mongoapi
 		/**
 		 * Constructor 
 		 */
-		MongoInterface();
+		MongoInterface(std::string URI = "127.0.0.1:27017");
 		/**
 		 * Destructor
 		 */
@@ -76,10 +78,9 @@ namespace mongoapi
 		 * Connect to a specified database
 		 *
 		 * @param database The name of the database to connect to
-		 * @param URI The IP address and port given as a string in the form "IP:Port" default: "127.0.0.1:27017"
 		 * @return True if the connection was successful
 		 */
-		bool connect(std::string database, std::string URI = "127.0.0.1:27017");
+		bool connect(std::string database);
 		/**
 		 * Insert a JsonBox Value into the database with specified collection.
 		 *

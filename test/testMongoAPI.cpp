@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
     }
-
+    
 	//run tests
 	std::cout << "Testing mongoAPI..." << std::endl;
 	JsonBox::Value result = mongoapi::testMongoAPI(testSubmodules, unitList);
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
 		mongoapi::MongoInterface mi;
 		bool connected = mi.connect("aqueti");
 		if(connected){
-			std::string id = mi.insertUnitTests("unit_tests", result);
+			std::string id = mi.insert("unit_tests", result);
 			if(id != "0"){
 				std::cout << "Results inserted in database successfully!" << std::endl;
 			}

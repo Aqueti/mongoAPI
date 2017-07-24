@@ -29,8 +29,8 @@ JsonBox::Value testMongoInterface(bool printFlag, bool asserFlag, std::string ur
 
 		//connect to database
 		//default parameters are database: "aqueti", URI: "127.0.0.1:27017"
-		MongoInterface mi;
-		bool connected = mi.connect("aqueti", uri);
+		MongoInterface mi(uri);
+		bool connected = mi.connect("aqueti");
 		if(!connected){
 			std::cout << "testing halted" << std::endl;
 			returnJson["pass"] = false;
