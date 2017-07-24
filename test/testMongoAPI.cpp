@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
             i++;
             unitList.push_back( argv[i]);
         } else if(strcmp(argv[i], "-n") == 0){
-            //insert = false;
+            insert = false;
         } else if(strcmp(argv[i], "-s") == 0){
             testSubmodules = false;
         } else if(strcmp(argv[i], "-h") == 0){
@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
 
 	//run tests
 	std::cout << "Testing mongoAPI..." << std::endl;
-	JsonBox::Value result = mongoapi::testMongoAPI(unitList, testSubmodules);
+	JsonBox::Value result = mongoapi::testMongoAPI(testSubmodules, unitList);
 	if(result["pass"] == true){
 		std::cout << "mongoAPI passed successfully!" << std::endl;
 	}

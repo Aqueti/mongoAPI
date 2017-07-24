@@ -12,7 +12,7 @@ namespace mongoapi {
 /**
  * \brief Run tests on all components in the mongoapi library
  **/
-JsonBox::Value testMongoAPI(std::vector<std::string> unitList, bool testSubmodules) {
+JsonBox::Value testMongoAPI(bool testSubmodules, std::vector<std::string> unitList) {
 	//define variables used
 	JsonBox::Value jsonReturn;
 	JsonBox::Value jsonUnits;
