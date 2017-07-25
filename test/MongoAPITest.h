@@ -30,10 +30,12 @@ namespace mongoapi {
 /**
  * Perform unit tests for the mongoapi repository
  *
+ * @param uri The string representation of the uri to connect the database to.
  * @param testSubmodules The boolean, if true run unit tests on submodules as well.
  * @return True on success
  */
-JsonBox::Value testMongoAPI(bool testSubmodules = true, std::vector<std::string> unitList = {"MongoInterface"});
+JsonBox::Value testMongoAPI(std::string uri = "127.0.0.1:27017", bool testSubmodules = true, bool printFlag = true, bool assertFlag = false, 
+		std::vector<std::string> unitList = {"MongoInterface"});
 
 /**
  * Perform unit tests for the MongoInterface class
@@ -43,5 +45,5 @@ JsonBox::Value testMongoAPI(bool testSubmodules = true, std::vector<std::string>
  * @param assertFlag The boolean, true if quit desired upon error
  * @return True on success
  */
-JsonBox::Value testMongoInterface(bool printFlag, bool assertFlag, std::string uri = "127.0.0.1:27017");
+JsonBox::Value testMongoInterface(std::string uri = "127.0.0.1:27017", bool printFlag = true, bool assertFlag = false);
 }

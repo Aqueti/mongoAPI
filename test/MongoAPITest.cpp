@@ -12,7 +12,7 @@ namespace mongoapi {
 /**
  * \brief Run tests on all components in the mongoapi library
  **/
-JsonBox::Value testMongoAPI(bool testSubmodules, std::vector<std::string> unitList) {
+JsonBox::Value testMongoAPI(std::string uri, bool testSubmodules, bool printFlag, bool assertFlag, std::vector<std::string> unitList) {
 	//define variables used
 	JsonBox::Value jsonReturn;
 	JsonBox::Value jsonUnits;
@@ -55,7 +55,7 @@ JsonBox::Value testMongoAPI(bool testSubmodules, std::vector<std::string> unitLi
 	for(std::vector<std::string>::iterator it = unitList.begin(); it != unitList.end(); ++it ) {
 		if( !it->compare("MongoInterface")) {
 			std::cout << "Testing MongoInterface..." << std::endl;
-			jsonValue = mongoapi::testMongoInterface(true, false);
+			jsonValue = mongoapi::testMongoInterface(uri, printFlag, assertFlag);
 		    jsonUnits["MongoInterface"] = jsonValue;
 		    jsonReturn["units"] = jsonUnits;
 		    if(jsonValue["pass"].getBoolean()){

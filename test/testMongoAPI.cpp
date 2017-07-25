@@ -24,6 +24,7 @@ bool printHelp(void)
     std::cout << "\t-t    is followed by name of method to be tested, then performs test and exits" << std::endl;
     std::cout << "\t-n    indicates that output should not be inserted into database" << std::endl;
     std::cout << "\t-s    indicates submodules are not to be tested" << std::endl;
+    std::cout << "\t-u    specifies URI used; default: 127.0.0.1:27017" << std::endl;
     //std::cout << "\t--version prints ATL version information\n"<< std::endl;
     std::cout << "Method names to follow t are: MongoInterface" << std::endl;
     std::cout << std::endl;
@@ -38,6 +39,10 @@ int main(int argc, char *argv[]) {
 	bool testSubmodules = true;
 	bool testAll = true;
 	bool insert = true;
+    bool printFlag = true;
+    bool assertFlag = false;
+    std::string uri = "127.0.0.1:27017";
+    std::string db = "software";
 
     //command line options
     int i;
@@ -55,7 +60,10 @@ int main(int argc, char *argv[]) {
             testSubmodules = false;
         } else if(strcmp(argv[i], "-h") == 0){
             printHelp();
-            return 1;
+            return 0;
+        } else if(strcmp(argv[i], "-u") == 0){
+            i++;
+            uri = argv[i];
         } else {
             std::cout << "Bad option used..." << std::endl;
             std::cout << "Exiting!" << std::endl;
@@ -65,7 +73,7 @@ int main(int argc, char *argv[]) {
     
 	//run tests
 	std::cout << "Testing mongoAPI..." << std::endl;
-	JsonBox::Value result = mongoapi::testMongoAPI(testSubmodules, unitList);
+	JsonBox::Value result = mongoapi::testMongoAPI(uri, testSubmodules, printFlag, assertFlag, unitList);
 	if(result["pass"] == true){
 		std::cout << "mongoAPI passed successfully!" << std::endl;
 	}
@@ -77,7 +85,7 @@ int main(int argc, char *argv[]) {
 	if(insert){
 		std::cout << "Inserting unit test results in database..." << std::endl;
 		mongoapi::MongoInterface mi;
-		bool connected = mi.connect("aqueti");
+		bool connected = mi.connect("a");
 		if(connected){
 			std::string id = mi.insert("unit_tests", result);
 			if(id != "0"){
@@ -86,7 +94,7 @@ int main(int argc, char *argv[]) {
 		}
 		else{
 			std::cout << "Failed to insert unit test results!" << std::endl;
-			return 0;
+			return 1;
 		}
 	}
 

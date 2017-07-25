@@ -8,7 +8,7 @@
 #include "MongoAPITest.h"
 
 namespace mongoapi {
-JsonBox::Value testMongoInterface(bool printFlag, bool asserFlag, std::string uri){
+JsonBox::Value testMongoInterface(std::string uri, bool printFlag, bool asserFlag){
 	try {
 		//create variables used in testing
 		JsonBox::Value val1;
@@ -28,9 +28,9 @@ JsonBox::Value testMongoInterface(bool printFlag, bool asserFlag, std::string ur
 		returnJson["pass"] = true;
 
 		//connect to database
-		//default parameters are database: "aqueti", URI: "127.0.0.1:27017"
+		//default parameters are database: "test", URI: "127.0.0.1:27017"
 		MongoInterface mi(uri);
-		bool connected = mi.connect("aqueti");
+		bool connected = mi.connect("test");
 		if(!connected){
 			std::cout << "testing halted" << std::endl;
 			returnJson["pass"] = false;
