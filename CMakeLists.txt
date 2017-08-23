@@ -54,8 +54,10 @@ if( "${GIT_BRANCH}" MATCHES "master" )
 else()
    set(VERSION_TAG "${GIT_BRANCH}")
 endif()
-
-message("VERSION TAG: ${VERSION_TAG}")
+if(NOT ${GIT_BRANCH} MATCHES "${GIT_BRANCH_PREV}")
+    set(CONFIGURE ON)
+endif()
+set(GIT_BRANCH_PREV ${GIT_BRANCH} CACHE STRING "Git Branch" FORCE)
 
 # Get the latest abbreviated commit hash of the working branch
 execute_process(
@@ -65,6 +67,12 @@ execute_process(
   OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
+if(NOT ${GIT_COMMIT_HASH} MATCHES "${GIT_COMMIT_HASH_PREV}")
+    set(CONFIGURE ON)
+endif()
+set(GIT_COMMIT_HASH_PREV ${GIT_COMMIT_HASH} CACHE STRING "Git Commit Hash" FORCE)
+
+
 # Get the date
 execute_process(
    COMMAND date +%F
@@ -72,6 +80,11 @@ execute_process(
    OUTPUT_VARIABLE BUILD_DATE 
    OUTPUT_STRIP_TRAILING_WHITESPACE
 )
+if(NOT ${BUILD_DATE} MATCHES "${BUILD_DATE_PREV}")
+    set(CONFIGURE ON)
+endif()
+set(BUILD_DATE_PREV ${BUILD_DATE} CACHE STRING "Build Date" FORCE)
+
 
 # Get the date
 execute_process(
@@ -85,10 +98,12 @@ execute_process(
 # Generate the version.h file to integrate version
 # information.
 #############################################
-configure_file( 
-   "${PROJECT_SOURCE_DIR}/revision.h.in"
-   "${CMAKE_INSTALL_PREFIX}/include/mongoapi/revision.h"
-)
+if(CONFIGURE OR NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/revision.h)
+    configure_file( 
+        "${PROJECT_SOURCE_DIR}/revision.h.in"
+        "revision.h"
+    )
+endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
