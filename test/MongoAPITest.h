@@ -13,7 +13,7 @@
 #include <fstream>
 #include "JsonBox.h"
 #include <vector>
-#include <bsoncxx/json.hpp>
+/*#include <bsoncxx/json.hpp>
 #include <bsoncxx/types.hpp>
 #include <bsoncxx/oid.hpp>
 #include <mongocxx/client.hpp>
@@ -21,7 +21,7 @@
 #include <mongocxx/stdx.hpp>
 #include <mongocxx/uri.hpp>
 #include <mongocxx/exception/bulk_write_exception.hpp>
-#include <mongocxx/exception/query_exception.hpp>
+#include <mongocxx/exception/query_exception.hpp>*/
 #include <assert.h>
 #include <revision.h>
 #include <ctime>

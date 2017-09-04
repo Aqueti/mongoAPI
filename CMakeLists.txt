@@ -116,24 +116,24 @@ find_package(MongoC REQUIRED)
 find_package(MongoCxx REQUIRED)
 find_package(JsonBox CONFIG REQUIRED)
 
-include_directories(
-    ${MONGOC_INCLUDE_DIR}
-    ${MONGOCXX_INCLUDE_DIRS}
-    ${BSON_INCLUDE_DIRS}
-    ${BSONCXX_INCLUDE_DIRS}
-)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 #create hte mongoapi library
 add_library(mongoAPI STATIC
     mongoapi.cpp 
 )
-TARGET_LINK_LIBRARIES(mongoAPI PUBLIC
-    JsonBox
-    ${MONGOC_LIBRARY} 
-    ${MONGOCXX_LIBRARY} 
-    ${BSONCXX_LIBRARY} 
-    ${BSON_LIBRARIES}
+target_include_directories(mongoAPI
+    PUBLIC ${MONGOC_INCLUDE_DIR} #TODO: This needs to be private
+    PUBLIC ${MONGOCXX_INCLUDE_DIRS}
+    PUBLIC ${BSON_INCLUDE_DIRS}
+    PUBLIC  ${BSONCXX_INCLUDE_DIRS}
+)
+TARGET_LINK_LIBRARIES(mongoAPI
+    PUBLIC JsonBox
+    PRIVATE ${BSONCXX_LIBRARY}
+    PRIVATE ${MONGOC_LIBRARY} 
+    PRIVATE ${MONGOCXX_LIBRARY} 
+    PRIVATE ${BSON_LIBRARIES}
 )
 set(TARGET_LIST mongoAPI)
 
@@ -145,7 +145,7 @@ if( BUILD_TESTS )
        test/MongoAPITest.cpp
        test/MongoInterfaceTest.cpp
    )
-   target_link_libraries( mongoAPI_test
+   target_link_libraries( mongoAPI_test PUBLIC
       mongoAPI
    )
    list(APPEND TARGET_LIST mongoAPI_test )
