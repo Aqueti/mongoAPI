@@ -5,6 +5,7 @@ PROJECT(mongoAPI VERSION "0.1.0.0")
 
 option(USE_SUPERBUILD "Use superbuild to pull in and build dependencies." ON)
 option(BUILD_TESTS "Build test libraries and excutables." ON)
+option(BUILD_TOOLS "Build interface tools." ON)
 
 #We need a git executable so we can determine versions
 find_package(Git REQUIRED)
@@ -161,6 +162,17 @@ if( BUILD_TESTS )
    )
    list(APPEND TARGET_LIST testMongoAPI )
 endif()
+
+if( BUILD_TOOLS ) 
+   #Add MongoAPI test as an executavble
+   add_executable( mongoTool
+      tools/MongoTool.cpp 
+   )
+   target_link_libraries( mongoTool
+      mongoAPI
+   )
+   list(APPEND TARGET_LIST mongoTool )
+endif( BUILD_TOOLS ) 
 
 #############################################
 #install library files
