@@ -118,7 +118,7 @@ int main(int argc, char * argv[] )
       }
    }
 
-/*
+
    //Connect to the database
    mongoapi::MongoInterface mongoInterface(uri);
    bool connected = mongoInterface.connect(dbase);
@@ -126,26 +126,26 @@ int main(int argc, char * argv[] )
       std::cout << "Unable to connect to server. Exiting" << std::endl;
       return 0;
    }
-*/
+
+   JsonBox::Value result;
    //Write the record
    if( insert ) {
       std::cout << "Inserting data into "<<dbase<<"/"<<collection<<std::endl;
       std::cout << data <<std::endl;
-//      mongoInterface.insert( dbase, data);
+      mongoInterface.insert( collection, data);
    }
 
    //Write the record
    else if( query ) {
       std::cout << "Query "<<dbase<<"/"<<collection<<std::endl;
       std::cout << data <<std::endl;
-//      mongoInterface.insert( dbase, data);
+      result = mongoInterface.query( collection, data);
+      result.writeToFile("out.json");
    }
    //Write the record
    else if( erase ) {
       std::cout << "Erase "<<dbase<<"/"<<collection<<std::endl;
       std::cout << data <<std::endl;
-//      mongoInterface.insert( dbase, data);
+      mongoInterface.removeEntry( collection, data);
    }
-
-   
 }
