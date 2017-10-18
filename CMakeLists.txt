@@ -10,6 +10,10 @@ option(BUILD_TOOLS "Build interface tools." ON)
 #We need a git executable so we can determine versions
 find_package(Git REQUIRED)
 
+# MongoC++ uses boost and doesn't export the include directory, so we look for
+# it here as well
+find_package(Boost 1.56.0 REQUIRED)
+
 # Doxygen support
 # add a target to generate API documentation with Doxygen
 find_package(Doxygen)
@@ -127,7 +131,8 @@ target_include_directories(mongoAPI
     PUBLIC ${MONGOC_INCLUDE_DIR} #TODO: This needs to be private
     PUBLIC ${MONGOCXX_INCLUDE_DIRS}
     PUBLIC ${BSON_INCLUDE_DIRS}
-    PUBLIC  ${BSONCXX_INCLUDE_DIRS}
+    PUBLIC ${BSONCXX_INCLUDE_DIRS}
+    PUBLIC ${Boost_INCLUDE_DIRS}
 )
 TARGET_LINK_LIBRARIES(mongoAPI
     PUBLIC JsonBox
