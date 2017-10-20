@@ -103,6 +103,18 @@ namespace mongoapi
 		 * @param collection The name of the collection to query
 		 * @param data The JsonBox Value query
 		 * @return Array of results
+		 * 
+		 * 
+		 * Here are some useful conditional examples:
+		 * 
+		 * JsonBox::Object myObject = {"myKey":{CONDITIONS}} 
+		 * 
+		 * Greater than equal CONDITONS = "$gte": 12345 returns a jsonbox array of "myKey": value such that value 
+		 * is greater than 12345
+		 * -----Less than equal is the same just replace the g with an l
+		 * 
+		 * Bound by some range CONDITIONS = "$gte": 12345, "$lte": 12348 returns a jsonbox array of "myKey": value such
+		 * that value is inclusively bounded by 12345-12348
 		 */
 		JsonBox::Value query(std::string collection, JsonBox::Value data);
 		/**
