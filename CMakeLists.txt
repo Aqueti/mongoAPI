@@ -211,3 +211,5 @@ install(FILES ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
 install(EXPORT ${PROJECT_NAME}
         DESTINATION lib${LIB_SUFFIX}/cmake
         FILE ${PROJECT_NAME}Targets.cmake)
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/cmake
+        DESTINATION ${CMAKE_INSTALL_PREFIX})
