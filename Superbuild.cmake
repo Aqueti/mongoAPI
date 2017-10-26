@@ -56,6 +56,7 @@ add_external_project(libbson dependencies/libbson OFF "" "${BSON_ARGS}")
 add_external_project(MongoC dependencies/mongo-c-driver OFF "libbson" "${MONGOC_ARGS}")
 add_external_project(MongoCXX dependencies/mongo-cxx-driver OFF "MongoC;libbson" "${MONGOCXX_ARGS}")
 add_external_project(JsonBox dependencies/JsonBox OFF "" "")
+add_external_project(AquetiTools dependencies/AquetiTools OFF "JsonBox" "")
 
 ExternalProject_Add (
   mongoapi
@@ -65,7 +66,7 @@ ExternalProject_Add (
     ${cmake_common_args}
     -DDOXYGEN_DIR=${CMAKE_BINARY_DIR}/INSTALL/Doxygen
   INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-  DEPENDS JsonBox MongoCXX submodule_init
+  DEPENDS AquetiTools JsonBox MongoCXX submodule_init
 )
 
 

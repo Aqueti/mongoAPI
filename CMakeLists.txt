@@ -122,6 +122,7 @@ find_package(BSONCxx REQUIRED)
 find_package(MongoC REQUIRED)
 find_package(MongoCxx REQUIRED)
 find_package(JsonBox CONFIG REQUIRED)
+find_package(AquetiTools CONFIG REQUIRED)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -142,6 +143,7 @@ if (MSVC)
   )
 endif()
 TARGET_LINK_LIBRARIES(mongoAPI
+    PUBLIC AquetiTools
     PUBLIC JsonBox
     PRIVATE ${BSONCXX_LIBRARY}
     PRIVATE ${MONGOC_LIBRARY} 
@@ -173,6 +175,14 @@ if( BUILD_TESTS )
       mongoAPI_test
    )
    list(APPEND TARGET_LIST testMongoAPI )
+
+   add_executable( MongoTest 
+     test/MongoTest.cpp
+   )
+   TARGET_LINK_LIBRARIES(MongoTest
+      mongoAPI
+   )
+   list(APPEND TARGET_LIST MongoTest )
 endif()
 
 if( BUILD_TOOLS ) 

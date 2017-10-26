@@ -26,3 +26,6 @@
     ignore = dirty
     branch = none
     update = none
+[submodule "dependencies/AquetiTools"]
+	path = dependencies/AquetiTools
+	url = https://github.com/Aqueti/AquetiTools.git
