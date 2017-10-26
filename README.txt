@@ -9,6 +9,12 @@ Update: "git submodule update"
 sudo apt-get install doxygen
 sudo apt-get install graphviz
 
+##### TO INSTALL MONGODB 3.0 #####
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
+sudo apt-get update
+sudo apt-get install mongodb-org
+
 ##### TO INSTALL BOOST #####
 sudo apt-get install libboost-all-dev
 
