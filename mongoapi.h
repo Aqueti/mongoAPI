@@ -21,21 +21,23 @@
 #include <bsoncxx/json.hpp>
 #include <bsoncxx/types.hpp>
 #include <bsoncxx/oid.hpp>
-#include <mongocxx/client.hpp>
 #include <mongocxx/instance.hpp>
-#include <mongocxx/pool.hpp>
 #include <mongocxx/stdx.hpp>
 #include <mongocxx/uri.hpp>
 #include <mongocxx/exception/bulk_write_exception.hpp>
 #include <mongocxx/exception/query_exception.hpp>
 #include <assert.h>
-#include <mutex>
+#include "atl/TSQueue.tcc"
+#include "MongoDatabaseClient.h"
+
 // #include <revision.h>
 using bsoncxx::builder::stream::document;
 using bsoncxx::builder::stream::finalize;
 
 namespace mongoapi
 {
+    typedef std::shared_ptr<MongoDatabaseClient> MongoDatabaseClientPtr;
+
 	/**
 	 * @class MongoInterface
 	 *
@@ -49,9 +51,8 @@ namespace mongoapi
 		static mongocxx::instance m_instance;
 		mongocxx::uri m_uri;
 		mongocxx::pool m_pool;
-		mongocxx::pool::entry m_client;
-		mongocxx::database m_db;
-        std::mutex m_mutex;
+        int m_maxClients;
+        atl::TSQueue<MongoDatabaseClientPtr> m_clients;
 
 		/**
 		 * Helper method to convert a JsonBox Value to a BSON object that MongoDB accepts
@@ -71,7 +72,7 @@ namespace mongoapi
 		/**
 		 * Constructor 
 		 */
-		MongoInterface(std::string URI = "127.0.0.1:27017");
+		MongoInterface(std::string URI = "127.0.0.1:27017", int maxClients=10);
 		/**
 		 * Destructor
 		 */

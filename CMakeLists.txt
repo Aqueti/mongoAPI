@@ -128,6 +128,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 #create hte mongoapi library
 add_library(mongoAPI STATIC
     mongoapi.cpp 
+    MongoDatabaseClient.cpp
 )
 target_include_directories(mongoAPI
     PUBLIC ${MONGOC_INCLUDE_DIR} #TODO: This needs to be private
@@ -149,7 +150,7 @@ TARGET_LINK_LIBRARIES(mongoAPI
 )
 set(TARGET_LIST mongoAPI)
 
-set(MONGO_HEADERS mongoapi.h)
+set(MONGO_HEADERS mongoapi.h MongoDatabaseClient.h)
 
 if( BUILD_TESTS )
    #Make a dedicated test library
