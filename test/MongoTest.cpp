@@ -8,7 +8,7 @@
 #include <thread>
 #include <JsonBox.h>
 
-#include "mongoapi/mongoapi.h"
+#include "mongoapi.h"
 #include <Timer.h>
 
 /**
