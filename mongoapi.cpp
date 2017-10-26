@@ -62,7 +62,7 @@ std::string MongoInterface::insert(std::string collection,
 		JsonBox::Value data)
 {
     MongoDatabaseClientPtr dbc;
-    if( !m_clients.dequeue(dbc) ){
+    if( !m_clients.dequeue(dbc, 10) ){
         std::cout << "FAILED TO GET MONGO DATABASE CLIENT" << std::endl;
     }
 
@@ -91,7 +91,7 @@ std::string MongoInterface::insertUnitTests(std::string collection,
 		JsonBox::Value data)
 {
     MongoDatabaseClientPtr dbc;
-    if( !m_clients.dequeue(dbc) ){
+    if( !m_clients.dequeue(dbc, 10) ){
         std::cout << "FAILED TO GET MONGO DATABASE CLIENT" << std::endl;
     }
 
@@ -125,7 +125,7 @@ JsonBox::Value MongoInterface::query(std::string collection,
 		JsonBox::Value data)
 {
     MongoDatabaseClientPtr dbc;
-    if( !m_clients.dequeue(dbc) ){
+    if( !m_clients.dequeue(dbc, 10) ){
         std::cout << "FAILED TO GET MONGO DATABASE CLIENT" << std::endl;
     }
 
@@ -158,7 +158,7 @@ JsonBox::Value MongoInterface::query(std::string collection,
 JsonBox::Value MongoInterface::queryAll(std::string collection)
 {
     MongoDatabaseClientPtr dbc;
-    if( !m_clients.dequeue(dbc) ){
+    if( !m_clients.dequeue(dbc, 10) ){
         std::cout << "FAILED TO GET MONGO DATABASE CLIENT" << std::endl;
     }
 
@@ -191,7 +191,7 @@ JsonBox::Value MongoInterface::queryAll(std::string collection)
 bool MongoInterface::removeEntry(std::string collection, JsonBox::Value data) 
 {
     MongoDatabaseClientPtr dbc;
-    if( !m_clients.dequeue(dbc) ){
+    if( !m_clients.dequeue(dbc, 10) ){
         std::cout << "FAILED TO GET MONGO DATABASE CLIENT" << std::endl;
     }
 
@@ -213,7 +213,7 @@ bool MongoInterface::removeEntry(std::string collection, JsonBox::Value data)
 bool MongoInterface::update(std::string collection, JsonBox::Value filter, JsonBox::Value update)
 {
     MongoDatabaseClientPtr dbc;
-    if( !m_clients.dequeue(dbc) ){
+    if( !m_clients.dequeue(dbc, 10) ){
         std::cout << "FAILED TO GET MONGO DATABASE CLIENT" << std::endl;
     }
 
@@ -235,7 +235,7 @@ bool MongoInterface::update(std::string collection, JsonBox::Value filter, JsonB
 int MongoInterface::count(std::string collection)
 {
     MongoDatabaseClientPtr dbc;
-    if( !m_clients.dequeue(dbc) ){
+    if( !m_clients.dequeue(dbc, 10) ){
         std::cout << "FAILED TO GET MONGO DATABASE CLIENT" << std::endl;
     }
 
@@ -256,7 +256,7 @@ int MongoInterface::count(std::string collection)
 int MongoInterface::countFilter(std::string collection, JsonBox::Value filter)
 {
     MongoDatabaseClientPtr dbc;
-    if( !m_clients.dequeue(dbc) ){
+    if( !m_clients.dequeue(dbc, 10) ){
         std::cout << "FAILED TO GET MONGO DATABASE CLIENT" << std::endl;
     }
 
@@ -291,7 +291,7 @@ std::string MongoInterface::getURI() const
 bool MongoInterface::removeAllEntries(std::string collection) 
 {
     MongoDatabaseClientPtr dbc;
-    if( !m_clients.dequeue(dbc) ){
+    if( !m_clients.dequeue(dbc, 10) ){
         std::cout << "FAILED TO GET MONGO DATABASE CLIENT" << std::endl;
     }
 
@@ -313,7 +313,7 @@ bool MongoInterface::removeAllEntries(std::string collection)
 bool MongoInterface::dropCollection(std::string collection) 
 {
     MongoDatabaseClientPtr dbc;
-    if( !m_clients.dequeue(dbc) ){
+    if( !m_clients.dequeue(dbc, 10) ){
         std::cout << "FAILED TO GET MONGO DATABASE CLIENT" << std::endl;
     }
 
