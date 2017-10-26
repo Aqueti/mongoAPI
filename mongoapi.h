@@ -26,7 +26,9 @@
 #include <mongocxx/uri.hpp>
 #include <mongocxx/exception/bulk_write_exception.hpp>
 #include <mongocxx/exception/query_exception.hpp>
+#include <mongocxx/exception/logic_error.hpp>
 #include <assert.h>
+#include "atl/Timer.h"
 #include "atl/TSQueue.tcc"
 #include "MongoDatabaseClient.h"
 
@@ -51,8 +53,10 @@ namespace mongoapi
 		static mongocxx::instance m_instance;
 		mongocxx::uri m_uri;
 		mongocxx::pool m_pool;
-        int m_maxClients;
-        atl::TSQueue<MongoDatabaseClientPtr> m_clients;
+		mongocxx::pool::entry m_client;
+		mongocxx::database m_db;
+        	int m_maxClients;
+        	atl::TSQueue<MongoDatabaseClientPtr> m_clients;
 
 		/**
 		 * Helper method to convert a JsonBox Value to a BSON object that MongoDB accepts
@@ -77,6 +81,11 @@ namespace mongoapi
 		 * Destructor
 		 */
 		virtual ~MongoInterface();
+		
+		/**
+		 * Creates an index on a collection
+		 */
+		bool createIndex(std::string collection, JsonBox::Value index);
 		/**
 		 * Connect to a specified database
 		 *

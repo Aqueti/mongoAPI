@@ -17,7 +17,7 @@ namespace mongoapi
 mongocxx::instance MongoInterface::m_instance{};
 
 MongoInterface::MongoInterface(std::string URI, int maxClients) : 
-    m_uri("mongodb://" + URI + "/?minPoolSize=1&maxPoolSize=" + std::to_string(maxClients))
+    m_uri("mongodb://" + URI + "/?minPoolSize=1&maxPoolSize=" + std::to_string(maxClients+1))
     , m_pool(m_uri)
 {
 	this->m_URI = URI;
@@ -31,10 +31,16 @@ MongoInterface::~MongoInterface()
 bool MongoInterface::connect(std::string database) 
 {
 	try{
+		// acquire a local instance to use for high-level maintenance
+		m_client = m_pool.acquire();
+		m_db = (*m_client)[database];
+
+		// acquire a queue of connected instances for query/insert/etc.
 		for( int i = 0; i < m_maxClients; i++ ){
-            MongoDatabaseClientPtr dbc = std::make_shared<MongoDatabaseClient>(m_pool, database);
-		    m_clients.enqueue(dbc);
-        }
+			MongoDatabaseClientPtr dbc = std::make_shared<MongoDatabaseClient>(m_pool, database);
+			m_clients.enqueue(dbc);
+		}
+		
 	}
 	catch(const mongocxx::exception& e){
 		std::cout << "database connection failed" << std::endl;
@@ -56,6 +62,19 @@ JsonBox::Value MongoInterface::JSON_from_BSON(bsoncxx::document::view data)
 	JsonBox::Value j;
 	j.loadFromString(bsoncxx::to_json(data));
 	return j;
+}
+
+bool MongoInterface::createIndex(std::string collection, JsonBox::Value index)
+{
+	try{
+		m_db[collection].create_index(BSON_from_JSON(index));
+		return true;
+	} catch( const mongocxx::logic_error& e ){
+		std::cout << "createIndex: " << e.what() << std::endl;
+	} catch( const mongocxx::operation_exception& e ){
+		std::cout << "createIndex: " << e.what() << std::endl;
+	}
+	return false;
 }
 
 std::string MongoInterface::insert(std::string collection,
