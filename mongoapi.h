@@ -29,6 +29,7 @@
 #include <mongocxx/exception/bulk_write_exception.hpp>
 #include <mongocxx/exception/query_exception.hpp>
 #include <assert.h>
+#include <mutex>
 // #include <revision.h>
 using bsoncxx::builder::stream::document;
 using bsoncxx::builder::stream::finalize;
@@ -50,6 +51,7 @@ namespace mongoapi
 		mongocxx::pool m_pool;
 		mongocxx::pool::entry m_client;
 		mongocxx::database m_db;
+        std::mutex m_mutex;
 
 		/**
 		 * Helper method to convert a JsonBox Value to a BSON object that MongoDB accepts
