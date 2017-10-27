@@ -103,6 +103,14 @@ namespace mongoapi
 		 */
 		std::string insert(std::string collection, JsonBox::Value data);
 		/**
+		 * Insert a vector of JsonBox Values into the database with specified collection.
+		 *
+		 * @param collection The name of the collection to insert Value into
+		 * @param data The JsonBox Values to insert
+		 * @return number of documents inserted, or 0 on failure
+		 */
+		int insertMany(std::string collection, std::vector<JsonBox::Value> data);
+		/**
 		 * Insert submodules into specified collection as individual documents for unit testing.
 		 *
 		 * @param collection The name of the collection to insert Value into

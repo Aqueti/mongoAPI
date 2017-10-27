@@ -114,6 +114,44 @@ std::string MongoInterface::insert(std::string collection,
 	return strReturn;
 }
 
+int MongoInterface::insertMany(std::string collection,
+		std::vector<JsonBox::Value> data)
+{
+    int ret = 0;
+    MongoDatabaseClientPtr dbc;
+    if( !m_clients.dequeue(dbc, 10) ){
+        std::cout << "FAILED TO GET MONGO DATABASE CLIENT" << std::endl;
+        return ret;
+    }
+
+	try {
+		// convert vector to BSON
+		std::vector<bsoncxx::document::value> documents;
+		for( JsonBox::Value doc : data ){
+		    documents.push_back(BSON_from_JSON(doc));
+		}
+
+		mongocxx::collection coll = dbc->m_db[collection];
+		mongocxx::stdx::optional<mongocxx::result::insert_many> result = coll.insert_many(documents);
+		if(result){
+			ret = result->inserted_count();
+			//bsoncxx::types::value id = result->inserted_id();
+			//if(id.type() == bsoncxx::type::k_oid){
+			//	bsoncxx::oid oid = id.get_oid().value;
+			//	strReturn = oid.to_string();
+			//}
+			std::cout << "INSERTED " << ret << " documents" << std::endl;
+		}
+	} catch (const mongocxx::bulk_write_exception& e) {
+		std::cout << "insert: " << e.what() << std::endl;
+	} catch (...) {
+		std::cout << "insert: default exception" << std::endl;
+	}
+
+    m_clients.enqueue(dbc);
+	return ret;
+}
+
 std::string MongoInterface::insertUnitTests(std::string collection,
 		JsonBox::Value data)
 {
