@@ -56,6 +56,7 @@ namespace mongoapi
 		mongocxx::pool::entry m_client;
 		mongocxx::database m_db;
         	int m_maxClients;
+		std::atomic<uint16_t> m_createdClients;
         	atl::TSQueue<MongoDatabaseClientPtr> m_clients;
 
 		/**
@@ -185,6 +186,9 @@ namespace mongoapi
 		 */
 		std::string getURI() const;
 
+		int getMaxClients() const;
+
+		int getCreatedClients() const;
 
 		/****************************************************************************/
 		/************************** USED FOR TESTING ONLY ***************************/

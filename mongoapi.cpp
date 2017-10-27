@@ -22,6 +22,7 @@ MongoInterface::MongoInterface(std::string URI, int maxClients) :
 {
 	this->m_URI = URI;
 	m_maxClients = maxClients;
+	m_createdClients = 0;
 }
 
 MongoInterface::~MongoInterface()
@@ -30,23 +31,29 @@ MongoInterface::~MongoInterface()
 
 bool MongoInterface::connect(std::string database) 
 {
+	m_database = database;
 	try{
-		// acquire a local instance to use for high-level maintenance
+		// (re)acquire a local instance to use for high-level maintenance functions
 		m_client = m_pool.acquire();
 		m_db = (*m_client)[database];
+
+		// clear the current queue of existing instances
+		m_clients.delete_all();
+		m_createdClients = 0;
 
 		// acquire a queue of connected instances for query/insert/etc.
 		for( int i = 0; i < m_maxClients; i++ ){
 			MongoDatabaseClientPtr dbc = std::make_shared<MongoDatabaseClient>(m_pool, database);
 			m_clients.enqueue(dbc);
+			m_createdClients++;
 		}
 		
 	}
 	catch(const mongocxx::exception& e){
-		std::cout << "database connection failed" << std::endl;
+		std::cout << "database connection failed after creating " 
+			  << m_createdClients << " database clients" << std::endl;
 		return false;
 	}
-	this->m_database = database;
 	return true;
 }
 
@@ -309,6 +316,16 @@ std::string MongoInterface::getDatabase() const
 std::string MongoInterface::getURI() const 
 {
 	return m_URI;
+}
+
+int MongoInterface::getMaxClients() const
+{
+	return m_maxClients;
+}
+
+int MongoInterface::getCreatedClients() const
+{
+	return m_createdClients;
 }
 
 /****************************************************************************/
