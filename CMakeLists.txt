@@ -117,12 +117,14 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
-find_package(BSON-1.0 REQUIRED)
-find_package(BSONCxx REQUIRED)
-find_package(MongoC REQUIRED)
-find_package(MongoCxx REQUIRED)
+find_package(libbson-static-1.0 CONFIG REQUIRED)
+find_package(libbsoncxx CONFIG REQUIRED)
+find_package(libmongoc-static-1.0 CONFIG REQUIRED)
+find_package(libmongocxx CONFIG REQUIRED)
 find_package(JsonBox CONFIG REQUIRED)
 find_package(AquetiTools CONFIG REQUIRED)
+
+link_directories(${LIBMONGOCXX_LIBRARY_DIRS})
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -132,11 +134,12 @@ add_library(mongoAPI STATIC
     MongoDatabaseClient.cpp
 )
 target_include_directories(mongoAPI
-    PUBLIC ${MONGOC_INCLUDE_DIR} #TODO: This needs to be private
-    PUBLIC ${MONGOCXX_INCLUDE_DIRS}
+    PUBLIC ${MONGOC_INCLUDE_DIRS} #TODO: This needs to be private
+    PUBLIC ${LIBMONGOCXX_INCLUDE_DIRS}
     PUBLIC ${BSON_INCLUDE_DIRS}
-    PUBLIC ${BSONCXX_INCLUDE_DIRS}
+    PUBLIC ${LIBBSONCXX_INCLUDE_DIRS}
 )
+
 if (MSVC)
   target_include_directories(mongoAPI
     PUBLIC ${Boost_INCLUDE_DIRS}
@@ -145,10 +148,10 @@ endif()
 TARGET_LINK_LIBRARIES(mongoAPI
     PUBLIC AquetiTools
     PUBLIC JsonBox
-    PRIVATE ${BSONCXX_LIBRARY}
-    PRIVATE ${MONGOC_LIBRARY} 
-    PRIVATE ${MONGOCXX_LIBRARY} 
-    PRIVATE ${BSON_LIBRARIES}
+    PRIVATE ${LIBMONGOCXX_LIBRARIES} 
+    PRIVATE ${LIBBSONCXX_LIBRARIES}
+    PRIVATE ${MONGOC_STATIC_LIBRARIES} 
+    PRIVATE ${BSON_STATIC_LIBRARIES}
 )
 set(TARGET_LIST mongoAPI)
 

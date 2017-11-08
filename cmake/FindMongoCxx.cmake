@@ -17,7 +17,7 @@ find_path(MONGOCXX_INCLUDE_DIRS "mongocxx/collection.hpp" HINTS
 )
 
 
-find_library(MONGOCXX_LIBRARY NAMES "mongocxx" HINTS 
+find_library(MONGOCXX_LIBRARY NAMES "libmongocxx.a" "mongocxx" HINTS 
    "${MONGOCXX_ROOT}/lib"
    "${INSTALL_PATH}/lib"
    "${CMAKE_INSTALL_PREFIX}/lib"

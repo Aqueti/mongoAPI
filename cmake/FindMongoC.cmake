@@ -16,7 +16,7 @@ find_path(MONGOC_INCLUDE_DIRS "mongoc.h" HINTS
 )
 
 
-find_library(MONGOC_LIBRARY NAMES "mongoc-1.0" HINTS 
+find_library(MONGOC_LIBRARY NAMES "mongoc-static-1.0" "mongoc-1.0" HINTS 
    "${MONGOC_ROOT}/lib"
    "${CMAKE_INSTALL_PREFIX}/lib"
 )
