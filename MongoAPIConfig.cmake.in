@@ -1,11 +1,13 @@
 @FIND_DEPENDENCIES@
 @PACKAGE_INIT@
 
-find_package(BSON-1.0 REQUIRED)
-find_package(BSONCxx REQUIRED)
-find_package(MongoC REQUIRED)
-find_package(MongoCxx REQUIRED)
+find_package(libbson-static-1.0 CONFIG REQUIRED)
+find_package(libbsoncxx CONFIG REQUIRED)
+find_package(libmongoc-static-1.0 CONFIG REQUIRED)
+find_package(libmongocxx CONFIG REQUIRED)
 find_package(JsonBox CONFIG REQUIRED)
+
+link_directories(${LIBMONGOCXX_LIBRARY_DIRS} ${LIBBSONCXX_LIBRARY_DIRS})
 
 if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake AND NOT TARGET @GUARD_TARGET@)
   include(${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake)

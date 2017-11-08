@@ -17,7 +17,7 @@ find_path(BSON_INCLUDE_DIRS "bson.h" HINTS
 
 
 message( "BSON INSTALL_PATH: ${INSTALL_PATH}")
-find_library(BSON_LIBRARIES NAMES "bson-1.0" HINTS 
+find_library(BSON_LIBRARIES NAMES "bson-static-1.0" "bson-1.0" HINTS 
    "${INSTALL_PATH}/lib"
    "${CMAKE_INSTALL_PREFIX}/lib"
 )
