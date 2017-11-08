@@ -140,7 +140,7 @@ int MongoInterface::insertMany(std::string collection,
 			//	bsoncxx::oid oid = id.get_oid().value;
 			//	strReturn = oid.to_string();
 			//}
-			std::cout << "INSERTED " << ret << " documents" << std::endl;
+			//std::cout << "INSERTED " << ret << " documents" << std::endl;
 		}
 	} catch (const mongocxx::bulk_write_exception& e) {
 		std::cout << "insert: " << e.what() << std::endl;
