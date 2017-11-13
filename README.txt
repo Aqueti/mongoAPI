@@ -9,21 +9,59 @@ Update: "git submodule update"
 sudo apt-get install doxygen
 sudo apt-get install graphviz
 
-##### TO INSTALL MONGODB 3.0 #####
+
+##################################
+##### TO INSTALL MONGODB 3.2 #####
+##################################
+# remove Ubuntu repository verison of mongo
+sudo apt purge mongodb
+
+# add official mongo repo and install
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
 echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
 sudo apt-get update
 sudo apt-get install mongodb-org
+
+# create systemd service file by pasting the following in a new file at /lib/systemd/system/mongod.service
+[Unit]
+Description=High-performance, schema-free document-oriented database
+After=network.target
+Documentation=https://docs.mongodb.org/manual
+
+[Service]
+User=mongodb
+Group=mongodb
+ExecStart=/usr/bin/mongod --quiet --config /etc/mongod.conf
+# file size
+LimitFSIZE=infinity
+# cpu time
+LimitCPU=infinity
+# virtual memory size
+LimitAS=infinity
+# open files
+LimitNOFILE=64000
+# processes/threads
+LimitNPROC=64000
+# total threads (user+kernel)
+TasksMax=infinity
+TasksAccounting=false
+
+[Install]
+WantedBy=multi-user.target
+
+# start mongo
+sudo service mongod start
+
+
+
+To install manually:
+in the install directory, run ccmake [source_directory] and turn superbuild "off"
 
 ##### TO INSTALL BOOST #####
 sudo apt-get install libboost-all-dev
 
 ##### TO INSTALL SCONS #####
 sudo apt-get install scons
-
-
-To install manually:
-in the install directory, run ccmake [source_directory] and turn superbuild "off"
 
 ##### TO INSTALL GIT #####
 sudo apt-get install git
