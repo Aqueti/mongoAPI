@@ -14,7 +14,7 @@ using namespace std;
 
 string uri = "127.0.0.1:27017";
 uint16_t max_clients = 10;
-string db_name = "acos";
+string db_name = "test_acos";
 uint16_t num_of_threads = 10;
 uint32_t times_per_thread = 1e3;
 bool isClean = true;
