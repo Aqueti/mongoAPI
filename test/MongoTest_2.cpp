@@ -14,7 +14,7 @@ using namespace std;
 
 string uri = "127.0.0.1:27017";
 uint16_t max_clients = 10;
-string db_name = "acos";
+string db_name = "test_acos";
 bool isClean = true;
 
 mongoapi::MongoInterface mi(uri, max_clients);
