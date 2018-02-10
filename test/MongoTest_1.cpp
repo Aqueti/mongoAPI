@@ -1,7 +1,7 @@
 /**
 * Checking:
 * insert function
-*
+* 
 **/
 
 #include <string>
@@ -116,7 +116,7 @@ int main(int argc, char * argv[] )
       }
    }
      
-   cout << "\t\t" << "exp\t" << "act\t" << "cmp\t" << endl;
+   cout << "\t\t" << "exp\t" << "act\t" << "cmp" << endl;
    for (map<string, Result>::iterator it = res.begin(); it != res.end(); it++) {
       cout << it->first << "\t"
            << (it->first.length() < 8 ? "\t" : "")
