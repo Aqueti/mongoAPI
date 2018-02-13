@@ -87,7 +87,7 @@ bool MongoInterface::createIndex(std::string collection, JsonBox::Value index)
 std::string MongoInterface::insert(std::string collection,
 		JsonBox::Value data)
 {
-	std::string strReturn;
+    std::string strReturn;
     MongoDatabaseClientPtr dbc;
     if( !m_clients.dequeue(dbc, 10) ){
         std::cout << "FAILED TO GET MONGO DATABASE CLIENT" << std::endl;
@@ -105,7 +105,7 @@ std::string MongoInterface::insert(std::string collection,
 			}
 		}
 	} catch (const mongocxx::bulk_write_exception& e) {
-		std::cout << "insert: " << e.what() << std::endl;
+		std::cout << "sdf - insert: " << e.what() << std::endl;
 	} catch (...) {
 		std::cout << "insert: default exception" << std::endl;
 	}
