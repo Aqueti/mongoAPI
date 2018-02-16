@@ -4,6 +4,7 @@
  * Created on: June 19, 2017
  * Author: Steve Feller/Nils Persson
  **/
+#include <chrono>
 #include <iostream>
 #include <vector>
 #include <thread>
@@ -11,7 +12,6 @@
 
 #include "mongoapi.h"
 #include <Timer.h>
-
 
 //global variables
 std::string uri = "127.0.0.1:27017";
@@ -22,23 +22,32 @@ int verbose = 0;
 double startTime;
 bool done = false;
 uint16_t statusRate = 1;  //Rate to print status in seconds
+bool useGlobalDatabase = true;
 
 uint64_t writeThreads = 10;
 uint64_t writeSuccess = 0;
 uint64_t writeFail = 0;
-double writeRate = 0.00001;
-double lastWriteTime = 0;                     //Time of last write to prevent queries into the future
+uint64_t writePS= 4000;
+double   writeRate= 0;
+double   lastWriteTime = 0;                     //Time of last write to prevent queries into the future
+uint64_t insertCount = 0;
+
 
 bool     windowMode = true;
 uint64_t queryThreads = 1;
 uint64_t querySuccess = 0;
 uint64_t queryFail = 0;
-double queryRate = 0.00001;
+uint64_t queryPS= 450;
+double   queryRate = 0.0;
+double   queryDelay = 10.0;
 
 //Thread safe queues for passing data between threads
 atl::TSQueue<JsonBox::Value> inputQ;     //We are passing in a JsonBox metadata and an destination
 atl::TSQueue<JsonBox::Value> queryQ;                              //Queue of JsonBox queries 
 atl::TSQueue<std::tuple<JsonBox::Value, JsonBox::Value>> outputQ;     //Found Result, destination, query 
+
+//Mongo interface object
+mongoapi::MongoInterface * mongoInterface;                   //Database interface
 
 
 /**
@@ -75,7 +84,7 @@ JsonBox::Value metaGenerator( int id ) {
    std::stringstream ss;
    ss<<"file_"<<id;
 
-   double ts = (double)startTime+(double)id*writeRate;
+   double ts = (double)startTime+(double)id * writeRate;
 
    JsonBox::Value input;
    input["id"].setString("test");
@@ -121,15 +130,19 @@ void StatusThread() {
    uint64_t lastWriteCount   = writeSuccess+writeFail;
    uint64_t lastQuerySuccess = querySuccess;
    uint64_t lastQueryCount   = querySuccess+queryFail;
+//   uint64_t lastInsert = insertCount;
 
    double writePercent = 0.0;
    double queryPercent = 0.0;
 
    while( !done) {
-      uint64_t totalWritesPerIter  = writeSuccess + writeFail-lastWriteCount;
-      uint64_t writeSuccessPerIter = writeSuccess - lastWriteCount;
-      uint64_t totalQueriesPerIter = querySuccess + queryFail-lastQueryCount;
-      uint64_t querySuccessPerIter = querySuccess - lastQueryCount;
+      uint64_t totalWrites = writeSuccess + writeFail;
+      uint64_t totalQueries = querySuccess + queryFail;
+
+      uint64_t totalWritesPerIter  = totalWrites  - lastWriteCount;
+      uint64_t writeSuccessPerIter = writeSuccess - lastWriteSuccess;
+      uint64_t totalQueriesPerIter = totalQueries - lastQueryCount;
+      uint64_t querySuccessPerIter = querySuccess - lastQuerySuccess;
 
       if(totalWritesPerIter > 0 ) {
          writePercent = 100.0*(double)writeSuccessPerIter/(double)totalWritesPerIter;
@@ -141,16 +154,19 @@ void StatusThread() {
       std::stringstream ss;
 
       std::cout << atl::getDateAsString()
-                << ":    \tWrites:"<<totalWritesPerIter<<"/"<<totalWritesPerIter-writeSuccessPerIter<<"<<("<<writePercent<<"%) at " << writeSuccessPerIter << " wps"
-                << ":    \tQueries:"<<totalQueriesPerIter<<"/"<<totalQueriesPerIter-querySuccessPerIter<<"<<("<<queryPercent<<"%) at " << querySuccessPerIter << " qps"
+                << "\tWrites:"<<writeSuccessPerIter<<"/"<<totalWritesPerIter<<"("<<writePercent<<"%," << writeSuccessPerIter << " wps)"
+                << "\tQueries:"<<querySuccessPerIter<<"/"<<totalQueriesPerIter<<"("<<queryPercent<<"%)," << querySuccessPerIter << " qps)"
+                << "\tinputQ: "<<inputQ.size()<<", queryQ: "<<queryQ.size()
                 <<std::endl;
 
       lastWriteCount = lastWriteCount + totalWritesPerIter;
-      lastWriteSuccess = writeSuccess - lastWriteSuccess;
+      lastWriteSuccess = writeSuccess;
       lastQueryCount =   lastQueryCount + totalQueriesPerIter;
-      lastQuerySuccess = querySuccess - lastQuerySuccess;
+      lastQuerySuccess = querySuccess;
+//      lastInsert = insertCount;
 
-      atl::sleep(statusRate);
+      std::this_thread::sleep_for(std::chrono::microseconds((uint64_t)(statusRate *(double)1e6)));
+//      atl::sleep(statusRate);
    }
 }
 
@@ -165,13 +181,14 @@ void StatusThread() {
  * as the thread id * the number of records per 
  **/
 void WriteThread( unsigned int tid, bool * doneFlag  ) {
-
-   //Try to connect to the database
-   mongoapi::MongoInterface mongoInterface(uri);
-   bool connected = mongoInterface.connect(database);
-   if(!connected){
-      std::cout << "writeThread "<<std::fixed<<tid<<" unable to connect to the database. Exiting" << std::endl;
-      exit(1);
+   mongoapi::MongoInterface localInterface(uri);
+   if( !useGlobalDatabase ) {
+      //Try to connect to the database
+      bool connected = localInterface.connect(database);
+      if(!connected){
+         std::cout << "writeThread "<<std::fixed<<tid<<" unable to connect to the database. Exiting" << std::endl;
+         exit(1);
+      }
    }
 
    //This is what we'll be dequeuing. First tuple is header, second is destination directory
@@ -189,15 +206,25 @@ void WriteThread( unsigned int tid, bool * doneFlag  ) {
       //If the input is null, nothing was available
       if( !input.isNull()) {
          //Add item to the database
-         std::string out = mongoInterface.insert(collection, input);
+         std::string out;
+
+         if( !useGlobalDatabase ) {
+            out = localInterface.insert(collection, input);
+         }
+         else {
+            out = mongoInterface->insert(collection, input);
+         }
          if( out.empty()) {
+             std::cout<< tid <<" - Write failed!"<<std::endl;
              writeFail++;
          }
-         else if( std::stod(input["timestamp"].getString()) > lastWriteTime ) {
-            lastWriteTime = std::stod(input["timestamp"].getString());
+         else {
+            if( std::stod(input["timestamp"].getString()) > lastWriteTime ) {
+               lastWriteTime = std::stod(input["timestamp"].getString());
+            }
+            writeSuccess++;
          }
 
-         writeSuccess++;
       }
    }
 
@@ -214,12 +241,15 @@ void WriteThread( unsigned int tid, bool * doneFlag  ) {
  **/
 void QueryThread( unsigned int tid, std::string collection, bool *doneFlag  ) {
 
-   //Try to connect to the database
-   mongoapi::MongoInterface mongoInterface(uri);
-   bool connected = mongoInterface.connect(database);
-   if(!connected){
-      std::cout << "queryThread "<<tid<<" unable to connect to the database. Exiting" << std::endl;
-      return;
+   mongoapi::MongoInterface localInterface(uri);
+   
+   if( !useGlobalDatabase ) {
+      //Try to connect to the database
+      bool connected = localInterface.connect(database);
+      if(!connected){
+         std::cout << "queryThread "<<tid<<" unable to connect to the database. Exiting" << std::endl;
+         return;
+      }
    }
    
 
@@ -246,7 +276,7 @@ void QueryThread( unsigned int tid, std::string collection, bool *doneFlag  ) {
          if( windowMode ) {
  
             double windowStart =std::stod(request["timestamp"].getString());
-            windowStart = windowStart -writeRate/2.0;
+            windowStart = windowStart - writeRate/2.0;
 
             JsonBox::Value timebounds;
             timebounds["$gte"].setString(std::to_string(windowStart));
@@ -262,7 +292,13 @@ void QueryThread( unsigned int tid, std::string collection, bool *doneFlag  ) {
          }
     
          //Perform actual query
-         JsonBox::Value result = mongoInterface.query(collection, query);
+         JsonBox::Value result;
+         if( !useGlobalDatabase ) {
+            result = localInterface.query(collection, query);
+         }
+         else {
+            result = mongoInterface->query(collection, query);
+         }
 
          //If null, query failed!
          if( result.isNull()) {
@@ -287,7 +323,7 @@ void QueryThread( unsigned int tid, std::string collection, bool *doneFlag  ) {
                //Make sure the data we recieved is within the window
                if((std::abs( target-actual ) > writeRate/2.0)) {
                   std::cout << tid <<" query timestamp error. Difference in target,actual exceeds rate. ("
-                            <<target<<","<<actual<<" > "<<writeRate<<")"<<std::endl;
+                            <<target<<","<<actual<<" > "<<writeRate/2.0<<")"<<std::endl;
                } 
                else {
                   if( arr.size() > 1 ) { 
@@ -295,9 +331,10 @@ void QueryThread( unsigned int tid, std::string collection, bool *doneFlag  ) {
                         std::cout << "Received "<<arr.size()<<" records when expecting 1 from query: "<<query<<std::endl;
                      }
                   }
-
-                  querySuccess++;
-                  outputQ.enqueue(std::tuple<JsonBox::Value,JsonBox::Value>(arr[0], request));
+                  else {
+                     querySuccess++;
+//                  outputQ.enqueue(std::tuple<JsonBox::Value,JsonBox::Value>(arr[0], request));
+                  }
                }
             }
          }
@@ -318,9 +355,9 @@ void QueryController() {
       threadVect.push_back( std::thread( QueryThread, i, collection, &queryDone));
    }
 
-   std::cout << "In query controller. Waiting for 1 seconds to begin queries"<<std::endl;
-   atl::sleep(1);
-   std::cout << "In query controller. Sending queries at about "<<1.0/queryRate<<" fps"<<std::endl;
+   std::cout << "In query controller. Waiting for "<<std::fixed<<queryDelay<<" seconds to begin queries"<<std::endl;
+   atl::sleep(queryDelay);
+   std::cout << "In query controller. Sending queries at about "<<queryPS<<" fps"<<std::endl;
 
    //Add data to the query queues
    uint64_t i = 1;
@@ -329,14 +366,15 @@ void QueryController() {
 
       double ts = std::stod(input["timestamp"].getString());
       while(( ts  > lastWriteTime )&&(!done)) {
-         std::cout << "Query Controller Caught up. Sleeping for 1 second"<<std::endl;
+         std::cout << "Query Controller Caught up("<<std::fixed<<ts-lastWriteTime<<"). Sleeping for 1 second"<<std::endl;
          atl::sleep(1);
          std::cout << "Query Controller awake again"<<std::endl;
       }
 
       queryQ.enqueue(input);
       i++;
-      atl::sleep(queryRate);
+      std::this_thread::sleep_for(std::chrono::microseconds((uint64_t)(queryRate *(double)1e6)));
+//      atl::sleep(queryRate);
    }
 
    queryDone = true;
@@ -358,12 +396,14 @@ void printHelp()
    std::cout << "Database testing application\n"<<std::endl;
    std::cout << "option:"<<std::endl;
    std::cout << "\t-h            print this help menu"<<std::endl;
-   std::cout << "\t-qr  <double> query rate where 0.0 = max (default="<<queryRate<<")"<<std::endl;
+   std::cout << "\t-localdb      create a separate database interface for each thread"<<std::endl;
+   std::cout << "\t-qd  <double> how long to delay queries after write starts (default="<<queryDelay<<")"<<std::endl;
+   std::cout << "\t-qps  <double> target number of queries per second. (default="<<queryPS<<")"<<std::endl;
    std::cout << "\t-qt  <int>    number of query threads (default="<<queryThreads<<")"<<std::endl;
    std::cout << "\t-uri <string> URI of the database in the format of hostname:port. (default="<<uri<<")"<<std::endl;
    std::cout << "\t-v   <int>    enter verbose mode (default="<<verbose<<")"<<std::endl;
    std::cout << "\t-wt   <int>   number of write threads to use (default="<<writeThreads<<")"<<std::endl;
-   std::cout << "\t-wr  <double> write rate per thread where 0.0 = max (default="<<writeRate<<")"<<std::endl;
+   std::cout << "\t-wps  <double> target number of writes per second. (default="<<writePS<<")"<<std::endl;
 /*
    std::cout << "\t-rt  <int>   number of read threads (default="<<readThreads<<")"<<std::endl;
    std::cout << "\t-rpt <int>   reads per thread (default="<<readsPerThread<<")"<<std::endl
@@ -391,9 +431,12 @@ int main(int argc, char * argv[] )
          printHelp();
          exit(1);
       }
-      else if( !strcmp( argv[i], "-qr")) {
-    i++;
-    queryRate = std::stod(argv[i]);
+      else if( !strcmp( argv[i], "-localdb")) {
+         useGlobalDatabase = false;
+      }
+      else if( !strcmp( argv[i], "-qps")) {
+         i++;
+         queryPS = std::stod(argv[i]);
       }
       else if( !strcmp( argv[i], "-qt")) {
     i++;
@@ -407,9 +450,9 @@ int main(int argc, char * argv[] )
     i++;
     writeThreads = std::stoi(argv[i]);
       }
-      else if( !strcmp( argv[i], "-wr")) {
-    i++;
-    writeRate = std::stod(argv[i]);
+      else if( !strcmp( argv[i], "-wps")) {
+         i++;
+         writePS = std::stod(argv[i]);
      }
      else if( !strcmp( argv[i], "-v")) {
         i++;
@@ -423,6 +466,18 @@ int main(int argc, char * argv[] )
      i++;
    }
 
+   std::cout << "Writing to database at "<<uri<<" with the following configuration:\n"
+             << "\t- Write Threads:     "<<writeThreads<<"\n"
+             << "\t- Query Threads:     "<<queryThreads<<"\n"
+             << "\t- Target Write(fps): "<<writePS<<"\n"
+             << "\t- Target Query(fps): "<<queryPS<<"\n"
+             << "\t- Query Delay:       "<<queryDelay<<"\n"
+             << "\t- Query Delay:       "<<queryDelay<<"\n"
+             << "\t- Verbose Mode:      "<<verbose<<"\n"
+             << std::endl;
+             
+
+
    //Kickoff management threads
    std::thread controlThread = std::thread(ControlThread);
    std::thread status;        //Thread the checks the status of a running process
@@ -435,8 +490,8 @@ int main(int argc, char * argv[] )
    startTime = atl::getTime();
 
    //Try to connect to the database
-   mongoapi::MongoInterface mongoInterface(uri);
-   bool connected = mongoInterface.connect(database);
+   mongoInterface = new mongoapi::MongoInterface(uri);
+   bool connected = mongoInterface->connect(database);
    if(!connected){
       std::cout << "Unable to connect to the database to erase the "<<collection<<" collection. Exiting" << std::endl;
       exit(1);
@@ -445,7 +500,7 @@ int main(int argc, char * argv[] )
    //If the erase flag is set, remove all records
    if( erase ) {
       std::cout << "Removing all entries in the collection "<<collection<<". This may take a while."<<std::endl;
-      mongoInterface.removeAllEntries(collection);
+      mongoInterface->removeAllEntries(collection);
       std::cout << "All entries in the collection "<<collection<<" removed"<<std::endl;
 
 
@@ -454,7 +509,7 @@ int main(int argc, char * argv[] )
 
       //Add item to the database
       JsonBox::Value input = metaGenerator(0);
-      std::string out = mongoInterface.insert(collection, input);
+      std::string out = mongoInterface->insert(collection, input);
       if( out.empty()) {
          writeFail++;
       }
@@ -464,13 +519,15 @@ int main(int argc, char * argv[] )
 
       //Creat the collection index
       JsonBox::Value index1;
-      index1["timestamp"].setString("1");
+      index1["timestamp"].setInteger(1);
       if( verbose ) {
          std::cout << "Creating index "<<index1<<" for collection "<<collection<<std::endl;
       }
-      mongoInterface.createIndex( collection, index1);
+      mongoInterface->createIndex( collection, index1);
    }
 
+   writeRate = 1.0/(double)writePS;
+   queryRate = 1.0/(double)queryPS;
 
    //Create the status thread if we are in verbose mode
    if( verbose ) {
@@ -490,13 +547,15 @@ int main(int argc, char * argv[] )
    std::thread queryController = (std::thread(QueryController));
 
    //Use the to create artificial metadata
-   uint64_t insertCount = 1;
+   insertCount = 1;
+   std::cout << "Inserting at "<<std::fixed<<writeRate<<" or "<<writePS<<" wps"<<std::endl;
    while( !done ) {
       JsonBox::Value input = metaGenerator(insertCount);
       inputQ.enqueue( input );
       insertCount++;
 
-      atl::sleep(writeRate);
+      std::this_thread::sleep_for(std::chrono::microseconds((uint64_t)(writeRate *(double)1e6)));
+//      atl::sleep(writeRate);
    }
 
    std::cout << "No longer writing data. Preparing to exit"<<std::endl;
@@ -516,4 +575,6 @@ int main(int argc, char * argv[] )
    }
 
    controlThread.join();
+
+   delete mongoInterface;
 }
