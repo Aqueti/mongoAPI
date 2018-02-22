@@ -14,6 +14,7 @@ set(cmake_common_args
     -DUSE_SUPERBUILD:BOOL=OFF
 )
 
+
 add_custom_target(submodule_init
     COMMAND ${GIT_EXECUTABLE} submodule init ${CMAKE_SOURCE_DIR}
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -38,35 +39,59 @@ macro(add_external_project MYNAME LOCATION MASTER DEPENDS ARGS)
     )
 endmacro(add_external_project)
 
-set(MONGOC_ARGS
+#See if we have all of the packages
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+find_package(libbson-static-1.0 QUIET)
+find_package(libbsoncxx QUIET )
+find_package(libmongoc-static-1.0 QUIET )
+find_package(libmongocxx QUIET )
+
+# If we are not forcing superbuild mode, then turn ON if missing libraries.
+# Otherwise, it remains as it was set
+if( NOT  libsson_static-1.0_FOUND )
+  set(BSON_ARGS
+    -DENABLE_TESTS:BOOL=OFF
+    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}/INSTALL
+  )
+  add_external_project(libbson dependencies/libbson OFF "" "${BSON_ARGS}")
+  set(depends libbson)
+#  list(APPEND depends libbson)
+endif()
+if( NOT  libmongoc-static_FOUND )
+  set(MONGOC_ARGS
     -DENABLE_TESTS:BOOL=OFF
     -DENABLE_EXAMPLES:BOOL=OFF
     -DENABLE_SASL:BOOL=OFF
-)
-set(MONGOCXX_ARGS
+    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}/INSTALL
+  )
+  add_external_project(MongoC dependencies/mongo-c-driver OFF "${depends}" "${MONGOC_ARGS}")
+  set(depends MongoC)
+endif()
+
+if( NOT  libmongocxx_FOUND )
+  set(MONGOCXX_ARGS
     -DLIBMONGOC_DIR=${CMAKE_BINARY_DIR}/INSTALL
     -DLIBBSON_DIR=${CMAKE_BINARY_DIR}/INSTALL
     -DCMAKE_PREFIX_PATH:PATH=${CMAKE_BINARY_DIR}/INSTALL
-)
-set(BSON_ARGS
-    -DENABLE_TESTS:BOOL=OFF
-)
+    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}/INSTALL
+  )
+  add_external_project(MongoCXX dependencies/mongo-cxx-driver OFF "${depends}" "${MONGOCXX_ARGS}")
+  set(depends MongoCXX)
+endif()
 
-add_external_project(libbson dependencies/libbson OFF "" "${BSON_ARGS}")
-add_external_project(MongoC dependencies/mongo-c-driver OFF "libbson" "${MONGOC_ARGS}")
-add_external_project(MongoCXX dependencies/mongo-cxx-driver OFF "MongoC;libbson" "${MONGOCXX_ARGS}")
+
 add_external_project(JsonBox dependencies/JsonBox OFF "" "")
 add_external_project(AquetiTools dependencies/AquetiTools OFF "JsonBox" "")
 
-ExternalProject_Add (
+message("SOURCEDIR: ${CMAKE_SOURCE_DIR}")
+ExternalProject_Add(
   mongoapi
   SOURCE_DIR ${CMAKE_SOURCE_DIR}
   BUILD_ALWAYS 1 
   CMAKE_ARGS
-    ${cmake_common_args}
-    -DDOXYGEN_DIR=${CMAKE_BINARY_DIR}/INSTALL/Doxygen
+     ${cmake_common_args}
+     -DDOXYGEN_DIR=${CMAKE_BINARY_DIR}/INSTALL/Doxygen
   INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-  DEPENDS AquetiTools JsonBox MongoCXX submodule_init
+  DEPENDS AquetiTools ${depends} 
 )
-
 

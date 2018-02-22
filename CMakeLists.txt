@@ -1,11 +1,14 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12)
+
 cmake_policy(SET CMP0048 NEW)
+cmake_minimum_required(VERSION 3.5)
+
 
 PROJECT(mongoAPI VERSION "0.1.0.0")
 
 option(USE_SUPERBUILD "Use superbuild to pull in and build dependencies." ON)
 option(BUILD_TESTS "Build test libraries and excutables." ON)
 option(BUILD_TOOLS "Build interface tools." ON)
+
 
 #We need a git executable so we can determine versions
 find_package(Git REQUIRED)
@@ -15,6 +18,23 @@ find_package(Git REQUIRED)
 if (MSVC)
   find_package(Boost 1.56.0 REQUIRED)
 endif()
+
+# Superbuild rules
+if(USE_SUPERBUILD)
+    message("Super depends: ${depends}")
+    include(ExternalProject)
+    include(Superbuild.cmake)
+    return()
+endif()
+
+list(APPEND CMAKE_MODULE_PATH 
+   ${CMAKE_INSTALL_PREFIX}/cmake
+   ${CMAKE_INSTALL_PREFIX}/lib/cmake
+#   ${CMAKE_BINARY_DIR}/INSTALL/cmake
+#   ${CMAKE_BINARY_DIR}/INSTALL/lib/cmake
+)
+
+message("Look: ${CMAKE_MODULE_PATH}")
 
 # Doxygen support
 # add a target to generate API documentation with Doxygen
@@ -29,19 +49,6 @@ if(DOXYGEN_FOUND)
         COMMENT "Generating API documentation with Doxygen" VERBATIM
     )
 endif(DOXYGEN_FOUND)
-
-
-list(APPEND CMAKE_PREFIX_PATH
-    ${CMAKE_INSTALL_PREFIX}/lib/cmake
-    usr/lib/cmake
-)
-
-# Superbuild rules
-if(USE_SUPERBUILD)
-    include(ExternalProject)
-    include(Superbuild.cmake)
-    return()
-endif()
 
 #############################################
 # Determine build information. Version specs
@@ -117,12 +124,14 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
+
+
 find_package(libbson-static-1.0 CONFIG REQUIRED)
 find_package(libbsoncxx CONFIG REQUIRED)
 find_package(libmongoc-static-1.0 CONFIG REQUIRED)
 find_package(libmongocxx CONFIG REQUIRED)
-find_package(JsonBox CONFIG REQUIRED)
-find_package(AquetiTools CONFIG REQUIRED)
+#find_package(JsonBox REQUIRED)
+#find_package(AquetiTools REQUIRED)
 
 link_directories(${LIBMONGOCXX_LIBRARY_DIRS})
 
@@ -138,6 +147,7 @@ target_include_directories(mongoAPI
     PUBLIC ${LIBMONGOCXX_INCLUDE_DIRS}
     PUBLIC ${BSON_INCLUDE_DIRS}
     PUBLIC ${LIBBSONCXX_INCLUDE_DIRS}
+    ${CMAKE_INSTALL_PREFIX}/include
 )
 
 if (MSVC)
