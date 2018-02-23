@@ -40,24 +40,40 @@ macro(add_external_project MYNAME LOCATION MASTER DEPENDS ARGS)
 endmacro(add_external_project)
 
 #See if we have all of the packages
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
-find_package(libbson-static-1.0 QUIET)
-find_package(libbsoncxx QUIET )
-find_package(libmongoc-static-1.0 QUIET )
-find_package(libmongocxx QUIET )
+if( NOT FORCE_MODULES )
+  list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+  find_package(libbson-static-1.0 QUIET)
+  find_package(libbsoncxx QUIET )
+  find_package(libmongoc-static-1.0 QUIET )
+  find_package(libmongocxx QUIET )
+endif()
 
-# If we are not forcing superbuild mode, then turn ON if missing libraries.
-# Otherwise, it remains as it was set
+#determine what local modules we need to build
 if( NOT  libsson_static-1.0_FOUND )
+   set(BUILD_BSON true)
+   set(BUILD_MONGOC true)
+   set(BUILD_MONGOCXX true)
+endif()
+if( NOT  libmongoc-static_FOUND )
+   set(BUILD_MONGOC true)
+   set(BUILD_MONGOCXX true)
+endif()
+if( libmongocxx_FOUND )
+   set(BUILD_MONGOCXX true)
+endif()
+
+
+# Build the missing modules 
+# Otherwise, it remains as it was set
+if( BUILD_BSON )
   set(BSON_ARGS
     -DENABLE_TESTS:BOOL=OFF
     -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}/INSTALL
   )
   add_external_project(libbson dependencies/libbson OFF "" "${BSON_ARGS}")
   set(depends libbson)
-#  list(APPEND depends libbson)
 endif()
-if( NOT  libmongoc-static_FOUND )
+if( BUILD_MONGOC)
   set(MONGOC_ARGS
     -DENABLE_TESTS:BOOL=OFF
     -DENABLE_EXAMPLES:BOOL=OFF
@@ -68,7 +84,7 @@ if( NOT  libmongoc-static_FOUND )
   set(depends MongoC)
 endif()
 
-if( NOT  libmongocxx_FOUND )
+if( BUILD_MONGOCXX )
   set(MONGOCXX_ARGS
     -DLIBMONGOC_DIR=${CMAKE_BINARY_DIR}/INSTALL
     -DLIBBSON_DIR=${CMAKE_BINARY_DIR}/INSTALL
@@ -80,14 +96,12 @@ if( NOT  libmongocxx_FOUND )
 endif()
 
 if(USE_SUPERBUILD)
-   message("Using Superbuild!")
    add_external_project(JsonBox dependencies/JsonBox OFF "" "")
    add_external_project(AquetiTools dependencies/AquetiTools OFF "JsonBox" "")
    set(superdepends AquetiTools)
 endif()
 
 
-message("SOURCEDIR: ${CMAKE_SOURCE_DIR}")
 ExternalProject_Add(
   mongoapi
   SOURCE_DIR ${CMAKE_SOURCE_DIR}

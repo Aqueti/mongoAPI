@@ -5,12 +5,18 @@ cmake_minimum_required(VERSION 3.5)
 
 PROJECT(mongoAPI VERSION "0.1.0.0")
 
+set(BUILD_MODULES CACHE BOOL ON )
 option(USE_SUPERBUILD "Use superbuild to pull in and build dependencies." ON)
 option(BUILD_TESTS "Build test libraries and excutables." ON)
 option(BUILD_TOOLS "Build interface tools." ON)
-option(BUILD_MODULES "Build submodules." ON)
+option(FORCE_MODULES "Force build submodules" OFF)
+#option(BUILD_MODULES "Build submodules." CACHE ON)
 
 if(USE_SUPERBUILD)
+   set(BUILD_MODULES true)
+endif()
+
+if( FORCE_MODULES ) 
    set(BUILD_MODULES true)
 endif()
 
@@ -25,6 +31,7 @@ endif()
 
 # Superbuild rules
 if(BUILD_MODULES)
+    message("Build Modules")
     include(ExternalProject)
     include(Superbuild.cmake)
     return()
