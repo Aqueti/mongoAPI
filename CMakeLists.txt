@@ -8,7 +8,11 @@ PROJECT(mongoAPI VERSION "0.1.0.0")
 option(USE_SUPERBUILD "Use superbuild to pull in and build dependencies." ON)
 option(BUILD_TESTS "Build test libraries and excutables." ON)
 option(BUILD_TOOLS "Build interface tools." ON)
+option(BUILD_MODULES "Build submodules." ON)
 
+if(USE_SUPERBUILD)
+   set(BUILD_MODULES true)
+endif()
 
 #We need a git executable so we can determine versions
 find_package(Git REQUIRED)
@@ -20,8 +24,7 @@ if (MSVC)
 endif()
 
 # Superbuild rules
-if(USE_SUPERBUILD)
-    message("Super depends: ${depends}")
+if(BUILD_MODULES)
     include(ExternalProject)
     include(Superbuild.cmake)
     return()

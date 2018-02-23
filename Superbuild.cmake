@@ -79,9 +79,12 @@ if( NOT  libmongocxx_FOUND )
   set(depends MongoCXX)
 endif()
 
+if(USE_SUPERBUILD)
+   add_external_project(JsonBox dependencies/JsonBox OFF "" "")
+   add_external_project(AquetiTools dependencies/AquetiTools OFF "JsonBox" "")
+   set(superdepends AquetiTools)
+endif()
 
-add_external_project(JsonBox dependencies/JsonBox OFF "" "")
-add_external_project(AquetiTools dependencies/AquetiTools OFF "JsonBox" "")
 
 message("SOURCEDIR: ${CMAKE_SOURCE_DIR}")
 ExternalProject_Add(
@@ -91,7 +94,7 @@ ExternalProject_Add(
   CMAKE_ARGS
      ${cmake_common_args}
      -DDOXYGEN_DIR=${CMAKE_BINARY_DIR}/INSTALL/Doxygen
+     -DBUILD_MODULES:BOOL=false
   INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-  DEPENDS AquetiTools ${depends} 
+  DEPENDS AquetiTools ${depends}  ${superdepends}
 )
-
