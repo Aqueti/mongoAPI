@@ -80,6 +80,7 @@ if( NOT  libmongocxx_FOUND )
 endif()
 
 if(USE_SUPERBUILD)
+   message("Using Superbuild!")
    add_external_project(JsonBox dependencies/JsonBox OFF "" "")
    add_external_project(AquetiTools dependencies/AquetiTools OFF "JsonBox" "")
    set(superdepends AquetiTools)
@@ -96,5 +97,5 @@ ExternalProject_Add(
      -DDOXYGEN_DIR=${CMAKE_BINARY_DIR}/INSTALL/Doxygen
      -DBUILD_MODULES:BOOL=false
   INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-  DEPENDS AquetiTools ${depends}  ${superdepends}
+  DEPENDS ${depends}  ${superdepends}
 )
