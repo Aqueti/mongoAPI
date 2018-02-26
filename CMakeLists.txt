@@ -12,6 +12,13 @@ option(BUILD_TOOLS "Build interface tools." ON)
 option(FORCE_MODULES "Force build submodules" OFF)
 #option(BUILD_MODULES "Build submodules." CACHE ON)
 
+list(APPEND CMAKE_MODULE_PATH 
+   ${CMAKE_INSTALL_PREFIX}/cmake
+   ${CMAKE_INSTALL_PREFIX}/lib/cmake
+   ${CMAKE_BINARY_DIR}/INSTALL/cmake
+   ${CMAKE_BINARY_DIR}/INSTALL/lib/cmake
+)
+
 if(USE_SUPERBUILD)
    set(BUILD_MODULES true)
 endif()
@@ -29,6 +36,11 @@ if (MSVC)
   find_package(Boost 1.56.0 REQUIRED)
 endif()
 
+
+message("MODULE PATH: ${CMAKE_MODULE_PATH}")
+
+include_directories(${CMAKE_INSTALL_PREFIX}/include)
+
 # Superbuild rules
 if(BUILD_MODULES)
     message("Build Modules")
@@ -40,8 +52,8 @@ endif()
 list(APPEND CMAKE_MODULE_PATH 
    ${CMAKE_INSTALL_PREFIX}/cmake
    ${CMAKE_INSTALL_PREFIX}/lib/cmake
-#   ${CMAKE_BINARY_DIR}/INSTALL/cmake
-#   ${CMAKE_BINARY_DIR}/INSTALL/lib/cmake
+   ${CMAKE_BINARY_DIR}/INSTALL/cmake
+   ${CMAKE_BINARY_DIR}/INSTALL/lib/cmake
 )
 
 message("Look: ${CMAKE_MODULE_PATH}")
@@ -152,12 +164,14 @@ add_library(mongoAPI STATIC
     mongoapi.cpp 
     MongoDatabaseClient.cpp
 )
+
+message("Include: ${CMAKE_INSTALL_PREFIX}/include")
 target_include_directories(mongoAPI
     PUBLIC ${MONGOC_INCLUDE_DIRS} #TODO: This needs to be private
     PUBLIC ${LIBMONGOCXX_INCLUDE_DIRS}
     PUBLIC ${BSON_INCLUDE_DIRS}
     PUBLIC ${LIBBSONCXX_INCLUDE_DIRS}
-    ${CMAKE_INSTALL_PREFIX}/include
+    PUBLIC ${CMAKE_INSTALL_PREFIX}/include
 )
 
 if (MSVC)
