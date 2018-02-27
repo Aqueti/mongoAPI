@@ -12,19 +12,22 @@ option(BUILD_TOOLS "Build interface tools." ON)
 option(FORCE_MODULES "Force build submodules" OFF)
 #option(BUILD_MODULES "Build submodules." CACHE ON)
 
-message("================================")
-list(APPEND CMAKE_MODULE_PATH 
-   ${CMAKE_INSTALL_PREFIX}/cmake
-   ${CMAKE_INSTALL_PREFIX}/lib/cmake
-   ${CMAKE_BINARY_DIR}/INSTALL/cmake
-   ${CMAKE_BINARY_DIR}/INSTALL/lib/cmake
-   ${CMAKE_CURRENT_BINARY_DIR}/INSTALL/lib/cmake
-)
+set(MONGOAPI_BUILD_DIR ${CMAKE_BINARY_DIR})
 
 if(USE_SUPERBUILD)
    set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/INSTALL)
+#   set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/INSTALL)
    set(BUILD_MODULES ON)
 endif()
+
+list(APPEND CMAKE_MODULE_PATH 
+   ${CMAKE_INSTALL_PREFIX}/cmake
+   ${CMAKE_INSTALL_PREFIX}/lib/cmake
+#   ${CMAKE_BINARY_DIR}/INSTALL/cmake
+#   ${CMAKE_BINARY_DIR}/INSTALL/lib/cmake
+#   ${CMAKE_CURRENT_BINARY_DIR}/INSTALL/lib/cmake
+)
+
 
 if( FORCE_MODULES ) 
    set(BUILD_MODULES ON)
@@ -40,8 +43,6 @@ if (MSVC)
 endif()
 
 
-message("----------------------------------MODULE PATH: ${CMAKE_MODULE_PATH}")
-
 include_directories(${CMAKE_INSTALL_PREFIX}/include)
 
 # Superbuild rules
@@ -55,8 +56,8 @@ endif()
 list(APPEND CMAKE_MODULE_PATH 
    ${CMAKE_INSTALL_PREFIX}/cmake
    ${CMAKE_INSTALL_PREFIX}/lib/cmake
-   ${CMAKE_BINARY_DIR}/INSTALL/cmake
-   ${CMAKE_BINARY_DIR}/INSTALL/lib/cmake
+#   ${CMAKE_BINARY_DIR}/INSTALL/cmake
+#   ${CMAKE_BINARY_DIR}/INSTALL/lib/cmake
    ${CMAKE_SOURCE_DIR}/INSTALL/lib/cmake
 )
 
@@ -153,7 +154,6 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
-message("================================")
 find_package(libbson-static-1.0 CONFIG REQUIRED)
 find_package(libbsoncxx CONFIG REQUIRED)
 find_package(libmongoc-static-1.0 CONFIG REQUIRED)
@@ -171,7 +171,6 @@ add_library(mongoAPI STATIC
     MongoDatabaseClient.cpp
 )
 
-message("Include: ${CMAKE_INSTALL_PREFIX}/include")
 target_include_directories(mongoAPI
     PUBLIC ${MONGOC_INCLUDE_DIRS} #TODO: This needs to be private
     PUBLIC ${LIBMONGOCXX_INCLUDE_DIRS}
@@ -193,7 +192,7 @@ TARGET_LINK_LIBRARIES(mongoAPI
     PRIVATE ${MONGOC_STATIC_LIBRARIES} 
     PRIVATE ${BSON_STATIC_LIBRARIES}
 )
-set(TARGET_LIST mongoAPI)
+list(APPEND TARGET_LIST mongoAPI)
 
 set(MONGO_HEADERS mongoapi.h MongoDatabaseClient.h)
 
@@ -250,6 +249,7 @@ configure_file(${CMAKE_SOURCE_DIR}/MongoAPIConfig.cmake.in
 
 export(TARGETS ${TARGET_LIST} FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake)
 
+message("----------------------BINARY: ${MONGOAPI_BUILD_DIR}")
 install(TARGETS ${TARGET_LIST} EXPORT ${PROJECT_NAME}
    RUNTIME DESTINATION bin COMPONENT lib
    LIBRARY DESTINATION lib${LIB_SUFFIX} COMPONENT lib
