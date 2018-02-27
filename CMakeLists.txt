@@ -1,30 +1,33 @@
 
 cmake_policy(SET CMP0048 NEW)
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.2)
 
 
 PROJECT(mongoAPI VERSION "0.1.0.0")
 
-set(BUILD_MODULES CACHE BOOL ON )
+option(BUILD_MODULES "Build submodules" ON )
 option(USE_SUPERBUILD "Use superbuild to pull in and build dependencies." ON)
 option(BUILD_TESTS "Build test libraries and excutables." ON)
 option(BUILD_TOOLS "Build interface tools." ON)
 option(FORCE_MODULES "Force build submodules" OFF)
 #option(BUILD_MODULES "Build submodules." CACHE ON)
 
+message("================================")
 list(APPEND CMAKE_MODULE_PATH 
    ${CMAKE_INSTALL_PREFIX}/cmake
    ${CMAKE_INSTALL_PREFIX}/lib/cmake
    ${CMAKE_BINARY_DIR}/INSTALL/cmake
    ${CMAKE_BINARY_DIR}/INSTALL/lib/cmake
+   ${CMAKE_CURRENT_BINARY_DIR}/INSTALL/lib/cmake
 )
 
 if(USE_SUPERBUILD)
-   set(BUILD_MODULES true)
+   set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/INSTALL)
+   set(BUILD_MODULES ON)
 endif()
 
 if( FORCE_MODULES ) 
-   set(BUILD_MODULES true)
+   set(BUILD_MODULES ON)
 endif()
 
 #We need a git executable so we can determine versions
@@ -37,7 +40,7 @@ if (MSVC)
 endif()
 
 
-message("MODULE PATH: ${CMAKE_MODULE_PATH}")
+message("----------------------------------MODULE PATH: ${CMAKE_MODULE_PATH}")
 
 include_directories(${CMAKE_INSTALL_PREFIX}/include)
 
@@ -54,9 +57,13 @@ list(APPEND CMAKE_MODULE_PATH
    ${CMAKE_INSTALL_PREFIX}/lib/cmake
    ${CMAKE_BINARY_DIR}/INSTALL/cmake
    ${CMAKE_BINARY_DIR}/INSTALL/lib/cmake
+   ${CMAKE_SOURCE_DIR}/INSTALL/lib/cmake
 )
 
-message("Look: ${CMAKE_MODULE_PATH}")
+link_directories(
+   ${CMAKE_INSTALL_PREFIX}/lib
+)
+message("Look: ${CMAKE_INSTALL_PREFIX}")
 
 # Doxygen support
 # add a target to generate API documentation with Doxygen
@@ -146,8 +153,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
-
-
+message("================================")
 find_package(libbson-static-1.0 CONFIG REQUIRED)
 find_package(libbsoncxx CONFIG REQUIRED)
 find_package(libmongoc-static-1.0 CONFIG REQUIRED)
