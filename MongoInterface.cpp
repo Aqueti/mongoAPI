@@ -558,6 +558,7 @@ bool MongoInterface::dropCollection(std::string collection)
  **/
 std::shared_ptr<MongoAPI> getMongoDBInterface( std::string uri )
 {
+   return std::shared_ptr<MongoAPI> MongoInterface(uri);
 }
 
 } //end namespace mongoapi
