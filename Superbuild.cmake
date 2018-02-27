@@ -127,11 +127,10 @@ if(USE_SUPERBUILD)
    set(superdepends AquetiTools)
 endif()
 
-if( USE_SUPERBUILD )
-
 ExternalProject_Add(
   mongoapi
   SOURCE_DIR ${CMAKE_SOURCE_DIR}
+  BINARY_DIR ${CMAKE_BINARY_DIR}
   BUILD_ALWAYS 1 
   CMAKE_ARGS
      ${cmake_common_args}
@@ -141,4 +140,3 @@ ExternalProject_Add(
   LOG_INSTALL 1
   DEPENDS ${depends}  ${superdepends}
 )
-endif()
