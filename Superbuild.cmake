@@ -51,7 +51,6 @@ macro(add_external_project MYNAME LOCATION MASTER DEPENDS ARGS)
         DOWNLOAD_COMMAND ${GIT_EXECUTABLE} submodule update --checkout ${CMAKE_SOURCE_DIR}/${LOCATION}
         DOWNLOAD_DIR ${CMAKE_SOURCE_DIR}
         CMAKE_ARGS ${cmake_common_args} ${ARGS}
-#        INSTALL_DIR ${CMAKE_BINARY_DIR}/INSTALL
         INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
         DEPENDS ${DEPENDS} submodule_init
     )
