@@ -1,6 +1,6 @@
 
 cmake_policy(SET CMP0048 NEW)
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.2.2)
 
 
 PROJECT(mongoAPI VERSION "0.1.0.0")
@@ -55,8 +55,6 @@ list(APPEND CMAKE_MODULE_PATH
    ${CMAKE_BINARY_DIR}/INSTALL/cmake
    ${CMAKE_BINARY_DIR}/INSTALL/lib/cmake
 )
-
-message("Look: ${CMAKE_MODULE_PATH}")
 
 # Doxygen support
 # add a target to generate API documentation with Doxygen
@@ -147,6 +145,8 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 
+message("Mods: ${CMAKE_MODULE_PATH}")
+
 
 find_package(libbson-static-1.0 CONFIG REQUIRED)
 find_package(libbsoncxx CONFIG REQUIRED)
@@ -156,7 +156,7 @@ find_package(libmongocxx CONFIG REQUIRED)
 #find_package(AquetiTools REQUIRED)
 
 link_directories(${LIBMONGOCXX_LIBRARY_DIRS})
-
+link_directories(${CMAKE_INSTALL_PREFIX}/lib)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 #create hte mongoapi library
@@ -165,7 +165,6 @@ add_library(mongoAPI STATIC
     MongoDatabaseClient.cpp
 )
 
-message("Include: ${CMAKE_INSTALL_PREFIX}/include")
 target_include_directories(mongoAPI
     PUBLIC ${MONGOC_INCLUDE_DIRS} #TODO: This needs to be private
     PUBLIC ${LIBMONGOCXX_INCLUDE_DIRS}
@@ -180,6 +179,8 @@ if (MSVC)
   )
 endif()
 TARGET_LINK_LIBRARIES(mongoAPI
+#    PUBLIC ${CMAKE_INSTALL_PREFIX}/lib/libAquetiTools.a
+#    PUBLIC ${CMAKE_INSTALL_PREFIX}/lib/libJsonBox.a
     PUBLIC AquetiTools
     PUBLIC JsonBox
     PRIVATE ${LIBMONGOCXX_LIBRARIES} 
@@ -217,7 +218,9 @@ if( BUILD_TESTS )
      test/MongoTest.cpp
    )
    TARGET_LINK_LIBRARIES(MongoTest
-      mongoAPI
+      PUBLIC mongoAPI
+    PUBLIC AquetiTools
+    PUBLIC JsonBox
    )
    list(APPEND TARGET_LIST MongoTest )
 endif()
@@ -228,6 +231,8 @@ if( BUILD_TOOLS )
       tools/MongoTool.cpp 
    )
    target_link_libraries( mongoTool
+    PUBLIC AquetiTools
+    PUBLIC JsonBox
       mongoAPI
    )
    list(APPEND TARGET_LIST mongoTool )

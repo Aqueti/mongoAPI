@@ -110,6 +110,7 @@ ExternalProject_Add(
      ${cmake_common_args}
      -DDOXYGEN_DIR=${CMAKE_BINARY_DIR}/INSTALL/Doxygen
      -DBUILD_MODULES:BOOL=false
+     -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
   INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
   DEPENDS ${depends}  ${superdepends}
 )
