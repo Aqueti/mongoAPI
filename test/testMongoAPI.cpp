@@ -3,9 +3,11 @@
  * \file testMongoAPI.cpp
  *
  * Created on: June 19, 2017
- * Author: Nils Persson
  **/
 
+#include <string>
+#include <cstring>
+#include <MongoAPI.h>
 #include "MongoAPITest.h"
 
 std::vector<std::string> unitList{"MongoInterface"};
@@ -84,10 +86,11 @@ int main(int argc, char *argv[]) {
 	//connect to database and insert JsonValue if "-n" was not used
 	if(insert){
 		std::cout << "Inserting unit test results in database..." << std::endl;
-		mongoapi::MongoInterface mi;
-		bool connected = mi.connect("a");
+                std::shared_ptr<mongoapi::MongoAPI> mi = mongoapi::getMongoAPI("127.0.0.1:27017");
+//		mongoapi::MongoAPI mi;
+		bool connected = mi->connect("a");
 		if(connected){
-			std::string id = mi.insert("unit_tests", result);
+			std::string id = mi->insert("unit_tests", result);
 			if(id != "0"){
 				std::cout << "Results inserted in database successfully!" << std::endl;
 			}

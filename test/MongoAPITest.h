@@ -5,7 +5,7 @@
  * Author: Nils Persson
  **/
 
-#include "mongoapi.h"
+#include "MongoAPI.h"
 #include "JsonBox.h"
 #include <cstdlib>
 #include <iostream>

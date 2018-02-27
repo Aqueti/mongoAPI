@@ -9,8 +9,11 @@
 #include <vector>
 #include <thread>
 #include <JsonBox.h>
+#include <cstring>
 
-#include "mongoapi.h"
+
+#include "MongoAPI.h"
+#include <atl/TSQueue.tcc>
 #include <atl/Timer.h>
 
 //global variables
@@ -47,7 +50,7 @@ atl::TSQueue<JsonBox::Value> queryQ;                              //Queue of Jso
 atl::TSQueue<std::tuple<JsonBox::Value, JsonBox::Value>> outputQ;     //Found Result, destination, query 
 
 //Mongo interface object
-mongoapi::MongoInterface * mongoInterface;                   //Database interface
+mongoapi::MongoAPI * mongoAPI;                   //Database interface
 
 
 /**
@@ -181,10 +184,10 @@ void StatusThread() {
  * as the thread id * the number of records per 
  **/
 void WriteThread( unsigned int tid, bool * doneFlag  ) {
-   mongoapi::MongoInterface localInterface(uri);
+   std::shared_ptr<mongoapi::MongoAPI> localInterface = mongoapi::getMongoAPI(uri);
    if( !useGlobalDatabase ) {
       //Try to connect to the database
-      bool connected = localInterface.connect(database);
+      bool connected = localInterface->connect(database);
       if(!connected){
          std::cout << "writeThread "<<std::fixed<<tid<<" unable to connect to the database. Exiting" << std::endl;
          exit(1);
@@ -209,10 +212,10 @@ void WriteThread( unsigned int tid, bool * doneFlag  ) {
          std::string out;
 
          if( !useGlobalDatabase ) {
-            out = localInterface.insert(collection, input);
+            out = localInterface->insert(collection, input);
          }
          else {
-            out = mongoInterface->insert(collection, input);
+            out = mongoAPI->insert(collection, input);
          }
          if( out.empty()) {
              std::cout<< tid <<" - Write failed!"<<std::endl;
@@ -241,11 +244,11 @@ void WriteThread( unsigned int tid, bool * doneFlag  ) {
  **/
 void QueryThread( unsigned int tid, std::string collection, bool *doneFlag  ) {
 
-   mongoapi::MongoInterface localInterface(uri);
+   std::shared_ptr<mongoapi::MongoAPI> localInterface = mongoapi::getMongoAPI(uri);
    
    if( !useGlobalDatabase ) {
       //Try to connect to the database
-      bool connected = localInterface.connect(database);
+      bool connected = localInterface->connect(database);
       if(!connected){
          std::cout << "queryThread "<<tid<<" unable to connect to the database. Exiting" << std::endl;
          return;
@@ -294,10 +297,10 @@ void QueryThread( unsigned int tid, std::string collection, bool *doneFlag  ) {
          //Perform actual query
          JsonBox::Value result;
          if( !useGlobalDatabase ) {
-            result = localInterface.query(collection, query);
+            result = localInterface->query(collection, query);
          }
          else {
-            result = mongoInterface->query(collection, query);
+            result = mongoAPI->query(collection, query);
          }
 
          //If null, query failed!
@@ -490,8 +493,8 @@ int main(int argc, char * argv[] )
    startTime = atl::getTime();
 
    //Try to connect to the database
-   mongoInterface = new mongoapi::MongoInterface(uri);
-   bool connected = mongoInterface->connect(database);
+   std::shared_ptr<mongoapi::MongoAPI> mongoAPI = mongoapi::getMongoAPI(uri);
+   bool connected = mongoAPI->connect(database);
    if(!connected){
       std::cout << "Unable to connect to the database to erase the "<<collection<<" collection. Exiting" << std::endl;
       exit(1);
@@ -500,7 +503,7 @@ int main(int argc, char * argv[] )
    //If the erase flag is set, remove all records
    if( erase ) {
       std::cout << "Removing all entries in the collection "<<collection<<". This may take a while."<<std::endl;
-      mongoInterface->removeAllEntries(collection);
+      mongoAPI->removeAllEntries(collection);
       std::cout << "All entries in the collection "<<collection<<" removed"<<std::endl;
 
 
@@ -509,7 +512,7 @@ int main(int argc, char * argv[] )
 
       //Add item to the database
       JsonBox::Value input = metaGenerator(0);
-      std::string out = mongoInterface->insert(collection, input);
+      std::string out = mongoAPI->insert(collection, input);
       if( out.empty()) {
          writeFail++;
       }
@@ -523,7 +526,7 @@ int main(int argc, char * argv[] )
       if( verbose ) {
          std::cout << "Creating index "<<index1<<" for collection "<<collection<<std::endl;
       }
-      mongoInterface->createIndex( collection, index1);
+      mongoAPI->createIndex( collection, index1);
    }
 
    writeRate = 1.0/(double)writePS;
@@ -576,5 +579,4 @@ int main(int argc, char * argv[] )
 
    controlThread.join();
 
-   delete mongoInterface;
 }

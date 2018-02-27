@@ -164,12 +164,13 @@ link_directories(${LIBMONGOCXX_LIBRARY_DIRS})
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 #create hte mongoapi library
-add_library(mongoAPI STATIC
-    mongoapi.cpp 
+add_library(MongoAPI STATIC
+    MongoInterface.cpp
+    MongoAPI.cpp 
     MongoDatabaseClient.cpp
 )
 
-target_include_directories(mongoAPI
+target_include_directories(MongoAPI
     PUBLIC ${MONGOC_INCLUDE_DIRS} #TODO: This needs to be private
     PUBLIC ${LIBMONGOCXX_INCLUDE_DIRS}
     PUBLIC ${BSON_INCLUDE_DIRS}
@@ -178,11 +179,11 @@ target_include_directories(mongoAPI
 )
 
 if (MSVC)
-  target_include_directories(mongoAPI
+  target_include_directories(MongoAPI
     PUBLIC ${Boost_INCLUDE_DIRS}
   )
 endif()
-TARGET_LINK_LIBRARIES(mongoAPI
+TARGET_LINK_LIBRARIES(MongoAPI
     PUBLIC AquetiTools
     PUBLIC JsonBox
     PRIVATE ${LIBMONGOCXX_LIBRARIES} 
@@ -190,9 +191,10 @@ TARGET_LINK_LIBRARIES(mongoAPI
     PRIVATE ${MONGOC_STATIC_LIBRARIES} 
     PRIVATE ${BSON_STATIC_LIBRARIES}
 )
-list(APPEND TARGET_LIST mongoAPI)
+list(APPEND TARGET_LIST MongoAPI)
 
-set(MONGO_HEADERS mongoapi.h MongoDatabaseClient.h)
+#set(MONGO_HEADERS mongoapi.h MongoDatabaseClient.h)
+set(MONGO_HEADERS MongoAPI.h)
 
 if( BUILD_TESTS )
    #Make a dedicated test library
@@ -201,11 +203,11 @@ if( BUILD_TESTS )
        test/MongoInterfaceTest.cpp
    )
    target_link_libraries( mongoAPI_test PUBLIC
-      mongoAPI
+      MongoAPI
    )
    list(APPEND TARGET_LIST mongoAPI_test )
 
-   list(APPEND MONGO_HEADERS test/MongoAPITest.h)
+#   list(APPEND MONGO_HEADERS test/MongoAPITest.h)
    
    #Add MongoAPI test as an executavble
    add_executable( testMongoAPI
@@ -213,6 +215,7 @@ if( BUILD_TESTS )
    )
    target_link_libraries(testMongoAPI
       mongoAPI_test
+      MongoAPI
    )
    list(APPEND TARGET_LIST testMongoAPI )
 
@@ -220,7 +223,7 @@ if( BUILD_TESTS )
      test/MongoTest.cpp
    )
    TARGET_LINK_LIBRARIES(MongoTest
-      mongoAPI
+      MongoAPI
    )
    list(APPEND TARGET_LIST MongoTest )
 endif()
@@ -231,7 +234,7 @@ if( BUILD_TOOLS )
       tools/MongoTool.cpp 
    )
    target_link_libraries( mongoTool
-      mongoAPI
+      MongoAPI
    )
    list(APPEND TARGET_LIST mongoTool )
 endif( BUILD_TOOLS ) 

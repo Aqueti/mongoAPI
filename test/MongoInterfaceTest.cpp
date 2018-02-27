@@ -29,8 +29,9 @@ JsonBox::Value testMongoInterface(std::string uri, bool printFlag, bool asserFla
 
 		//connect to database
 		//default parameters are database: "test", URI: "127.0.0.1:27017"
-		MongoInterface mi(uri);
-		bool connected = mi.connect("test");
+                std::shared_ptr<MongoAPI> mi = getMongoAPI(uri);
+//		MongoAPI mi(uri);
+		bool connected = mi->connect("test");
 		if(!connected){
 			std::cout << "testing halted" << std::endl;
 			returnJson["pass"] = false;
@@ -63,16 +64,16 @@ JsonBox::Value testMongoInterface(std::string uri, bool printFlag, bool asserFla
 
 		if(connected){
 			//drop collection before testing for a clean test environment
-			mi.dropCollection("test");
+			mi->dropCollection("test");
 
 			//test insert function of database (num and values)
 			//will create test collection if it does not already exist
-			mi.insert("test", val1);
-			mi.insert("test", val2);
-			mi.insert("test", val3);
-			mi.insert("test", val4);
+			mi->insert("test", val1);
+			mi->insert("test", val2);
+			mi->insert("test", val3);
+			mi->insert("test", val4);
 
-			count = mi.count("test");
+			count = mi->count("test");
 			if(count != 4){
 				returnJson["pass"] = false;
 				if(printFlag){
@@ -83,7 +84,7 @@ JsonBox::Value testMongoInterface(std::string uri, bool printFlag, bool asserFla
 				}
 			}
 
-			result = mi.queryAll("test");
+			result = mi->queryAll("test");
 			pass = true;
 			if(result[(size_t)0]["name"] != val1["name"] || result[(size_t)0]["class"] != val1["class"]
 					|| result[(size_t)0]["age"] != val1["age"]){
@@ -113,7 +114,7 @@ JsonBox::Value testMongoInterface(std::string uri, bool printFlag, bool asserFla
 			}
 
 			//test query function of database (num and values)
-			result = mi.query("test", val5);
+			result = mi->query("test", val5);
 			count = result.getArray().size();
 			if(count != 2){
 				returnJson["pass"] = false;
@@ -145,7 +146,7 @@ JsonBox::Value testMongoInterface(std::string uri, bool printFlag, bool asserFla
 				}
 			}
 
-			result = mi.query("test", val10);
+			result = mi->query("test", val10);
 			count = result.getArray().size();
 			if(count != 2){
 				returnJson["pass"] = false;
@@ -178,9 +179,9 @@ JsonBox::Value testMongoInterface(std::string uri, bool printFlag, bool asserFla
 			}
 
 			//test remove function of database
-			mi.removeEntry("test", val5);
+			mi->removeEntry("test", val5);
 
-			count = mi.countFilter("test", val5);
+			count = mi->countFilter("test", val5);
 			if(count != 0){
 				returnJson["pass"] = false;
 				if(printFlag){
@@ -192,9 +193,9 @@ JsonBox::Value testMongoInterface(std::string uri, bool printFlag, bool asserFla
 			}
 
 			//test update function of database
-			mi.update("test", val6, val7);
+			mi->update("test", val6, val7);
 
-			result = mi.query("test", val6);
+			result = mi->query("test", val6);
 			if(result[(size_t)0]["class"] != "graduate"){
 				returnJson["pass"] = false;
 				if(printFlag){
@@ -206,7 +207,7 @@ JsonBox::Value testMongoInterface(std::string uri, bool printFlag, bool asserFla
 			}
 			
 			//drop the collection to clean up the database after testing
-			mi.dropCollection("test");
+			mi->dropCollection("test");
 		}
 
 		//return the Json value
