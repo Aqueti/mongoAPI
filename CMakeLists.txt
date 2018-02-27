@@ -47,7 +47,6 @@ include_directories(${CMAKE_INSTALL_PREFIX}/include)
 
 # Superbuild rules
 if(BUILD_MODULES)
-    message("Build Modules")
     include(ExternalProject)
     include(Superbuild.cmake)
     return()
@@ -64,7 +63,6 @@ list(APPEND CMAKE_MODULE_PATH
 link_directories(
    ${CMAKE_INSTALL_PREFIX}/lib
 )
-message("Look: ${CMAKE_INSTALL_PREFIX}")
 
 # Doxygen support
 # add a target to generate API documentation with Doxygen
@@ -249,7 +247,6 @@ configure_file(${CMAKE_SOURCE_DIR}/MongoAPIConfig.cmake.in
 
 export(TARGETS ${TARGET_LIST} FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake)
 
-message("----------------------BINARY: ${MONGOAPI_BUILD_DIR}")
 install(TARGETS ${TARGET_LIST} EXPORT ${PROJECT_NAME}
    RUNTIME DESTINATION bin COMPONENT lib
    LIBRARY DESTINATION lib${LIB_SUFFIX} COMPONENT lib

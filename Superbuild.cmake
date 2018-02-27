@@ -65,7 +65,6 @@ if( NOT FORCE_MODULES )
   find_package(libmongocxx QUIET )
 endif()
 
-message("++++++++++++++++++++++++CHECKED MODS+++++++++++++++++++++++")
 
 #determine what local modules we need to build
 if( NOT  libsson_static-1.0_FOUND )
