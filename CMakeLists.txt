@@ -148,10 +148,10 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 message("Mods: ${CMAKE_MODULE_PATH}")
 
 
-find_package(libbson-static-1.0 CONFIG REQUIRED)
-find_package(libbsoncxx CONFIG REQUIRED)
-find_package(libmongoc-static-1.0 CONFIG REQUIRED)
-find_package(libmongocxx CONFIG REQUIRED)
+#find_package(libbson-static-1.0 CONFIG REQUIRED)
+#find_package(libbsoncxx CONFIG REQUIRED)
+#find_package(libmongoc-static-1.0 CONFIG REQUIRED)
+#find_package(libmongocxx CONFIG REQUIRED)
 #find_package(JsonBox REQUIRED)
 #find_package(AquetiTools REQUIRED)
 
