@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.2.2)
 
 PROJECT(mongoAPI VERSION "0.1.0.0")
 
-set(BUILD_MODULES CACHE BOOL ON )
+option(BUILD_MODULES "Build Modules" ON )
 option(USE_SUPERBUILD "Use superbuild to pull in and build dependencies." ON)
 option(BUILD_TESTS "Build test libraries and excutables." ON)
 option(BUILD_TOOLS "Build interface tools." ON)
@@ -18,6 +18,8 @@ list(APPEND CMAKE_MODULE_PATH
    ${CMAKE_BINARY_DIR}/INSTALL/cmake
    ${CMAKE_BINARY_DIR}/INSTALL/lib/cmake
 )
+
+message("--------------------${CMAKE_CURRENT_BINARY_DIR}")
 
 if(USE_SUPERBUILD)
    set(BUILD_MODULES true)
@@ -148,10 +150,10 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 message("Mods: ${CMAKE_MODULE_PATH}")
 
 
-#find_package(libbson-static-1.0 CONFIG REQUIRED)
-#find_package(libbsoncxx CONFIG REQUIRED)
-#find_package(libmongoc-static-1.0 CONFIG REQUIRED)
-#find_package(libmongocxx CONFIG REQUIRED)
+find_package(libbson-static-1.0 CONFIG REQUIRED)
+find_package(libbsoncxx CONFIG REQUIRED)
+find_package(libmongoc-static-1.0 CONFIG REQUIRED)
+find_package(libmongocxx CONFIG REQUIRED)
 #find_package(JsonBox REQUIRED)
 #find_package(AquetiTools REQUIRED)
 
