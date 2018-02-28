@@ -50,7 +50,7 @@ atl::TSQueue<JsonBox::Value> queryQ;                              //Queue of Jso
 atl::TSQueue<std::tuple<JsonBox::Value, JsonBox::Value>> outputQ;     //Found Result, destination, query 
 
 //Mongo interface object
-mongoapi::MongoAPI * mongoAPI;                   //Database interface
+std::shared_ptr<mongoapi::MongoAPI> mongoAPI;
 
 
 /**
@@ -102,9 +102,9 @@ JsonBox::Value metaGenerator( int id ) {
  **/
 void printControls()
 {
-   std::cout << "Control Options:\nEnter one of the following commands to modify execution"<<std::endl;
-   std::cout << "\texit - stop execution"<<std::endl;
-   
+   std::cout << "\n> Control Options:\n> Enter one of the following commands to modify execution"<<std::endl;
+   std::cout << ">\texit - stop execution"<<std::endl;
+   std::cout << ">\thelp - print this help menu"<<std::endl;
 }
 
 
@@ -113,14 +113,21 @@ void printControls()
  **/
 void ControlThread() {
    std::string input;
+   printControls();
+
    while( !done ) {
-       printControls();
+       std::cout << "> ";
 
        std::cin >> input;
 
-       std::cout << "Control Thread received: "<<input<<std::endl;
        if( !input.compare("exit")) {
            done = true;
+       }
+       else if( !input.compare("help")) {
+           printControls();
+       }
+       else {
+           std::cout << "> Unrecognized command. Enter help for options"<<std::endl;
        }
    }
 }
@@ -399,6 +406,7 @@ void printHelp()
    std::cout << "Database testing application\n"<<std::endl;
    std::cout << "option:"<<std::endl;
    std::cout << "\t-h            print this help menu"<<std::endl;
+   std::cout << "\t-erase        erase test collection before testing"<<std::endl;
    std::cout << "\t-localdb      create a separate database interface for each thread"<<std::endl;
    std::cout << "\t-qd  <double> how long to delay queries after write starts (default="<<queryDelay<<")"<<std::endl;
    std::cout << "\t-qps  <double> target number of queries per second. (default="<<queryPS<<")"<<std::endl;
@@ -428,7 +436,8 @@ int main(int argc, char * argv[] )
    int i = 1;
    while( i < argc ) {
       if( !strcmp( argv[i], "-erase")) {
-    erase = true;
+         std::cout << "Erasing!"<<std::endl;
+         erase = true;
       }
       else if( !strcmp( argv[i], "-h")) {
          printHelp();
@@ -469,7 +478,7 @@ int main(int argc, char * argv[] )
      i++;
    }
 
-   std::cout << "Writing to database at "<<uri<<" with the following configuration:\n"
+   std::cout << "Interface to database at "<<uri<<" with the following configuration:\n"
              << "\t- Write Threads:     "<<writeThreads<<"\n"
              << "\t- Query Threads:     "<<queryThreads<<"\n"
              << "\t- Target Write(fps): "<<writePS<<"\n"
@@ -481,19 +490,12 @@ int main(int argc, char * argv[] )
              
 
 
-   //Kickoff management threads
-   std::thread controlThread = std::thread(ControlThread);
-   std::thread status;        //Thread the checks the status of a running process
 
-
-   if( queryThreads == 0 ) { 
-      std::cout << "No queries will be made" << std::endl;
-   }
 
    startTime = atl::getTime();
 
    //Try to connect to the database
-   std::shared_ptr<mongoapi::MongoAPI> mongoAPI = mongoapi::getMongoAPI(uri);
+   mongoAPI = mongoapi::getMongoAPI(uri);
    bool connected = mongoAPI->connect(database);
    if(!connected){
       std::cout << "Unable to connect to the database to erase the "<<collection<<" collection. Exiting" << std::endl;
@@ -505,7 +507,6 @@ int main(int argc, char * argv[] )
       std::cout << "Removing all entries in the collection "<<collection<<". This may take a while."<<std::endl;
       mongoAPI->removeAllEntries(collection);
       std::cout << "All entries in the collection "<<collection<<" removed"<<std::endl;
-
 
       //Create the collection through the first entry
       JsonBox::Value first = metaGenerator(0);
@@ -529,15 +530,20 @@ int main(int argc, char * argv[] )
       mongoAPI->createIndex( collection, index1);
    }
 
+   //Kickoff management threads
+   std::thread controlThread = std::thread(ControlThread);
+   std::thread status;        //Thread the checks the status of a running process
+
+   if( queryThreads == 0 ) { 
+      std::cout << "No queries will be made" << std::endl;
+   }
    writeRate = 1.0/(double)writePS;
    queryRate = 1.0/(double)queryPS;
 
    //Create the status thread if we are in verbose mode
    if( verbose ) {
       status = std::thread(StatusThread);
-      std::cout << "Creating "<<writeThreads<<" write threads"<<std::endl;
    }  
-
    std::vector<std::thread> threadVect;
 
    //Spawn write threads that each write m values
@@ -564,19 +570,18 @@ int main(int argc, char * argv[] )
    std::cout << "No longer writing data. Preparing to exit"<<std::endl;
    done = true;
 
+   queryController.join();
    //Wait for all threads to complete
    for( auto it = threadVect.begin(); it != threadVect.end(); it++ ) {
       it->join();
    }
 
-   queryController.join();
 
 
    //Join the status thread
    if( verbose ) {
       status.join();
    }
-
    controlThread.join();
 
 }
