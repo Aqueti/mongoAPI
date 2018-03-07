@@ -57,8 +57,9 @@ namespace mongoapi
 		mongocxx::database m_db;
         	int m_maxClients;
 		std::atomic<uint16_t> m_createdClients;
-        	atl::TSQueue<MongoDatabaseClientPtr> m_clients;
 
+	public:
+        	atl::TSQueue<MongoDatabaseClientPtr> m_clients;
 		/**
 		 * Helper method to convert a JsonBox Value to a BSON object that MongoDB accepts
 		 *
@@ -73,7 +74,6 @@ namespace mongoapi
 		 * @return The JsonBox Value
 		 */
 		static JsonBox::Value JSON_from_BSON(bsoncxx::document::view data);
-	public:
 		/**
 		 * Constructor 
 		 */
@@ -110,14 +110,7 @@ namespace mongoapi
 		 * @return number of documents inserted, or 0 on failure
 		 */
 		int insertMany(std::string collection, std::vector<JsonBox::Value> data);
-		/**
-		 * Insert submodules into specified collection as individual documents for unit testing.
-		 *
-		 * @param collection The name of the collection to insert Value into
-		 * @param data The JsonBox Value to insert
-		 * @return Id of inserted value or 0 if error encountered
-		 */
-		std::string insertUnitTests(std::string collection, JsonBox::Value data);
+	
 		/**
 		 * Query the specified collection according to a specified JsonBox Value
 		 *
@@ -138,13 +131,7 @@ namespace mongoapi
 		 * that value is inclusively bounded by 12345-12348
 		 */
 		JsonBox::Value query(std::string collection, JsonBox::Value data);
-		/**
-		 * Query the specified collection for all JsonBox Values
-		 *
-		 * @param collection The name of the collection to query
-		 * @return Array of results
-		 */
-		JsonBox::Value queryAll(std::string collection);
+
 		/**
 		 * Remove one or multiple entries from the specified collection
 		 *
@@ -152,7 +139,7 @@ namespace mongoapi
 		 * @param data A JsonBox Value specifying what entries to remove
 		 * @return True on success
 		 */
-		bool removeEntry(std::string collection, JsonBox::Value data);
+		bool removeEntries(std::string collection, JsonBox::Value data);
 		/**
 		 * this queries a collection for the specified value, and updates it with
 		 * the passed parameters.  This function will only update one entry if the
@@ -167,20 +154,13 @@ namespace mongoapi
 				JsonBox::Value update);
 		/**
 		 * Count the number of objects in the collection specified
-		 *
-		 * @param collection The name of the collection to query
-		 * @return Integer value of number
-		 */
-		int count(std::string collection);
-		/**
-		 * Count the number of objects in the collection specified
 		 * that match the specified filter
 		 *
 		 * @param collection The name of the collection to query
 		 * @param filter The query used on collection  
 		 * @return Integer value of number
 		 */
-		int countFilter(std::string collection, JsonBox::Value filter);
+		int count(std::string collection, JsonBox::Value filter);
 		/**
 		 * Returns a string containing the name of the current database
 		 *
@@ -198,17 +178,6 @@ namespace mongoapi
 
 		int getCreatedClients() const;
 
-		/****************************************************************************/
-		/************************** USED FOR TESTING ONLY ***************************/
-		/****************************************************************************/		
-
-		/**
-		 * Remove all entries from the specified collection
-		 *
-		 * @param collection The name of the collection
-		 * @return True on success
-		 */
-		bool removeAllEntries(std::string collection);
 		/**
 		 * Drop specified collection
 		 *

@@ -70,6 +70,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
     }
+	std::cout << uri << std::endl;
     
 	//run tests
 	std::cout << "Testing mongoAPI..." << std::endl;

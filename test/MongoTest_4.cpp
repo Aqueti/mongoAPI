@@ -28,7 +28,7 @@ void run_task(map<string, vector<JsonBox::Value> > values, int task_id) {
    value["thread"]["$lte"] = p_num_of_threads;
 
    for (map<string, vector<JsonBox::Value> >::iterator it = values.begin(); it != values.end(); it++) {
-      mi.removeEntry(it->first, value);
+      mi.removeEntries(it->first, value);
    }
 }
 
@@ -46,7 +46,7 @@ int main(int argc, char * argv[] )
    num_of["files"] = 10;
    num_of["containers"] = 10;
 
-   if (isClean) for (map<string, uint32_t>::iterator it = num_of.begin(); it != num_of.end(); it++) mi.removeAllEntries(it->first);
+   if (isClean) for (map<string, uint32_t>::iterator it = num_of.begin(); it != num_of.end(); it++) mi.removeEntries(it->first, {});
 
    map<string, vector<JsonBox::Value> > v;
    vector<map<string, vector<JsonBox::Value> > > values;
@@ -110,9 +110,9 @@ int main(int argc, char * argv[] )
    res["sessions"].exp =  p_num_of_threads * num_of["sessions"];
    res["files"].exp =  p_num_of_threads * num_of["sessions"] * num_of["files"];
    res["containers"].exp =  p_num_of_threads * num_of["sessions"] * num_of["files"] * num_of["containers"];
-   res["sessions"].act = mi.count("sessions");
-   res["files"].act = mi.count("files");
-   res["containers"].act = mi.count("containers");
+   res["sessions"].act = mi.count("sessions", {});
+   res["files"].act = mi.count("files", {});
+   res["containers"].act = mi.count("containers", {});
       
    cout << "\t\t" << "exp\t" << "act\t" << endl;
    for (map<string, Result>::iterator it = res.begin(); it != res.end(); it++) {

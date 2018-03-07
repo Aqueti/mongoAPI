@@ -49,7 +49,12 @@ int main(int argc, char * argv[] )
 {
    unsigned int threadCount = 100;
    int writesPerThread = 10000;
-   std::string uri = "127.0.0.1:27017";
+   std::string uri;
+   if(argc ==1){
+	   uri = "127.0.0.1:27017";
+   } else {
+	   uri = argv[1];
+   }
 
    atl::Timer timer;
 

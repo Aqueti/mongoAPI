@@ -72,7 +72,7 @@ JsonBox::Value testMongoInterface(std::string uri, bool printFlag, bool asserFla
 			mi.insert("test", val3);
 			mi.insert("test", val4);
 
-			count = mi.count("test");
+			count = mi.count("test", {});
 			if(count != 4){
 				returnJson["pass"] = false;
 				if(printFlag){
@@ -83,7 +83,7 @@ JsonBox::Value testMongoInterface(std::string uri, bool printFlag, bool asserFla
 				}
 			}
 
-			result = mi.queryAll("test");
+			result = mi.query("test", {});
 			pass = true;
 			if(result[(size_t)0]["name"] != val1["name"] || result[(size_t)0]["class"] != val1["class"]
 					|| result[(size_t)0]["age"] != val1["age"]){
@@ -178,9 +178,9 @@ JsonBox::Value testMongoInterface(std::string uri, bool printFlag, bool asserFla
 			}
 
 			//test remove function of database
-			mi.removeEntry("test", val5);
+			mi.removeEntries("test", val5);
 
-			count = mi.countFilter("test", val5);
+			count = mi.count("test", val5);
 			if(count != 0){
 				returnJson["pass"] = false;
 				if(printFlag){

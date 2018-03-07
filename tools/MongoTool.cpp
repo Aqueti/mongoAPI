@@ -146,6 +146,6 @@ int main(int argc, char * argv[] )
    else if( erase ) {
       std::cout << "Erase "<<dbase<<"/"<<collection<<std::endl;
       std::cout << data <<std::endl;
-      mongoInterface.removeEntry( collection, data);
+      mongoInterface.removeEntries( collection, data);
    }
 }

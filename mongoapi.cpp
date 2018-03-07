@@ -59,6 +59,9 @@ bool MongoInterface::connect(std::string database)
 
 bsoncxx::document::value MongoInterface::BSON_from_JSON(JsonBox::Value data)
 {
+	if(data.isNull()){
+		return bsoncxx::from_json("{}");
+	}
 	std::stringstream stream;
 	data.writeToStream(stream, false);
 	return bsoncxx::from_json(stream.str());
@@ -152,41 +155,6 @@ int MongoInterface::insertMany(std::string collection,
 	return ret;
 }
 
-std::string MongoInterface::insertUnitTests(std::string collection,
-		JsonBox::Value data)
-{
-	std::string strReturn;
-    MongoDatabaseClientPtr dbc;
-    if( !m_clients.dequeue(dbc, 10) ){
-        std::cout << "FAILED TO GET MONGO DATABASE CLIENT" << std::endl;
-        return strReturn;
-    }
-
-	try {
-		mongocxx::collection coll = dbc->m_db[collection];
-		//std::cout << data << std::endl;
-		if(data["submodules"].getObject().size() > 0){
-
-			for(JsonBox::Object::const_iterator it = data["submodules"].getObject().begin(); 
-					it !=data["submodules"].getObject().end(); ++it){
-				std::string str = this->insertUnitTests(collection, data["submodules"][it->first]);
-				JsonBox::Value json;
-				json["_id"] = str;
-				json["pass"] = data["submodules"][it->first]["pass"];
-				data["submodules"][it->first] = json;
-			}
-		}
-		strReturn = this->insert(collection, data);
-	} catch (const mongocxx::bulk_write_exception& e) {
-		std::cout << "insert: " << e.what() << std::endl;
-	} catch (...) {
-		std::cout << "insert: default exception" << std::endl;
-	}
-
-	m_clients.enqueue(dbc);
-	return strReturn;
-}
-
 JsonBox::Value MongoInterface::query(std::string collection,
 		JsonBox::Value data)
 {
@@ -222,41 +190,8 @@ JsonBox::Value MongoInterface::query(std::string collection,
 	return {};
 }
 
-JsonBox::Value MongoInterface::queryAll(std::string collection)
-{
-    MongoDatabaseClientPtr dbc;
-    if( !m_clients.dequeue(dbc, 10) ){
-        std::cout << "FAILED TO GET MONGO DATABASE CLIENT" << std::endl;
-        return {};
-    }
 
-    JsonBox::Value results;
-    bool success = false;
-	try{
-		mongocxx::collection coll = dbc->m_db[collection];
-		mongocxx::cursor cursor = coll.find(document{} << finalize);
-		int i = 0;
-		for(auto doc : cursor) {
-			results[i] = JSON_from_BSON(doc);
-			i++;
-		}
-		success = true;
-	} /*catch (const mongocxx::logic_error& e) {
-		std::cout << "query: " << e.what() << std::endl;
-	} */
-	catch (const mongocxx::query_exception& e) {
-		std::cout << "query returned empty" << std::endl;
-	}
-	catch (...) {
-		std::cout << "queryAll: default exception" << std::endl;
-	}
-
-	m_clients.enqueue(dbc);
-	if( success ) return results;
-	return {};
-}
-
-bool MongoInterface::removeEntry(std::string collection, JsonBox::Value data) 
+bool MongoInterface::removeEntries(std::string collection, JsonBox::Value data) 
 {
     MongoDatabaseClientPtr dbc;
     if( !m_clients.dequeue(dbc, 10) ){
@@ -302,29 +237,7 @@ bool MongoInterface::update(std::string collection, JsonBox::Value filter, JsonB
     return rc;
 }
 
-int MongoInterface::count(std::string collection)
-{
-    MongoDatabaseClientPtr dbc;
-    if( !m_clients.dequeue(dbc, 10) ){
-        std::cout << "FAILED TO GET MONGO DATABASE CLIENT" << std::endl;
-        return -1;
-    }
-
-    int rc = -1;
-	try {
-		mongocxx::collection coll = dbc->m_db[collection];
-		rc = coll.count(document{} << finalize);
-	} /*catch (const mongocxx::query_exception& e) {
-		std::cout << "count: " << e.what() << std::endl;
-	} */catch (...) {
-		std::cout << "count: default exception" << std::endl;
-	}
-
-    m_clients.enqueue(dbc);
-	return rc;
-}
-
-int MongoInterface::countFilter(std::string collection, JsonBox::Value filter)
+int MongoInterface::count(std::string collection, JsonBox::Value filter)
 {
     MongoDatabaseClientPtr dbc;
     if( !m_clients.dequeue(dbc, 10) ){
@@ -366,32 +279,7 @@ int MongoInterface::getCreatedClients() const
 	return m_createdClients;
 }
 
-/****************************************************************************/
-/************************** USED FOR TESTING ONLY ***************************/
-/****************************************************************************/
 
-bool MongoInterface::removeAllEntries(std::string collection) 
-{
-    MongoDatabaseClientPtr dbc;
-    if( !m_clients.dequeue(dbc, 10) ){
-        std::cout << "FAILED TO GET MONGO DATABASE CLIENT" << std::endl;
-        return false;
-    }
-
-    bool rc = false;
-	try {
-		mongocxx::collection coll = dbc->m_db[collection];
-		coll.delete_many(document{} << finalize);
-		rc = true;
-	} catch (const mongocxx::bulk_write_exception& e) {
-		std::cout << "removeAllEntries: " << e.what() << std::endl;
-	} catch (...) {
-		std::cout << "removeAllEntries: default exception" << std::endl;
-	}
-
-    m_clients.enqueue(dbc);
-	return rc;
-}
 
 bool MongoInterface::dropCollection(std::string collection) 
 {

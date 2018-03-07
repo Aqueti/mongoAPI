@@ -75,7 +75,7 @@ int main(int argc, char * argv[] )
       t_values[i]["containers"]["HContainerID"] = t_values[i]["files"]["HContainerID"].getToString();
    }
 
-   if (isClean) for (int i = 0; i < collections.size(); i++) mi.removeAllEntries(collections[i]);
+   if (isClean) for (int i = 0; i < collections.size(); i++) mi.removeEntries(collections[i], {});
 
    vector<thread> threads;
    for (int i = 0; i < num_of_threads; i++) {
@@ -91,7 +91,7 @@ int main(int argc, char * argv[] )
       if (i != 2) res[collections[i]].exp = num_of_threads;
       else res[collections[i]].exp = num_of_threads * times_per_thread;
 
-      res[collections[i]].act = mi.count(collections[i]);
+      res[collections[i]].act = mi.count(collections[i], {});
    }
       
    for (int i = 0; i < num_of_threads; i++) {

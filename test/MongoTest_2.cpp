@@ -41,7 +41,7 @@ int main(int argc, char * argv[] )
    num_of["files"] = 10;
    num_of["containers"] = 100;   
 
-   if (isClean) for (map<string, uint32_t>::iterator it = num_of.begin(); it != num_of.end(); it++) mi.removeAllEntries(it->first);
+   if (isClean) for (map<string, uint32_t>::iterator it = num_of.begin(); it != num_of.end(); it++) mi.removeEntries(it->first, {});
 
    map<string, vector<JsonBox::Value> > v;
    vector<map<string, vector<JsonBox::Value> > > values;
@@ -96,15 +96,15 @@ int main(int argc, char * argv[] )
    res["sessions"].exp =  num_of_threads * num_of["sessions"];
    res["files"].exp =  num_of_threads * num_of["sessions"] * num_of["files"];
    res["containers"].exp =  num_of_threads * num_of["sessions"] * num_of["files"] * num_of["containers"];
-   res["sessions"].act = mi.count("sessions");
-   res["files"].act = mi.count("files");
-   res["containers"].act = mi.count("containers");
+   res["sessions"].act = mi.count("sessions", {});
+   res["files"].act = mi.count("files", {});
+   res["containers"].act = mi.count("containers", {});
    
    for (int x = 0; x < num_of_threads; x++) {
       JsonBox::Value condition;
       condition["thread"] = x;  
       for (map<string, uint32_t>::iterator it = num_of.begin(); it != num_of.end(); it++) {
-         res[it->first].cmp = (mi.countFilter(it->first, condition) == (res[it->first].exp / num_of_threads));         
+         res[it->first].cmp = (mi.count(it->first, condition) == (res[it->first].exp / num_of_threads));         
       }      
    }
       
