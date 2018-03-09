@@ -57,7 +57,10 @@ namespace mongoapi
 		mongocxx::database m_db;
         	int m_maxClients;
 		std::atomic<uint16_t> m_createdClients;
-        	atl::TSQueue<MongoDatabaseClientPtr> m_clients;
+
+
+	public:
+       	atl::TSQueue<MongoDatabaseClientPtr> m_clients;
 
 		/**
 		 * Helper method to convert a JsonBox Value to a BSON object that MongoDB accepts
@@ -73,7 +76,6 @@ namespace mongoapi
 		 * @return The JsonBox Value
 		 */
 		static JsonBox::Value JSON_from_BSON(bsoncxx::document::view data);
-	public:
 		/**
 		 * Constructor 
 		 */
