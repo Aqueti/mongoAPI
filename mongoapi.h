@@ -47,7 +47,7 @@ namespace mongoapi
 	 * with methods to insert, retrieve, and remove entries with JsonBox Values.
 	 */
 	class MongoInterface {
-	private:
+	protected:
 		std::string m_database;
 		std::string m_URI;
 		static mongocxx::instance m_instance;
