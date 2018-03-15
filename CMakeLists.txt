@@ -42,7 +42,7 @@ if (MSVC)
   find_package(Boost 1.56.0 REQUIRED)
 endif()
 
-
+link_directories(${CMAKE_INSTALL_PREFIX}/lib)
 include_directories(${CMAKE_INSTALL_PREFIX}/include)
 
 # Superbuild rules
