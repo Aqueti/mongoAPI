@@ -20,11 +20,19 @@ if(USE_SUPERBUILD)
    set(BUILD_MODULES ON)
 endif()
 
+
+message("CURRENT: ${CMAKE_CURRENT_BINARY_DIR}")
+message("BINARY: ${CMAKE_BINARY_DIR}")
+
+
+set( libbsoncxx_DIR ${CMAKE_CURRENT_BINARY_DIR}/INSTALL/lib/cmake/libbsoncxx-3.1.3)
+set( libmongocxx_DIR ${CMAKE_CURRENT_BINARY_DIR}/INSTALL/lib/cmake/libmongocxx-3.1.3)
 list(APPEND CMAKE_MODULE_PATH 
+#   ${CMAKE_CURRENT_SOURCE_DIR}/cmake
    ${CMAKE_INSTALL_PREFIX}/cmake
    ${CMAKE_INSTALL_PREFIX}/lib/cmake
-#   ${CMAKE_BINARY_DIR}/INSTALL/cmake
-#   ${CMAKE_BINARY_DIR}/INSTALL/lib/cmake
+   ${CMAKE_CURRENT_BINARY_DIR}/INSTALL/cmake
+   ${CMAKE_CURRENT_BINARY_DIR}/INSTALL/lib/cmake
 #   ${CMAKE_CURRENT_BINARY_DIR}/INSTALL/lib/cmake
 )
 
@@ -43,7 +51,10 @@ if (MSVC)
 endif()
 
 link_directories(${CMAKE_INSTALL_PREFIX}/lib)
-include_directories(${CMAKE_INSTALL_PREFIX}/include)
+include_directories(
+   ${CMAKE_BINARY_DIR}/INSTALL/include
+   ${CMAKE_INSTALL_PREFIX}/include
+)
 
 # Superbuild rules
 if(BUILD_MODULES)
@@ -170,12 +181,25 @@ add_library(MongoAPI STATIC
     MongoDatabaseClient.cpp
 )
 
-target_include_directories(MongoAPI
-    PUBLIC ${MONGOC_INCLUDE_DIRS} #TODO: This needs to be private
-    PUBLIC ${LIBMONGOCXX_INCLUDE_DIRS}
-    PUBLIC ${BSON_INCLUDE_DIRS}
-    PUBLIC ${LIBBSONCXX_INCLUDE_DIRS}
-    PUBLIC ${CMAKE_INSTALL_PREFIX}/include
+#target_include_directories(MongoAPI
+#    PUBLIC ${CMAKE_BINARY_DIR}/INSTALL/include/
+#    PUBLIC ${MONGOC_INCLUDE_DIRS} #TODO: This needs to be private
+#    PUBLIC ${LIBMONGOCXX_INCLUDE_DIRS}/mongocxx
+#    PUBLIC ${BSON_INCLUDE_DIRS}
+#     PUBLIC ${LIBBSONCXX_INCLUDE_DIRS}
+#     $<INSTALL_INTERFACE:${LIBBSONCXX_INCLUDE_DIRS}
+#    PUBLIC ${CMAKE_INSTALL_PREFIX}/include
+#)
+
+
+include_directories( 
+    ${CMAKE_BINARY_DIR}/INSTALL/include/
+    ${MONGOC_INCLUDE_DIRS} #TODO: This needs to be private
+    ${LIBMONGOCXX_INCLUDE_DIRS}
+    ${BSON_INCLUDE_DIRS}
+    ${LIBBSONCXX_INCLUDE_DIRS}
+    ${LIBBSONCXX_INCLUDE_DIRS}
+    ${CMAKE_INSTALL_PREFIX}/include
 )
 
 if (MSVC)
