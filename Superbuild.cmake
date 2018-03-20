@@ -4,9 +4,9 @@ set(cmake_common_args
     -DCMAKE_CXX_COMPILER:PATH=${CMAKE_CXX_COMPILER}
     -DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}
     -DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS}
-#    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
-#    -DCMAKE_INSTALL_RPATH:PATH=${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}
-#    -DCMAKE_INCLUDE_PATH:PATH=${CMAKE_INSTALL_PREFIX}/include
+    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
+    -DCMAKE_INSTALL_RPATH:PATH=${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}
+    -DCMAKE_INCLUDE_PATH:PATH=${CMAKE_INSTALL_PREFIX}/include
 #    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}/INSTALL
 #    -DCMAKE_INSTALL_RPATH:PATH=${CMAKE_CURRENT_BINARY_DIR}/INSTALL/lib${LIB_SUFFIX}
     -DCMAKE_INCLUDE_PATH:PATH=${CMAKE_CURRENT_BINARY_DIR}/INSTALL/include
@@ -18,18 +18,18 @@ set(cmake_common_args
     -DUSE_SUPERBUILD:BOOL=OFF
 )
 
- list(APPEND cmake_local_args 
-     ${cmake_common_args}
-     -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_BINARY_DIR}/INSTALL
-     -DCMAKE_INSTALL_RPATH:PATH=${CMAKE_BINARY_DIR}/INSTALL/lib${LIB_SUFFIX}
-     -DCMAKE_INCLUDE_PATH:PATH=${CMAKE_BINARY_DIR}/INSTALL/include
-  )
+# list(APPEND cmake_local_args 
+#     ${cmake_common_args}
+#     -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_BINARY_DIR}/INSTALL
+#     -DCMAKE_INSTALL_RPATH:PATH=${CMAKE_BINARY_DIR}/INSTALL/lib${LIB_SUFFIX}
+#     -DCMAKE_INCLUDE_PATH:PATH=${CMAKE_BINARY_DIR}/INSTALL/include
+#  )
 
-  list(APPEND cmake_global_args 
-    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
-    -DCMAKE_INSTALL_RPATH:PATH=${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}
-    -DCMAKE_INCLUDE_PATH:PATH=${CMAKE_INSTALL_PREFIX}/include
-  )
+#  list(APPEND cmake_global_args 
+#    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
+#    -DCMAKE_INSTALL_RPATH:PATH=${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}
+#    -DCMAKE_INCLUDE_PATH:PATH=${CMAKE_INSTALL_PREFIX}/include
+#  )
 
 add_custom_target(submodule_init
     COMMAND ${GIT_EXECUTABLE} submodule init ${CMAKE_SOURCE_DIR}
@@ -114,13 +114,13 @@ if( BUILD_MONGOCXX )
     -DCMAKE_PREFIX_PATH:PATH=${CMAKE_INSTALL_PREFIX}
     -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
   )
-  add_external_project(MongoCXX dependencies/mongo-cxx-driver OFF "${depends}" "${MONGOCXX_ARGS} ${cmake_local_args}")
+  add_external_project(MongoCXX dependencies/mongo-cxx-driver OFF "${depends}" "${MONGOCXX_ARGS}")
   set(depends MongoCXX)
 endif()
 
 if(USE_SUPERBUILD)
-   add_external_project(JsonBox dependencies/JsonBox OFF "" "${cmake_global_args}")
-   add_external_project(AquetiTools dependencies/AquetiTools OFF "JsonBox" "${cmake_global_args}")
+   add_external_project(JsonBox dependencies/JsonBox OFF "" "")
+   add_external_project(AquetiTools dependencies/AquetiTools OFF "JsonBox" "")
    set(superdepends AquetiTools)
 endif()
 
@@ -131,7 +131,6 @@ ExternalProject_Add(
   BUILD_ALWAYS 1 
   CMAKE_ARGS
      ${cmake_common_args}
-     ${cmake_global_args}
      -DDOXYGEN_DIR=${CMAKE_BINARY_DIR}/INSTALL/Doxygen
     -DBUILD_MODULES:BOOL=false
   INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
