@@ -187,7 +187,6 @@ add_library(MongoAPI STATIC
 #    PUBLIC ${LIBMONGOCXX_INCLUDE_DIRS}/mongocxx
 #    PUBLIC ${BSON_INCLUDE_DIRS}
 #     PUBLIC ${LIBBSONCXX_INCLUDE_DIRS}
-#     $<INSTALL_INTERFACE:${LIBBSONCXX_INCLUDE_DIRS}
 #    PUBLIC ${CMAKE_INSTALL_PREFIX}/include
 #)
 
@@ -219,7 +218,11 @@ TARGET_LINK_LIBRARIES(MongoAPI
 list(APPEND TARGET_LIST MongoAPI)
 
 #set(MONGO_HEADERS mongoapi.h MongoDatabaseClient.h)
-set(MONGO_HEADERS MongoAPI.h)
+set(MONGO_HEADERS 
+   MongoAPI.h
+   mongoapi.h
+   MongoDatabaseClient.h
+)
 
 if( BUILD_TESTS )
    #Make a dedicated test library
