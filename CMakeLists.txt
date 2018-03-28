@@ -117,12 +117,11 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
-find_package(libbson-1.0 CONFIG REQUIRED)
-#find_package(libbson-static-1.0 CONFIG REQUIRED)
+#find_package(libbson-1.0 CONFIG REQUIRED)
+find_package(libbson-static-1.0 CONFIG REQUIRED)
 find_package(libbsoncxx CONFIG REQUIRED)
-find_package(libmongoc-1.0 CONFIG REQUIRED)
-#find_package(libmongoc-static-1.0 CONFIG REQUIRED)
-find_package(libmongocxx CONFIG REQUIRED)
+#find_package(libmongoc-1.0 CONFIG REQUIRED)
+find_package(libmongoc-static-1.0 CONFIG REQUIRED)
 find_package(JsonBox CONFIG REQUIRED)
 find_package(AquetiTools CONFIG REQUIRED)
 
