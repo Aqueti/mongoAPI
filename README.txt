@@ -11,14 +11,14 @@ sudo apt-get install graphviz
 
 
 ##################################
-##### TO INSTALL MONGODB 3.2 #####
+##### TO INSTALL MONGODB 3.6 #####
 ##################################
 # remove Ubuntu repository verison of mongo
-sudo apt purge mongodb
+sudo apt purge mongodb mongodb-org*
 
 # add official mongo repo and install
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
-echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
+echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.6 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.6.list
 sudo apt-get update
 sudo apt-get install mongodb-org
 
