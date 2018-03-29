@@ -167,7 +167,7 @@ find_package(libbson-static-1.0 CONFIG REQUIRED)
 find_package(libbsoncxx CONFIG REQUIRED)
 find_package(libmongoc-static-1.0 CONFIG REQUIRED)
 find_package(libmongocxx CONFIG REQUIRED)
-find_package(JsonBox REQUIRED)
+find_package(JsonBox CONFIG REQUIRED)
 #find_package(AquetiTools REQUIRED)
 
 link_directories(${LIBMONGOCXX_LIBRARY_DIRS})
@@ -220,7 +220,7 @@ list(APPEND TARGET_LIST MongoAPI)
 
 #set(MONGO_HEADERS mongoapi.h MongoDatabaseClient.h)
 set(MONGO_HEADERS 
-   MongoAPI.h
+    #MongoAPI.h
    mongoapi.h
    MongoDatabaseClient.h
 )
