@@ -71,6 +71,10 @@ list(APPEND CMAKE_MODULE_PATH
    ${CMAKE_SOURCE_DIR}/INSTALL/lib/cmake
 )
 
+list(APPEND CMAKE_PREFIX_PATH
+    ${CMAKE_MODULE_PATH}
+)
+
 link_directories(
    ${CMAKE_INSTALL_PREFIX}/lib
 )
