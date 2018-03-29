@@ -176,8 +176,9 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 #create hte mongoapi library
 add_library(MongoAPI STATIC
-    MongoInterface.cpp
-    MongoAPI.cpp 
+	mongoapi.cpp
+#    MongoInterface.cpp
+#    MongoAPI.cpp 
     MongoDatabaseClient.cpp
 )
 
@@ -224,7 +225,7 @@ set(MONGO_HEADERS
    MongoDatabaseClient.h
 )
 
-if( BUILD_TESTS )
+if( FALSE AND BUILD_TESTS )
    #Make a dedicated test library
    add_library( mongoAPI_test STATIC
        test/MongoAPITest.cpp
@@ -256,16 +257,16 @@ if( BUILD_TESTS )
    list(APPEND TARGET_LIST MongoTest )
 endif()
 
-if( BUILD_TOOLS ) 
-   #Add MongoAPI test as an executavble
-   add_executable( mongoTool
-      tools/MongoTool.cpp 
-   )
-   target_link_libraries( mongoTool
-      MongoAPI
-   )
-   list(APPEND TARGET_LIST mongoTool )
-endif( BUILD_TOOLS ) 
+#if( BUILD_TOOLS ) 
+#   #Add MongoAPI test as an executavble
+#   add_executable( mongoTool
+#      tools/MongoTool.cpp 
+#   )
+#   target_link_libraries( mongoTool
+#      MongoAPI
+#   )
+#   list(APPEND TARGET_LIST mongoTool )
+#endif( BUILD_TOOLS ) 
 
 #############################################
 #install library files
