@@ -163,6 +163,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
+
 find_package(libbson-static-1.0 CONFIG REQUIRED)
 find_package(libbsoncxx CONFIG REQUIRED)
 find_package(libmongoc-static-1.0 CONFIG REQUIRED)
@@ -175,9 +176,9 @@ link_directories(${LIBMONGOCXX_LIBRARY_DIRS})
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 #create hte mongoapi library
-add_library(MongoAPI STATIC
+add_library(mongoapi 
     MongoInterface.cpp
-    MongoAPI.cpp 
+    mongoapi.cpp
     MongoDatabaseClient.cpp
 )
 
@@ -202,12 +203,12 @@ include_directories(
 )
 
 if (MSVC)
-  target_include_directories(MongoAPI
+  target_include_directories(mongoapi
     PUBLIC ${Boost_INCLUDE_DIRS}
   )
 endif()
 
-TARGET_LINK_LIBRARIES(MongoAPI
+TARGET_LINK_LIBRARIES(mongoapi
     PUBLIC AquetiTools
     PUBLIC JsonBox
     INTERFACE ${LIBMONGOCXX_LIBRARIES} 
@@ -215,14 +216,27 @@ TARGET_LINK_LIBRARIES(MongoAPI
     PRIVATE ${MONGOC_STATIC_LIBRARIES} 
     PRIVATE ${BSON_STATIC_LIBRARIES}
 )
-list(APPEND TARGET_LIST MongoAPI)
+list(APPEND TARGET_LIST mongoapi)
 
 #set(MONGO_HEADERS mongoapi.h MongoDatabaseClient.h)
 set(MONGO_HEADERS 
-   MongoAPI.h
+   mongoapi.h
    mongoapi.h
    MongoDatabaseClient.h
 )
+
+#PRELIM
+FILE(GLOB solibs ${CMAKE_INSTALL_PREFIX}/lib/*.so)
+add_custom_target( MongoAPI_all 
+        ALL
+        COMMAND ls ${solibs}
+        COMMAND ar -qc libMongoAPI.a ${solibs}
+        WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/lib
+        VERBATIM
+        DEPENDS mongoapi
+)
+
+
 
 if( BUILD_TESTS )
    #Make a dedicated test library
@@ -231,7 +245,7 @@ if( BUILD_TESTS )
        test/MongoInterfaceTest.cpp
    )
    target_link_libraries( mongoAPI_test PUBLIC
-      MongoAPI
+      mongoapi
    )
    list(APPEND TARGET_LIST mongoAPI_test )
 
@@ -243,7 +257,7 @@ if( BUILD_TESTS )
    )
    target_link_libraries(testMongoAPI
       mongoAPI_test
-      MongoAPI
+      mongoapi
    )
    list(APPEND TARGET_LIST testMongoAPI )
 
@@ -251,7 +265,7 @@ if( BUILD_TESTS )
      test/MongoTest.cpp
    )
    TARGET_LINK_LIBRARIES(MongoTest
-      MongoAPI
+      mongoapi
    )
    list(APPEND TARGET_LIST MongoTest )
 endif()
@@ -262,7 +276,7 @@ if( BUILD_TOOLS )
       tools/MongoTool.cpp 
    )
    target_link_libraries( mongoTool
-      MongoAPI
+      mongoapi
    )
    list(APPEND TARGET_LIST mongoTool )
 endif( BUILD_TOOLS ) 
@@ -272,6 +286,8 @@ endif( BUILD_TOOLS )
 # This sections initiates the build of the  components in th TARGET_LIST. 
 # Each component
 #############################################
+
+
 configure_file(${CMAKE_SOURCE_DIR}/MongoAPIConfig.cmake.in
                ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
                @ONLY)
