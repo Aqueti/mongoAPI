@@ -18,6 +18,7 @@
 #include <fstream>
 #include "JsonBox.h"
 #include <vector>
+#include <bsoncxx/exception/exception.hpp>
 #include <bsoncxx/json.hpp>
 #include <bsoncxx/types.hpp>
 #include <bsoncxx/oid.hpp>

@@ -108,7 +108,9 @@ std::string MongoInterface::insert(std::string collection,
 			}
 		}
 	} catch (const mongocxx::bulk_write_exception& e) {
-		std::cout << "insert: " << e.what() << std::endl;
+		std::cout << "insert: bsoncxx::bulk_write_exception: " << e.what() << std::endl;
+    } catch (const bsoncxx::v_noabi::exception& e) {
+        std::cout << "insert: bsoncxx::v_noabi::exception: " << e.what() << std::endl;
 	} catch (...) {
 		std::cout << "insert: default exception" << std::endl;
 	}
