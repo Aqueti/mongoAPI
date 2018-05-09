@@ -37,6 +37,22 @@ bool MongoInterface::connect(std::string database)
 		m_client = m_pool.acquire();
 		m_db = (*m_client)[database];
 
+		// THIS CODE IS NOT POINTLESS
+		// mongo connection errors don't occur until we 
+		// actually try to do something
+		// even list_collections succeeds
+		// iterating the cursor triggers the exception
+		// we do it so we know if we've failed to connect
+		// this isn't pretty or good, but works as a bandaid for now
+		mongocxx::cursor cursor = m_db.list_collections();
+		JsonBox::Value results;
+		int i = 0;
+		for(auto doc : cursor) {
+			JSON_from_BSON(doc);
+		}
+		// THE CODE ABOVE IS NOT POINTLESS
+
+
 		// clear the current queue of existing instances
 		m_clients.delete_all();
 		m_createdClients = 0;
