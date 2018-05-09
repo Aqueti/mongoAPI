@@ -48,6 +48,8 @@ find_package(Git REQUIRED)
 # using the MSVC compiler, so we look for it here as well, but it only does this for Windows
 if (MSVC)
   find_package(Boost 1.56.0 REQUIRED)
+  # Don't let Windows.h define min() and max() as macros; they conflict with our definitions.
+  add_definitions(-DNOMINMAX)
 endif()
 
 link_directories(${CMAKE_INSTALL_PREFIX}/lib)
