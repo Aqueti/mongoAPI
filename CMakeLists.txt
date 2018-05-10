@@ -48,8 +48,6 @@ find_package(Git REQUIRED)
 # using the MSVC compiler, so we look for it here as well, but it only does this for Windows
 if (MSVC)
   find_package(Boost 1.56.0 REQUIRED)
-  # Don't let Windows.h define min() and max() as macros; they conflict with our definitions.
-  add_definitions(-DNOMINMAX)
 endif()
 
 link_directories(${CMAKE_INSTALL_PREFIX}/lib)
@@ -212,11 +210,13 @@ if (MSVC)
   target_include_directories(MongoAPI
     PUBLIC ${Boost_INCLUDE_DIRS}
   )
+  # Don't let Windows.h define min() and max() as macros; they conflict with our definitions.
+  target_compile_definitions(MongoAPI PUBLIC -DNOMINMAX)
 endif()
 
 list(APPEND mongoAPI_linkLIBS
-	${CMAKE_INSTALL_PREFIX}/lib/libmongocxx.a
-	${CMAKE_INSTALL_PREFIX}/lib/libbsoncxx.a
+#	${CMAKE_INSTALL_PREFIX}/lib/libmongocxx.a
+#	${CMAKE_INSTALL_PREFIX}/lib/libbsoncxx.a
     ${MONGOC_STATIC_LIBRARIES} 
     ${BSON_STATIC_LIBRARIES}
 )
