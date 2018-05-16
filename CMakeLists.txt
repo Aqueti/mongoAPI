@@ -178,7 +178,7 @@ link_directories(${LIBMONGOCXX_LIBRARY_DIRS})
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-#create hte mongoapi library
+#create the mongoapi library
 add_library(MongoAPI STATIC
 	mongoapi.cpp
 #    MongoInterface.cpp
@@ -214,9 +214,18 @@ if (MSVC)
   target_compile_definitions(MongoAPI PUBLIC -DNOMINMAX)
 endif()
 
+# Convert the library-base-name entries into full paths so that
+# libraries and programs that link to us know where to find them.
+# We only want the static libraries, so we need to search for the
+# names they might have on each system we compile on to avoid
+# finding installed .so system libraries.
+find_library(MONGOCXX_LIBRARY_PATH NAMES libmongocxx.a mongocxx.lib)
+find_library(BSONCXX_LIBRARY_PATH NAMES libbsoncxx.a bsoncxx.lib)
 list(APPEND mongoAPI_linkLIBS
 #	${CMAKE_INSTALL_PREFIX}/lib/libmongocxx.a
 #	${CMAKE_INSTALL_PREFIX}/lib/libbsoncxx.a
+    ${MONGOCXX_LIBRARY_PATH} 
+    ${BSONCXX_LIBRARY_PATH}
     ${MONGOC_STATIC_LIBRARIES} 
     ${BSON_STATIC_LIBRARIES}
 )
@@ -225,7 +234,7 @@ list(APPEND mongoAPI_linkLIBS
 TARGET_LINK_LIBRARIES(MongoAPI
     PUBLIC AquetiTools
     PUBLIC JsonBox
-	PRIVATE ${mongoAPI_linkLIBS}
+    PRIVATE ${mongoAPI_linkLIBS}
 )
 #    INTERFACE ${LIBMONGOCXX_LIBRARIES} 
 #    PRIVATE ${LIBBSONCXX_LIBRARIES}
