@@ -92,15 +92,22 @@ JsonBox::Value MongoInterface::JSON_from_BSON(bsoncxx::document::view data)
 
 bool MongoInterface::createIndex(std::string collection, JsonBox::Value index)
 {
-	try{
-		m_db[collection].create_index(BSON_from_JSON(index));
-		return true;
-	} catch( const mongocxx::logic_error& e ){
-		std::cout << "createIndex: " << e.what() << std::endl;
-	} catch( const mongocxx::operation_exception& e ){
-		std::cout << "createIndex: " << e.what() << std::endl;
-	}
-	return false;
+   MongoDatabaseClientPtr dbc;
+   if( !m_clients.dequeue(dbc, 10) ){
+      std::cout << "FAILED TO GET MONGO DATABASE CLIENT" << std::endl;
+      return false;
+   }
+
+   try {
+      mongocxx::collection coll = dbc->m_db[collection];
+      coll.create_index(BSON_from_JSON(index));
+      return true;
+   } catch( const mongocxx::logic_error& e ){
+      std::cout << "createIndex: " << e.what() << std::endl;
+   } catch( const mongocxx::operation_exception& e ){
+      std::cout << "createIndex: " << e.what() << std::endl;
+   }
+   return false;
 }
 
 std::string MongoInterface::insert(std::string collection,
