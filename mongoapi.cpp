@@ -1,5 +1,5 @@
 /**
- * @file mongoapi.h
+ * @file mongoapi.cpp
  * @author Nils Persson <npersson@live.unc.edu>
  * @version 1.0
  *
