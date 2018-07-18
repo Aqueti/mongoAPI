@@ -25,8 +25,8 @@ message("CURRENT: ${CMAKE_CURRENT_BINARY_DIR}")
 message("BINARY: ${CMAKE_BINARY_DIR}")
 
 
-set( libbsoncxx_DIR ${CMAKE_CURRENT_BINARY_DIR}/INSTALL/lib/cmake/libbsoncxx-3.1.3)
-set( libmongocxx_DIR ${CMAKE_CURRENT_BINARY_DIR}/INSTALL/lib/cmake/libmongocxx-3.1.3)
+set( libbsoncxx_DIR ${CMAKE_CURRENT_BINARY_DIR}/INSTALL/lib/cmake/libbsoncxx-3.2.0)
+set( libmongocxx_DIR ${CMAKE_CURRENT_BINARY_DIR}/INSTALL/lib/cmake/libmongocxx-3.2.0)
 list(APPEND CMAKE_MODULE_PATH 
 #   ${CMAKE_CURRENT_SOURCE_DIR}/cmake
    ${CMAKE_INSTALL_PREFIX}/cmake
