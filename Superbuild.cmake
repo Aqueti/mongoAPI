@@ -58,7 +58,7 @@ endmacro(add_external_project)
 #See if we have all of the packages
 if( NOT FORCE_MODULES )
   list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
-  find_package(libbson-static-1.0 QUIET)
+  #find_package(libbson-static-1.0 QUIET)
   find_package(libbsoncxx QUIET )
   find_package(libmongoc-static-1.0 QUIET )
   find_package(libmongocxx QUIET )
@@ -66,8 +66,8 @@ endif()
 
 
 #determine what local modules we need to build
-if( NOT  libsson_static-1.0_FOUND )
-   set(BUILD_BSON true)
+if( NOT  libbson_static-1.0_FOUND )
+    #set(BUILD_BSON true)
    set(BUILD_MONGOC true)
    set(BUILD_MONGOCXX true)
 endif()
@@ -82,15 +82,15 @@ endif()
 
 # Build the missing modules 
 # Otherwise, it remains as it was set
-if( BUILD_BSON )
-  set(BSON_ARGS
-    -DENABLE_TESTS:BOOL=OFF
-#    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}/INSTALL
-    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
-  )
-  add_external_project(libbson dependencies/libbson OFF "" "${BSON_ARGS}")
-  set(depends libbson)
-endif()
+#if( BUILD_BSON )
+#  set(BSON_ARGS
+#    -DENABLE_TESTS:BOOL=OFF
+##    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}/INSTALL
+#    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
+#  )
+#  add_external_project(libbson dependencies/libbson OFF "" "${BSON_ARGS}")
+#  set(depends libbson)
+#endif()
 if( BUILD_MONGOC)
   set(MONGOC_ARGS
     -DENABLE_TESTS:BOOL=OFF
@@ -110,7 +110,7 @@ if( BUILD_MONGOCXX )
 #    -DCMAKE_PREFIX_PATH:PATH=${CMAKE_BINARY_DIR}/INSTALL
 #    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}/INSTALL
     -DLIBMONGOC_DIR=${CMAKE_INSTALL_PREFIX}
-    -DLIBBSON_DIR=${CMAKE_INSTALL_PREFIX}
+    #-DLIBBSON_DIR=${CMAKE_INSTALL_PREFIX}
 #    -DCMAKE_PREFIX_PATH:PATH=${CMAKE_INSTALL_PREFIX}
     -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
   )
