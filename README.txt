@@ -17,7 +17,8 @@ sudo apt-get install graphviz
 sudo apt purge mongodb mongodb-org*
 
 # add official mongo repo and install
-sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+# sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927 OR
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5
 echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.6 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.6.list
 sudo apt-get update
 sudo apt-get install mongodb-org
